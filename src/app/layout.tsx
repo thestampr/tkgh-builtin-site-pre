@@ -5,7 +5,7 @@ import { SessionClientProvider } from "@/components/providers/SessionClientProvi
 
 export const metadata: Metadata = defaultMetadata;
 
-export async function getInitialProps({ locale }: { locale: string }) {
+RootLayout.getInitialProps = async ({ locale }: { locale: string }) => {
   return {
     props: {
       messages: {
