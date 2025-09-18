@@ -22,8 +22,8 @@ export function ProviderCTA({ preview, config }: ProviderCTAProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (preview) return; // don't hide global CTA in preview mode
     setMounted(true);
+    if (preview) return; // don't hide global CTA in preview mode
     // Hide global site CTA (ContactUsButton) while provider CTA is present
     const el = document.querySelector<HTMLElement>("[data-global-cta]");
     if (el) el.style.display = "none";
