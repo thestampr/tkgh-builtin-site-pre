@@ -1,14 +1,15 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { PrismaClient } from "@prisma/client/scripts/default-index.js";
 import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { revalidateTag } from "next/cache";
 import prisma from "../db/prisma";
 import { verifyPassword } from "./password";
-import { revalidateTag } from "next/cache";
 
 // Extend default user session/jwt types via module augmentation (add later if needed)
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma), // We'll customize user model fields; minimal for now
+  adapter: PrismaAdapter(prisma as PrismaClient), // We'll customize user model fields; minimal for now
   session: {
     strategy: "jwt"
   },
@@ -35,7 +36,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = user.role;
       }
       return token;
     },
