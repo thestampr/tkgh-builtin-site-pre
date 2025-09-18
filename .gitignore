@@ -48,6 +48,7 @@ dev.db
 dev.db-journal
 prisma/migrations/*/migration.sql
 prisma/migrations/*/schema.prisma
+migration_lock.toml
 
 # uploads
 public/uploads
