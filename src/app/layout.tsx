@@ -1,7 +1,7 @@
+import { SessionClientProvider } from "@/components/providers/SessionClientProvider";
 import { defaultMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import "./globals.css";
-import { SessionClientProvider } from "@/components/providers/SessionClientProvider";
 
 export const metadata: Metadata = defaultMetadata;
 
@@ -16,10 +16,10 @@ RootLayout.getInitialProps = async ({ locale }: { locale: string }) => {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const lang = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "en";
+  const lang = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
   
   return (
-    <html lang={lang} data-theme="light" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <title>{process.env.NEXT_PUBLIC_SITE_NAME || "Loading..."}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />

@@ -1,12 +1,12 @@
 import { getRequestConfig } from "next-intl/server";
+import { defaultLocale, locales } from "./navigation";
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
   
-  const supported = (process.env.NEXT_PUBLIC_SUPPORTED_LOCALES || "en,th").split(",");
-  const locale = requested && supported.includes(requested) 
+  const locale = requested && locales.includes(requested) 
   ? requested 
-  : process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "en";
+  : defaultLocale;
 
   return {
     locale,
