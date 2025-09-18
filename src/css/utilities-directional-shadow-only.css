@@ -1,0 +1,185 @@
+/* custom shadows (cause tailwind.config.ts doesn't working) */
+/* Tailwind CSS v4 @theme: Directional shadows with reduced lateral bleed */
+/* Strategy:
+   - Use smaller blur and a slightly larger negative spread than the blur to compress side bleed.
+   - Push the offset further in the intended direction.
+   - Keep all layers strictly in one direction (no counter layers).
+   - A configurable color is provided via --shadow-color (R, G, B).
+*/
+
+@theme {
+  /* Global color for all shadows (R, G, B). Override per component if needed:
+     style="--shadow-color: 17, 24, 39" */
+  --shadow-color: 0, 0, 0;
+
+  /* Top shadows (negative Y) */
+  --shadow-t-sm: 0 -3px 6px -5px rgba(var(--shadow-color), 0.20);
+  --shadow-t-md: 0 -8px 12px -11px rgba(var(--shadow-color), 0.22), 0 -14px 20px -19px rgba(var(--shadow-color), 0.14);
+  --shadow-t-lg: 0 -12px 18px -17px rgba(var(--shadow-color), 0.22), 0 -22px 30px -29px rgba(var(--shadow-color), 0.14);
+  --shadow-t-xl: 0 -18px 28px -27px rgba(var(--shadow-color), 0.22), 0 -30px 44px -43px rgba(var(--shadow-color), 0.14);
+  --shadow-t-2xl: 0 -26px 44px -41px rgba(var(--shadow-color), 0.22), 0 -44px 68px -65px rgba(var(--shadow-color), 0.14);
+  --shadow-t-3xl: 0 -36px 60px -57px rgba(var(--shadow-color), 0.23), 0 -64px 96px -89px rgba(var(--shadow-color), 0.14);
+
+  /* Bottom shadows (positive Y) */
+  --shadow-b-sm: 0 3px 6px -5px rgba(var(--shadow-color), 0.20);
+  --shadow-b-md: 0 8px 12px -11px rgba(var(--shadow-color), 0.22), 0 14px 20px -19px rgba(var(--shadow-color), 0.14);
+  --shadow-b-lg: 0 12px 18px -17px rgba(var(--shadow-color), 0.22), 0 22px 30px -29px rgba(var(--shadow-color), 0.14);
+  --shadow-b-xl: 0 18px 28px -27px rgba(var(--shadow-color), 0.22), 0 30px 44px -43px rgba(var(--shadow-color), 0.14);
+  --shadow-b-2xl: 0 26px 44px -41px rgba(var(--shadow-color), 0.22), 0 44px 68px -65px rgba(var(--shadow-color), 0.14);
+  --shadow-b-3xl: 0 36px 60px -57px rgba(var(--shadow-color), 0.23), 0 64px 96px -89px rgba(var(--shadow-color), 0.14);
+
+  /* Left shadows (negative X) */
+  --shadow-l-sm: -3px 0 6px -5px rgba(var(--shadow-color), 0.20);
+  --shadow-l-md: -8px 0 12px -11px rgba(var(--shadow-color), 0.22), -14px 0 20px -19px rgba(var(--shadow-color), 0.14);
+  --shadow-l-lg: -12px 0 18px -17px rgba(var(--shadow-color), 0.22), -22px 0 30px -29px rgba(var(--shadow-color), 0.14);
+  --shadow-l-xl: -18px 0 28px -27px rgba(var(--shadow-color), 0.22), -30px 0 44px -43px rgba(var(--shadow-color), 0.14);
+  --shadow-l-2xl: -26px 0 44px -41px rgba(var(--shadow-color), 0.22), -44px 0 68px -65px rgba(var(--shadow-color), 0.14);
+  --shadow-l-3xl: -36px 0 60px -57px rgba(var(--shadow-color), 0.23), -64px 0 96px -89px rgba(var(--shadow-color), 0.14);
+
+  /* Right shadows (positive X) */
+  --shadow-r-sm: 3px 0 6px -5px rgba(var(--shadow-color), 0.20);
+  --shadow-r-md: 8px 0 12px -11px rgba(var(--shadow-color), 0.22), 14px 0 20px -19px rgba(var(--shadow-color), 0.14);
+  --shadow-r-lg: 12px 0 18px -17px rgba(var(--shadow-color), 0.22), 22px 0 30px -29px rgba(var(--shadow-color), 0.14);
+  --shadow-r-xl: 18px 0 28px -27px rgba(var(--shadow-color), 0.22), 30px 0 44px -43px rgba(var(--shadow-color), 0.14);
+  --shadow-r-2xl: 26px 0 44px -41px rgba(var(--shadow-color), 0.22), 44px 0 68px -65px rgba(var(--shadow-color), 0.14);
+  --shadow-r-3xl: 36px 0 60px -57px rgba(var(--shadow-color), 0.23), 64px 0 96px -89px rgba(var(--shadow-color), 0.14);
+
+  /* All-direction shadows (symmetric, conservative blur) */
+  --shadow-all-sm: 0 2px 6px -4px rgba(var(--shadow-color), 0.15);
+  --shadow-all-md: 0 6px 16px -12px rgba(var(--shadow-color), 0.18);
+  --shadow-all-lg: 0 12px 28px -22px rgba(var(--shadow-color), 0.18);
+  --shadow-all-xl: 0 18px 40px -34px rgba(var(--shadow-color), 0.18);
+  --shadow-all-2xl: 0 26px 56px -46px rgba(var(--shadow-color), 0.22);
+  --shadow-all-3xl: 0 36px 80px -68px rgba(var(--shadow-color), 0.24);
+}
+
+/* Directional shadows with zero lateral bleed for positioned elements */
+/* Works with position: sticky | fixed | absolute | relative */
+/* It does not change the host element's position. If your host is static, add .u-shadow-anchor or Tailwind's .relative */
+/* Shadows are rendered outside edges using a vertical/horizontal gradient to avoid side bleed */
+
+@layer utilities {
+  /* Optional anchor: use on static hosts */
+  .u-shadow-anchor { position: relative; }
+
+  /* =========================
+     Bottom-only (outside)
+     ========================= */
+  .u-shadow-b-sm-only::after,
+  .u-shadow-b-md-only::after,
+  .u-shadow-b-lg-only::after,
+  .u-shadow-b-xl-only::after,
+  .u-shadow-b-2xl-only::after,
+  .u-shadow-b-3xl-only::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: var(--u-shadow-z, 1);
+    /* Color controls */
+    --u-shadow-color: var(--u-shadow-color, 0, 0, 0);
+    --u-shadow-opacity: var(--u-shadow-opacity, 0.18);
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--u-shadow-color), var(--u-shadow-opacity)),
+      rgba(var(--u-shadow-color), 0)
+    );
+  }
+  .u-shadow-b-sm-only::after { height: 10px; bottom: -10px; }
+  .u-shadow-b-md-only::after { height: 16px; bottom: -16px; }
+  .u-shadow-b-lg-only::after { height: 24px; bottom: -24px; }
+  .u-shadow-b-xl-only::after { height: 32px; bottom: -32px; }
+  .u-shadow-b-2xl-only::after { height: 48px; bottom: -48px; }
+  .u-shadow-b-3xl-only::after { height: 64px; bottom: -64px; }
+
+  /* =========================
+     Top-only (outside)
+     ========================= */
+  .u-shadow-t-sm-only::before,
+  .u-shadow-t-md-only::before,
+  .u-shadow-t-lg-only::before,
+  .u-shadow-t-xl-only::before,
+  .u-shadow-t-2xl-only::before,
+  .u-shadow-t-3xl-only::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: var(--u-shadow-z, 1);
+    --u-shadow-color: var(--u-shadow-color, 0, 0, 0);
+    --u-shadow-opacity: var(--u-shadow-opacity, 0.18);
+    background: linear-gradient(
+      to top,
+      rgba(var(--u-shadow-color), var(--u-shadow-opacity)),
+      rgba(var(--u-shadow-color), 0)
+    );
+  }
+  .u-shadow-t-sm-only::before { height: 10px; top: -10px; }
+  .u-shadow-t-md-only::before { height: 16px; top: -16px; }
+  .u-shadow-t-lg-only::before { height: 24px; top: -24px; }
+  .u-shadow-t-xl-only::before { height: 32px; top: -32px; }
+  .u-shadow-t-2xl-only::before { height: 48px; top: -48px; }
+  .u-shadow-t-3xl-only::before { height: 64px; top: -64px; }
+
+  /* =========================
+     Left-only (outside)
+     ========================= */
+  .u-shadow-l-sm-only::before,
+  .u-shadow-l-md-only::before,
+  .u-shadow-l-lg-only::before,
+  .u-shadow-l-xl-only::before,
+  .u-shadow-l-2xl-only::before,
+  .u-shadow-l-3xl-only::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: var(--u-shadow-z, 1);
+    --u-shadow-color: var(--u-shadow-color, 0, 0, 0);
+    --u-shadow-opacity: var(--u-shadow-opacity, 0.18);
+    background: linear-gradient(
+      to left,
+      rgba(var(--u-shadow-color), var(--u-shadow-opacity)),
+      rgba(var(--u-shadow-color), 0)
+    );
+  }
+  .u-shadow-l-sm-only::before { width: 10px; left: -10px; }
+  .u-shadow-l-md-only::before { width: 16px; left: -16px; }
+  .u-shadow-l-lg-only::before { width: 24px; left: -24px; }
+  .u-shadow-l-xl-only::before { width: 32px; left: -32px; }
+  .u-shadow-l-2xl-only::before { width: 48px; left: -48px; }
+  .u-shadow-l-3xl-only::before { width: 64px; left: -64px; }
+
+  /* =========================
+     Right-only (outside)
+     ========================= */
+  .u-shadow-r-sm-only::after,
+  .u-shadow-r-md-only::after,
+  .u-shadow-r-lg-only::after,
+  .u-shadow-r-xl-only::after,
+  .u-shadow-r-2xl-only::after,
+  .u-shadow-r-3xl-only::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: var(--u-shadow-z, 1);
+    --u-shadow-color: var(--u-shadow-color, 0, 0, 0);
+    --u-shadow-opacity: var(--u-shadow-opacity, 0.18);
+    background: linear-gradient(
+      to right,
+      rgba(var(--u-shadow-color), var(--u-shadow-opacity)),
+      rgba(var(--u-shadow-color), 0)
+    );
+  }
+  .u-shadow-r-sm-only::after { width: 10px; right: -10px; }
+  .u-shadow-r-md-only::after { width: 16px; right: -16px; }
+  .u-shadow-r-lg-only::after { width: 24px; right: -24px; }
+  .u-shadow-r-xl-only::after { width: 32px; right: -32px; }
+  .u-shadow-r-2xl-only::after { width: 48px; right: -48px; }
+  .u-shadow-r-3xl-only::after { width: 64px; right: -64px; }
+}

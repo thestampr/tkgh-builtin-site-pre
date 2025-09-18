@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  passwordHash    String
+  role            String            @default("PUBLIC")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  analytics       AnalyticsEvent[]  @relation("UserAnalytics")
+  builtIns        BuiltIn[]         @relation("ProviderBuiltIns")
+  categories      Category[]
+  favorites       FavoriteBuiltIn[]
+  formSubmissions FormSubmission[]
+  profile         Profile?
+}
+
+model Profile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  displayName       String?
+  bio               String?
+  avatarUrl         String?
+  contactJson       String?
+  coverImage        String?
+  ctaJson           String?   // serialized CTA configuration (base locale)
+  published         Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id])
+  translations      ProfileTranslation[]
+}
+
+model ProfileTranslation {
+  id          String   @id @default(cuid())
+  profileId   String
+  locale      String
+  displayName String?
+  bio         String?
+  ctaLabel    String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  profile     Profile  @relation(fields: [profileId], references: [id])
+
+  @@unique([profileId, locale])
+}
+
+model Category {
+  id           String                @id @default(cuid())
+  providerId   String
+  name         String
+  slug         String
+  description  String?
+  coverImage   String?
+  excerpt      String?
+  published    Boolean               @default(true)
+  styleJson    String?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  builtIns     BuiltIn[]
+  provider     User                  @relation(fields: [providerId], references: [id])
+  translations CategoryTranslation[]
+
+  @@unique([providerId, slug])
+}
+
+model BuiltIn {
+  id           String               @id @default(cuid())
+  providerId   String
+  categoryId   String?
+  title        String
+  slug         String
+  summary      String?
+  content      String?
+  coverImage   String?
+  galleryJson  String?
+  price        Int?
+  currency     String?              // ISO currency code for base locale price (e.g. THB, USD)
+  status       String               @default("DRAFT")
+  publishedAt  DateTime?
+  ctaLabel     String?
+  ctaUrl       String?
+  icon         String?
+  styleJson    String?
+  layout       String?
+  viewCount    Int                  @default(0)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  analytics    AnalyticsEvent[]     @relation("BuiltInAnalytics")
+  category     Category?            @relation(fields: [categoryId], references: [id])
+  provider     User                 @relation("ProviderBuiltIns", fields: [providerId], references: [id])
+  translations BuiltInTranslation[]
+  favorites    FavoriteBuiltIn[]
+
+  @@unique([providerId, slug])
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  categoryId  String
+  locale      String
+  name        String?
+  description String?
+  excerpt     String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([categoryId, locale])
+}
+
+model BuiltInTranslation {
+  id        String   @id @default(cuid())
+  builtInId String
+  locale    String
+  title     String?
+  summary   String?
+  content   String?
+  ctaLabel  String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  price     Int?
+  currency  String?  // localized currency code
+  builtIn   BuiltIn  @relation(fields: [builtInId], references: [id])
+
+  @@unique([builtInId, locale])
+}
+
+model FavoriteBuiltIn {
+  userId    String
+  builtInId String
+  createdAt DateTime @default(now())
+  builtIn   BuiltIn  @relation(fields: [builtInId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, builtInId])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String
+  path      String
+  userId    String?
+  builtInId String?
+  userAgent String?
+  ipHash    String?
+  createdAt DateTime @default(now())
+  builtIn   BuiltIn? @relation("BuiltInAnalytics", fields: [builtInId], references: [id])
+  user      User?    @relation("UserAnalytics", fields: [userId], references: [id])
+
+  @@index([type, createdAt])
+  @@index([builtInId])
+}
+
+model FormSubmission {
+  id        String   @id @default(cuid())
+  locale    String?
+  name      String
+  phone     String
+  email     String?
+  location  String?
+  category  String?
+  budget    String?
+  detail    String
+  createdAt DateTime @default(now())
+  viewed    Boolean  @default(false)
+  archived  Boolean  @default(false)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([archived])
+}

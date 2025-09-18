@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+@import "../css/scrollbar.css";
+@import "../css/utilities-directional-shadow-only.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Typography defaults */
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+
+  /* custom */
+  /* --primary: #179391; */
+  /* --secondary: #0E2A47; */
+  --primary: #8a6a40;
+  --secondary: #292F36;
+  --accent: #54b54f;
+  --variant: #d01a22;
+  --alert: #f59e0b;
+  --divider: #51545a;
+
+  --success: var(--accent);
+  --danger: var(--variant);
+  --warning: var(--alert);
+
+  --divider: #51545a;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+  /* gray-900 */
+  --surface: #f9fafb;
+  /* gray-50, softer than pure white */
+  --elevated: #ffffff;
+  /* elevated surfaces/cards */
+  --border: #e5e7eb;
+  /* gray-200 */
+  --muted: rgba(0, 0, 0, 0.04);
+  /* subtle hover background */
+  --muted-hover: rgba(0, 0, 0, 0.08);
+  --muted-foreground: #6b7280;
+  /* gray-500 */
+  --primary-foreground: #ffffff;
+  --ring: rgba(0, 0, 0, 0.06);
+  /* subtle divider/shadow tint */
+  --popover: #ffffff;
+  /* popover background */
+  --hover-tint: rgba(0, 0, 0, 0.06);
+  /* theme-aware overlay for hover */
+}
+
+@theme {
+  --color-bg: #ffffff;
+  --color-fg: #0f172a;
+
+  /* custom */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-variant: var(--variant);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+
+  --color-divider: color-mix(in oklab, var(--divider) 40%, transparent);
+}
+
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
+/* dark mode */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+/* fonts */
+@font-face {
+  font-family: "Legitima";
+  src:
+    local("Legitima"),
+    url('/fonts/legitima/Legitima-Regular.woff2') format('woff2'),
+    url('/fonts/legitima/Legitima-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  scrollbar-width: none;
+  -webkit-scrollbar: hidden;
+}
+
+* {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+
+  overscroll-behavior-x: none;
+  scrollbar-gutter: stable;
+}
+
+body {
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* body > main {
+  height: fit-content;
+  min-height: 100vh;
+} */
+
+/* Simple container utility */
+.container {
+  @apply mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Buttons - soft, theme-aware */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--muted-hover);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  pointer-events: none;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.btn:disabled:hover {
+  background: var(--surface);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+.btn-primary:hover {
+  background-image: linear-gradient(var(--hover-tint), var(--hover-tint));
+  background-blend-mode: overlay;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--muted-hover);
+}
+
+.btn-danger {
+  background: transparent;
+  color: rgb(220 38 38);
+  /* red-600 */
+  border-color: rgb(220 38 38 / 0.35);
+}
+
+.btn-danger:hover {
+  background: rgb(220 38 38 / 0.18);
+}

@@ -1,0 +1,500 @@
+{
+  "Nav": {
+    "home": {
+      "label": "Home",
+      "title": "Home"
+    },
+    "drafting": {
+      "label": "Drafting",
+      "title": "Drafting & BOQ Services"
+    },
+    "categories": {
+      "label": "Categories",
+      "title": "Categories"
+    },
+    "builtIn": {
+      "label": "Built-in",
+      "title": "Built-in"
+    },
+    "estimate": {
+      "label": "Estimate",
+      "title": "Estimate"
+    },
+    "contact": {
+      "label": "Contact",
+      "title": "Contact"
+    },
+    "language": {
+      "label": "Language",
+      "title": "Language"
+    },
+    "menu": {
+      "label": "Menu",
+      "title": "Menu"
+    }
+  },
+  "Home": {
+    "title": "Design Your Dream Interior",
+    "desc": "Design Your Dream Interior",
+    "heroTitle": "Design your space beautifully",
+    "heroSubtitle": "Browse categories and built-in selections for your next project.",
+    "categoriesTitle": "Categories"
+  },
+  "Common": {
+    "brand": "Your Brand",
+    "freeEstimate": "Free Estimate",
+    "back": "Back",
+    "send": "Send",
+    "sending": "Sending...",
+    "success": "Request sent successfully. Our team will contact you shortly.",
+    "failed": "Submit failed",
+    "explore": "Explore",
+    "exploreMore": "Explore more",
+    "viewDetails": "View details",
+    "price": "Price",
+    "requestEstimate": "Request estimate",
+    "categories": "Built-in Categories",
+    "contact": "Contact",
+    "services": "Services (2D/3D/BOQ)",
+    "ourProjects": "Our Projects",
+    "aboutUs": "About Us",
+    "newsPromotions": "News & Promotions",
+    "blog": "Blog",
+    "localeName": "English",
+    "localeEN": "English",
+    "localeTH": "Thai",
+    "lineChat": "LINE Chat",
+    "contactUs": "Contact Us",
+    "provider": "Provider",
+    "providerItems": "Items",
+    "providerCategories": "Categories"
+  },
+  "ProviderCTA": {
+    "label": "Contact",
+    "href": "/estimate",
+    "preview": "Preview",
+    "saveLabel": "Save CTA Label",
+    "config": "CTA Button",
+    "color": "Color",
+    "size": "Size",
+    "icon": "Icon",
+    "style": "Style"
+  },
+  "Locale": {
+    "name": "English",
+    "en": "English",
+    "th": "ภาษาไทย"
+  },
+  "Categories": {
+    "title": "Categories",
+    "desc": "Discover our collection of categories.",
+    "listTitle": "All Categories",
+    "listSubtitle": "Pick a category to explore items.",
+    "empty": "No categories available.",
+    "noItems": "No items available in this category yet."
+  },
+  "BuiltIn": {
+    "title": "Built-in",
+    "desc": "Discover our collection of built-in items.",
+    "listTitle": "Built-in Items",
+    "listSubtitle": "Explore our built-in selections.",
+    "empty": "No items available.",
+    "emptySearch": "No built-in items match your search or filters."
+  },
+  "Estimate": {
+    "title": "Get Your Estimate",
+    "desc": "We’re excited to hear about your project. Share a few details and we’ll prepare a friendly, transparent estimate.",
+    "side": {
+      "points": {
+        "0": "Quick, friendly estimate tailored to you",
+        "1": "Transparent pricing and clear options",
+        "2": "Suggestions that fit your space and budget",
+        "3": "Flexible scheduling to suit your timeline"
+      },
+      "lovedBy": "Loved by {count}+ people"
+    },
+    "form": {
+      "title": "Tell us about your project",
+      "subtitle": "A few quick details help us estimate accurately and suggest the right options."
+    },
+    "pageTitle": "Request an estimate",
+    "pageSubtitle": "Tell us what you need and we will contact you back.",
+    "name": "Full name",
+    "phone": "Phone",
+    "email": "Email",
+    "location": "Location",
+    "category": "Category",
+    "budget": "Budget",
+    "detail": "Detail",
+    "sending": "Sending...",
+    "submit": "Submit",
+    "validation": "Please complete all required fields.",
+    "optionLiving": "Living room",
+    "optionBedroom": "Bedroom",
+    "optionKitchen": "Kitchen",
+    "optionRenovation": "Renovation",
+    "optionConstruction": "Construction"
+  },
+  "Contact": {
+    "title": "Contact us",
+    "desc": "Contact us for more information about our services.",
+    "subtitle": "We would love to hear from you.",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "Inspiration": {
+    "title": "Get Inspired",
+    "desc": "Explore our collection of inspiring designs and ideas."
+  },
+  "BOQServices": {
+    "hero": {
+      "title": "2D / 3D Design & BOQ Services",
+      "subtitle": "Luxury-grade architectural and engineering visuals paired with precise Bills of Quantities — designed to win approvals, streamline procurement, and bring projects to life.",
+      "bullets": [
+        "Photoreal renders & walkthroughs",
+        "Construction-ready 2D/3D documentation",
+        "Accurate, line-item BOQs for procurement",
+        "Local compliance & materials optimization"
+      ],
+      "ctaQuote": "Get a quote",
+      "ctaWork": "View our work",
+      "card": {
+        "title": "Luxury Residence Concept",
+        "subtitle": "High-detail render with material study and lighting pass.",
+        "alt": "3D architectural render"
+      }
+    },
+    "deliver": {
+      "heading": "What we deliver",
+      "subheading": "Seamless collaboration from concept through procurement: conceptual drawings, detailed design, multi-disciplinary coordination, 3D visualizations, and a structured BOQ ready for tender.",
+      "cards": [
+        {
+          "title": "Concept & Schematic Design",
+          "text": "Early-stage layouts, massing, and material intent to explore design options quickly."
+        },
+        {
+          "title": "Detailed 2D / CAD Documentation",
+          "text": "Construction-ready drawings, sections, schedules and detail packages."
+        },
+        {
+          "title": "Photoreal 3D Visuals",
+          "text": "High-quality imagery and animations for client approvals and marketing."
+        },
+        {
+          "title": "Comprehensive BOQ",
+          "text": "Line-item quantities, material descriptions, and cost-ready outputs for procurement."
+        }
+      ],
+      "why": {
+        "heading": "Why choose us",
+        "list": [
+          "Dedicated design & quantity teams",
+          "Fast turnarounds with milestone clarity",
+          "Transparent deliverables and revisions",
+          "Integration with suppliers & contractors"
+        ],
+        "turnaroundLabel": "Turnaround",
+        "turnaroundValue": "2-6 weeks"
+      }
+    },
+    "gallery": {
+      "heading": "Selected visuals",
+      "altInterior": "interior render",
+      "altExterior": "exterior render",
+      "altSite": "site plan"
+    },
+    "packages": {
+      "heading": "Packages",
+      "subheading": "Tailored packages for projects of different scales. Start with a scoped quote.",
+      "requestQuote": "Request quote",
+      "items": [
+        {
+          "title": "Essential",
+          "price": "₹ / $",
+          "description": "Concept drawings, basic BOQ, and 1 revision.",
+          "features": [
+            "2D Concept plans",
+            "Preliminary BOQ",
+            "1 design revision"
+          ]
+        },
+        {
+          "title": "Standard",
+          "price": "₹ / $",
+          "description": "Detailed 2D sets, BOQ, 3D visuals, and coordination.",
+          "features": [
+            "Full 2D documentation",
+            "Photoreal renders",
+            "BOQ with material takeoffs"
+          ]
+        },
+        {
+          "title": "Premium",
+          "price": "₹ / $",
+          "description": "End-to-end design, advanced renders, and procurement support.",
+          "features": [
+            "BIM coordination",
+            "Multiple design options",
+            "Procurement-ready BOQ"
+          ]
+        }
+      ]
+    },
+    "faq": {
+      "heading": "Frequently asked questions",
+      "subheading": "Concise answers to common queries about our workflow and deliverables.",
+      "items": [
+        {
+          "q": "What is included in 2D/3D design & BOQ services?",
+          "a": "We deliver detailed 2D drawings, photorealistic 3D visualizations, schematic & construction drawings, and a comprehensive Bill of Quantities (BOQ) ready for tendering and procurement."
+        },
+        {
+          "q": "Can you adapt designs to local codes and material availability?",
+          "a": "Yes — our team aligns designs with local building codes, supplier availability, and project constraints to ensure feasibility and cost-efficiency."
+        },
+        {
+          "q": "What file formats will I receive?",
+          "a": "Typical deliverables include DWG, PDF, IFC/3D exports, high-res PNG/JPEG renders, and an Excel-based BOQ. Custom formats can be accommodated on request."
+        }
+      ]
+    },
+    "contact": {
+      "heading": "Get a project estimate",
+      "subheading": "Tell us about your project and we’ll get back with a tailored scope & timeline.",
+      "form": {
+        "name": "Full name",
+        "email": "Email address",
+        "phone": "Phone (optional)",
+        "message": "Brief project summary",
+        "submit": "Send inquiry",
+        "submitting": "Sending..."
+      },
+      "sent": "Message sent — we’ll respond soon."
+    },
+    "footerCta": {
+      "heading": "Ready to start?",
+      "subheading": "Speak with our design & estimation team for a quick scope and fixed quote.",
+      "requestQuote": "Request a quote",
+      "scheduleCall": "Schedule a call"
+    }
+  },
+  "Auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Access your account and project tools.",
+    "registerTitle": "Create account",
+    "registerSubtitle": "Join to save favorites and request services.",
+    "providerRegisterTitle": "Provider registration",
+    "providerRegisterSubtitle": "Create a provider account to manage content & services.",
+    "providerDisclaimer": "Provider accounts may require manual approval.",
+    "noAccount": "Need an account?",
+    "registerUser": "Register as User",
+    "registerProvider": "Register as Provider",
+    "becomeProvider": "Offer services?",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Login here",
+    "providerCtaPrompt": "Want to offer services?",
+    "providerCta": "Register as Provider",
+    "wantNormalAccount": "Need a regular user account?",
+    "registerUserAlt": "Register as User"
+  },
+  "Account": {
+    "titleUser": "Your Account",
+    "subtitleUser": "Manage your profile and saved activity.",
+    "titleProvider": "Provider Dashboard",
+    "subtitleProvider": "Overview of your content & performance",
+    "menu": {
+      "overview": "Overview",
+      "profile": "Profile",
+      "builtIns": "Built-ins",
+      "categories": "Categories",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "summary": {
+      "builtIns": "Built-ins",
+      "published": "Published",
+      "drafts": "Drafts",
+      "categories": "Categories"
+    },
+    "tables": {
+      "topViews": "Top Views",
+      "recent": "Recent Updates",
+      "views": "Views",
+      "status": "Status",
+      "updated": "Updated"
+    },
+    "empty": {
+      "noData": "No data",
+      "noBuiltIns": "No built-in items yet.",
+      "noCategories": "No categories yet."
+    },
+    "user": {
+      "email": "Email",
+      "role": "Role",
+      "favorites": "Favorites",
+      "lastLogin": "Last login"
+    },
+    "ui": {
+      "editProfile": "Edit profile",
+      "favoritesHeading": "Favorites",
+      "noFavorites": "No favorites yet",
+      "views30Days": "Views (30 days)",
+      "topCategories": "Top Categories",
+      "noViewsYet": "No views yet",
+      "noDataGeneric": "No data",
+      "saveDraft": "Save Draft",
+      "publish": "Publish",
+      "previewDraft": "Preview Draft",
+      "advancedJson": "Advanced JSON",
+      "contactChannels": "Contact Channels",
+      "addChannel": "Add",
+      "avatar": "Avatar",
+      "provider": "Provider",
+      "ownedBy": "by {name}",
+      "saving": "Saving...",
+      "saved": "Saved",
+      "unsaved": "Unsaved changes",
+      "fileTooLarge": "File too large (max 512KB)",
+      "fileTypeInvalid": "Unsupported file type",
+      "userProfile": {
+        "title": "Profile Settings",
+        "avatar": "Profile Image",
+        "email": "Email",
+        "changeEmail": "Change Email",
+        "newEmail": "New Email",
+        "saveEmail": "Save Email",
+        "password": "Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "updatePassword": "Update Password",
+        "updating": "Updating...",
+        "updated": "Updated",
+        "emailUpdated": "Email updated",
+        "passwordUpdated": "Password updated",
+        "mismatch": "Passwords do not match",
+        "weakPassword": "Password must be at least 8 characters",
+        "invalidEmail": "Invalid email",
+        "emailInUse": "Email already in use",
+        "invalidCurrent": "Current password incorrect"
+      },
+      "settings": {
+        "title": "Account Settings",
+        "subtitle": "Manage basic account settings.",
+        "accountSectionTitle": "Account",
+        "accountSectionSubtitle": "Basic account information",
+        "passwordSectionTitle": "Password",
+        "passwordSectionSubtitle": "Update your password",
+        "currentEmail": "Current Email"
+      }
+    }
+  },
+  "ProviderBuiltIns": {
+    "title": "Built-ins",
+    "subtitle": "Create & manage your built-in items.",
+    "new": "New Item",
+    "editTitle": "Edit Built-in",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search built-ins...",
+      "status": "Status",
+      "category": "Category",
+      "published": "Published",
+      "draft": "Draft",
+      "all": "All",
+      "sort": "Sort",
+      "sortNewest": "Newest",
+      "sortOldest": "Oldest",
+      "sortTitle": "Title A-Z",
+      "sortTitleDesc": "Title Z-A",
+      "sortPriceLow": "Price low-high",
+      "sortPriceHigh": "Price high-low",
+      "reset": "Reset"
+    },
+    "imagesLabel": "Images (first = cover)",
+    "imagesHint": "Use Make Cover to move an image to the first position.",
+    "upload": "Upload",
+    "makeCover": "Make Cover",
+    "remove": "Remove",
+    "coverBadge": "Cover",
+    "fields": {
+      "title": "Title",
+      "slug": "Slug",
+      "price": "Price",
+      "currency": "Currency",
+      "category": "Category",
+      "content": "Content (Markdown)"
+    },
+    "status": {
+      "draft": "DRAFT",
+      "published": "PUBLISHED"
+    },
+    "messages": {
+      "titleRequired": "Title required",
+      "categoryRequired": "Category required",
+      "translationTitleRequired": "Translation title required",
+      "createFailed": "Create failed",
+      "updateFailed": "Update failed",
+      "translationFailed": "Translation save failed"
+    },
+    "publish": {
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "publishing": "Publishing...",
+      "unpublishing": "Unpublishing...",
+      "published": "Published",
+      "draft": "Draft"
+    }
+  },
+  "ProviderCategories": {
+    "title": "Categories",
+    "subtitle": "Organize your built-in items.",
+    "new": "New Category",
+    "editTitle": "Edit Category",
+    "fields": {
+      "name": "Name",
+      "slug": "Slug",
+      "excerpt": "Excerpt",
+      "description": "Description",
+      "coverImage": "Cover Image"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search categories...",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "all": "All",
+      "sort": "Sort",
+      "sortUpdated": "Latest Updated",
+      "sortNameAsc": "Name A-Z",
+      "sortNameDesc": "Name Z-A",
+      "sortCreatedNewest": "Newest Created",
+      "sortCreatedOldest": "Oldest Created"
+    },
+    "messages": {
+      "nameSlugRequired": "Name & slug required",
+      "translationNameRequired": "Translation name required",
+      "createFailed": "Create failed",
+      "updateFailed": "Update failed",
+      "translationFailed": "Translation save failed",
+      "uploadFailed": "Upload failed"
+    },
+    "publish": {
+      "published": "Published",
+      "unpublished": "Unpublished"
+    },
+    "ui": {
+      "removeImage": "Remove",
+      "noImage": "No image selected",
+      "shortTeaserPlaceholder": "Short teaser",
+      "longerDescriptionPlaceholder": "Longer description",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    }
+  }
+}
