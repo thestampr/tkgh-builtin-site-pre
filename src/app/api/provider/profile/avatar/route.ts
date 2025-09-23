@@ -1,40 +1,32 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/options';
-import prisma from '@/lib/db/prisma';
-import { randomBytes } from 'crypto';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { assertProvider } from "@/lib/auth/assertProvider";
+import { authOptions } from "@/lib/auth/options";
+import prisma from "@/lib/db/prisma";
+import { uploadFiles } from "@/lib/upload";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
-// Dev-only simple file writer. In production replace with S3/R2 upload.
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'PROVIDER') {
-      return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
-    }
+    assertProvider(session);
     const form = await request.formData();
-    const file = form.get('file');
+    const file = form.get("file");
     if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: 'Missing file' }, { status: 400 });
+      return NextResponse.json({ error: "Missing file" }, { status: 400 });
     }
     const type = file.type;
-    if (!['image/png','image/jpeg','image/webp'].includes(type)) {
-      return NextResponse.json({ error: 'TYPE' }, { status: 400 });
+    if (!["image/png", "image/jpeg", "image/webp"].includes(type)) {
+      return NextResponse.json({ error: "TYPE" }, { status: 400 });
     }
     if (file.size > 512 * 1024) {
-      return NextResponse.json({ error: 'SIZE' }, { status: 400 });
+      return NextResponse.json({ error: "SIZE" }, { status: 400 });
     }
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const ext = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
-    const filename = `avatar_${randomBytes(6).toString('hex')}.${ext}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    await fs.mkdir(uploadDir, { recursive: true });
-    await fs.writeFile(path.join(uploadDir, filename), buffer);
-    const url = `/uploads/${filename}`;
-    const userId = session.user.id as string;
-    // Directly persist avatarUrl (no drafts)
+    const urls = await uploadFiles(form, { folder: "avatar", maxSizeMB: 0.5, maxCount: 1 });
+    if (!urls.length) {
+      return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    }
+    const url = urls[0];
+    const userId = session!.user.id;
     const data = { avatarUrl: url };
     try {
       await prisma.profile.upsert({
@@ -42,11 +34,15 @@ export async function POST(request: Request) {
         update: data,
         create: { userId, ...data }
       });
-    } catch {
-      // If avatarUrl column unknown (stale client) ignore
+    } catch (e: unknown) {
+      console.error("Prisma error", e);
     }
     return NextResponse.json({ url });
   } catch (e: unknown) {
-    return NextResponse.json({ error: (e as Error).message || 'Error' }, { status: 500 });
+    if (e instanceof Error) {
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    }
+    console.error("Upload avatar error", e);
+    return NextResponse.json({ error: "Error" }, { status: 500 });
   }
 }
