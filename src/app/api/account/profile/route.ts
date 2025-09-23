@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
-  const userId = session.user.id as string;
+  const userId = session.user.id;
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, profile: { select: { avatarUrl: true } } } });
   return NextResponse.json({ email: user?.email, avatarUrl: user?.profile?.avatarUrl || null });
 }

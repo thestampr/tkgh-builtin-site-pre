@@ -13,7 +13,7 @@ const BodySchema = z.object({
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const userId = session.user.id as string;
+  const userId = session.user.id;
   const profile = await prisma.profile.findUnique({ where: { userId } });
   return NextResponse.json({ profile });
 }
@@ -21,7 +21,7 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const userId = session.user.id as string;
+  const userId = session.user.id;
   const json = await req.json();
   const parsed = BodySchema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input', issues: parsed.error.issues }, { status: 400 });

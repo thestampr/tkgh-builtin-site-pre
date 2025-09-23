@@ -12,7 +12,7 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect(`/${locale}/login`);
   if (session.user.role !== 'PROVIDER') redirect(`/${locale}/account`);
-  const userId = session.user.id as string;
+  const userId = session.user.id;
   // Direct DB query avoids losing auth cookies with an internal fetch and is faster.
   const cats = await prisma.category.findMany({ where: { providerId: userId }, orderBy: { createdAt: 'desc' } });
   const ids = cats.map(c => c.id);

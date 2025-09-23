@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     await fs.mkdir(uploadDir, { recursive: true });
     await fs.writeFile(path.join(uploadDir, filename), buffer);
     const url = `/uploads/${filename}`;
-    const userId = session.user.id as string;
+    const userId = session.user.id;
     // Directly persist coverImage (no drafts)
     const data = { coverImage: url };
     try {

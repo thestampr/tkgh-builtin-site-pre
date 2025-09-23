@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (!builtIn) return NextResponse.json({ ok: true });
 
     const session = await getServerSession(authOptions);
-    const userId = session?.user ? session.user.id as string : null;
+    const userId = session?.user ? session.user.id : null;
 
     const ua = (req.headers.get('user-agent') || '').slice(0,200);
     const ip = (req.headers.get('x-forwarded-for') || '')
