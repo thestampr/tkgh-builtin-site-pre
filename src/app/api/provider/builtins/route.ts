@@ -1,6 +1,7 @@
 import { assertProvider } from '@/lib/auth/assertProvider';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
+import { errorJson } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
@@ -49,9 +50,9 @@ export async function GET(request: Request) {
     const base = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th';
     const items = itemsRaw.map(i => ({ ...i, favoritesCount: (i as any)._count?.favorites || 0, languages: [base, ...(grouped[i.id] || [])].join(', ') }));
     return NextResponse.json({ items });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -79,13 +80,13 @@ export async function POST(request: Request) {
         currency: typeof currency === 'string' && currency.length <= 8 ? currency.toUpperCase() : null,
         categoryId: categoryId || null,
         coverImage: coverImage || null,
-        galleryJson: Array.isArray(gallery) ? JSON.stringify(gallery.slice(0, 12)) : null,
+        galleryJson: Array.isArray(gallery) ? JSON.stringify(gallery.slice(0, 12)) : undefined,
         status: 'DRAFT'
       }
     });
     return NextResponse.json({ item: { ...created, languages: process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th' } });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }

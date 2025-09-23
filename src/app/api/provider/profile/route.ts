@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { errorJson } from '@/lib/errors';
 
 // GET: fetch provider profile (live only)
 export async function GET(request: Request) {
@@ -12,11 +13,14 @@ export async function GET(request: Request) {
     const userId = session!.user.id as string;
     const { searchParams } = new URL(request.url);
     const includeTranslations = searchParams.get('withTranslations') === '1';
-    const profile: any = await prisma.profile.findUnique({ where: { userId }, include: includeTranslations ? { translations: true } : undefined as any });
+    const profile = await prisma.profile.findUnique({
+      where: { userId },
+      ...(includeTranslations ? { include: { translations: true } } : {})
+    });
     return NextResponse.json({ profile });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -69,8 +73,9 @@ export async function PUT(request: Request) {
       if ('ctaJson' in data) {
         try {
           profile = await prisma.profile.update({ where: { userId }, data });
-        } catch (e: any) {
-          if (/Unknown argument `ctaJson`/i.test(String(e.message))) {
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (/Unknown argument `ctaJson`/i.test(msg)) {
             const { ctaJson, ...rest } = data;
             profile = await prisma.profile.update({ where: { userId }, data: rest });
             try { await prisma.$executeRawUnsafe(`UPDATE Profile SET ctaJson = ? WHERE userId = ?`, ctaJson, userId); } catch {/* ignore */ }
@@ -84,8 +89,8 @@ export async function PUT(request: Request) {
       }
     }
     return NextResponse.json({ profile });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }

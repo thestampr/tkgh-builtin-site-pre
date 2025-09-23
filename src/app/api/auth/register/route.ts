@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/db/prisma';
 import { hashPassword } from '@/lib/auth/password';
+import prisma from '@/lib/db/prisma';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 // Only allow requesting USER or PROVIDER from client; PUBLIC is internal default state
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  role: z.enum(['USER', 'PROVIDER']).optional()
+  role: z.enum(["PROVIDER", "PUBLIC", "CUSTOMER", "ADMIN"]).optional()
 });
 
 export async function POST(req: Request) {
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
     }
     const passwordHash = await hashPassword(parsed.password);
-    const requestedRole = parsed.role || 'USER';
+    const requestedRole = parsed.role || 'CUSTOMER';
     const user = await prisma.user.create({
       data: {
         email: parsed.email,

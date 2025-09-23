@@ -3,6 +3,7 @@ import prisma from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/options';
 import crypto from 'crypto';
+import { errorJson } from '@/lib/errors';
 
 export async function POST(request: Request) {
   try {
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true, eventId: evt.id });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'Error' }, { status: 500 });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }

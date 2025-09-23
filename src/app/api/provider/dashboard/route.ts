@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { errorJson } from '@/lib/errors';
 
 export async function GET() {
   try {
@@ -37,9 +38,11 @@ export async function GET() {
     }
     const series = Object.entries(seriesMap).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
 
-    const totalViews = agg.reduce((s, b: any) => s + (b.viewCount || 0), 0);
-    const totalFavorites = agg.reduce((s, b: any) => s + (b._count?.favorites || 0), 0);
-    const topFavorites = [...agg].sort((a: any, b: any) => (b._count?.favorites || 0) - (a._count?.favorites || 0)).slice(0, 5)
+    const totalViews = agg.reduce((s, b) => s + (b.viewCount || 0), 0);
+    const totalFavorites = agg.reduce((s, b) => s + (b._count?.favorites || 0), 0);
+    const topFavorites = [...agg]
+      .sort((a, b) => (b._count?.favorites || 0) - (a._count?.favorites || 0))
+      .slice(0, 5)
       .map(b => ({ id: b.id, favorites: b._count?.favorites || 0, viewCount: b.viewCount }));
     return NextResponse.json({
       summary: { totalBuiltIns, publishedCount, draftCount, categoryCount, totalViews, totalFavorites },
@@ -48,7 +51,8 @@ export async function GET() {
       recent,
       views14d: series
     });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || 'Error' }, { status: e.message === 'FORBIDDEN' ? 403 : 500 });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }

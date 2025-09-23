@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/options';
 import crypto from 'crypto';
+import { errorJson } from '@/lib/errors';
 
 // POST /api/builtin-view { slug }
 // Idempotent-ish per minute per IP+UA+slug to avoid rapid artificial inflation
@@ -34,7 +35,8 @@ export async function POST(req: Request) {
       ]);
     }
     return NextResponse.json({ ok: true });
-  } catch (e:any) {
-    return NextResponse.json({ error: e.message || 'Error' }, { status: 500 });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }

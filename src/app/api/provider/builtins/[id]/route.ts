@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { errorJson } from '@/lib/errors';
 
 async function requireOwnedBuiltIn(id: string, providerId: string) {
   const item = await prisma.builtIn.findUnique({ where: { id } });
@@ -19,11 +20,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const userId = session!.user.id as string;
     const item = await requireOwnedBuiltIn(id, userId);
     const translations = await prisma.builtInTranslation.findMany({ where: { builtInId: id } });
-    const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map((t: any) => t.locale)].join(', ');
+    const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map(t => t.locale)].join(', ');
     return NextResponse.json({ item: { ...item, languages, translations } });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -51,8 +52,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           status: status ?? undefined
         }
       });
-      const translations = await prisma.builtInTranslation.findMany({ where: { builtInId: id }, select: { locale: true } });
-      const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map((t: any) => t.locale)].join(', ');
+  const translations = await prisma.builtInTranslation.findMany({ where: { builtInId: id }, select: { locale: true } });
+  const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map(t => t.locale)].join(', ');
       return NextResponse.json({ item: { ...updated, languages } });
     }
     // translation upsert path
@@ -67,13 +68,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       }
       const base = await prisma.builtIn.findUnique({ where: { id } });
       const translations = await prisma.builtInTranslation.findMany({ where: { builtInId: id }, select: { locale: true } });
-      const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map((t: any) => t.locale)].join(', ');
+      const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map(t => t.locale)].join(', ');
       return NextResponse.json({ item: { ...base, languages } });
     }
     return NextResponse.json({ item: await prisma.builtIn.findUnique({ where: { id } }) });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -88,15 +89,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { action } = await request.json();
     if (action === 'publish') {
       const updated = await prisma.builtIn.update({ where: { id }, data: { status: 'PUBLISHED', publishedAt: item.publishedAt || new Date() }, include: { _count: { select: { favorites: true } } } });
-      return NextResponse.json({ item: { ...updated, favoritesCount: (updated as any)._count?.favorites || 0 } });
+      return NextResponse.json({ item: { ...updated, favoritesCount: updated._count?.favorites || 0 } });
     } else if (action === 'unpublish') {
       const updated = await prisma.builtIn.update({ where: { id }, data: { status: 'DRAFT' }, include: { _count: { select: { favorites: true } } } });
-      return NextResponse.json({ item: { ...updated, favoritesCount: (updated as any)._count?.favorites || 0 } });
+      return NextResponse.json({ item: { ...updated, favoritesCount: updated._count?.favorites || 0 } });
     }
     return NextResponse.json({ error: 'Unsupported action' }, { status: 400 });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -116,8 +117,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
       prisma.builtIn.delete({ where: { id } })
     ]);
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    const status = e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500;
-    return NextResponse.json({ error: e.message || 'Error' }, { status });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
   }
 }

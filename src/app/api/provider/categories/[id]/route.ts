@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { errorJson } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -20,10 +21,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params; const userId = session!.user.id as string;
     const cat = await ownedCategory(id, userId);
     const translations = await prisma.categoryTranslation.findMany({ where: { categoryId: id } });
-    const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map((t: any) => t.locale)].join(', ');
+    const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map(t => t.locale)].join(', ');
     return NextResponse.json({ category: { ...cat, languages, translations } });
-  } catch (e: any) { 
-    return NextResponse.json({ error: e.message }, { status: e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500 }); 
+  } catch (e: unknown) { 
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status }); 
   }
 }
 
@@ -56,10 +58,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       });
     }
     const translations = await prisma.categoryTranslation.findMany({ where: { categoryId: id }, select: { locale: true } });
-    const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map((t: any) => t.locale)].join(', ');
+    const languages = [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...translations.map(t => t.locale)].join(', ');
     return NextResponse.json({ category: { ...updated, languages } });
-  } catch (e: any) { 
-    return NextResponse.json({ error: e.message }, { status: e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500 }); 
+  } catch (e: unknown) { 
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status }); 
   }
 }
 
@@ -76,7 +79,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
       prisma.category.delete({ where: { id } })
     ]);
     return NextResponse.json({ ok: true });
-  } catch (e: any) { 
-    return NextResponse.json({ error: e.message }, { status: e.message === 'FORBIDDEN' ? 403 : e.message === 'NOT_FOUND' ? 404 : 500 }); 
+  } catch (e: unknown) { 
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status }); 
   }
 }
