@@ -6,12 +6,12 @@ import { locales } from "@/i18n/navigation";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
 import { Check, ChevronUp, Menu } from "lucide-react";
+import type { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Session } from "next-auth";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type UserMenuProps = {
   session: Session | null;
@@ -33,6 +33,7 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
   return (
     <Popover className="relative">
       {({ close }) => (
@@ -48,7 +49,8 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
             ) : (
               <span
                 className={clsx(
-                  "inline-flex items-center justify-center h-9 w-9 rounded-full bg-gradient-to-br from-primary/80 to-primary text-white text-sm font-semibold ring-2 ring-white/20 shadow-sm"
+                  "h-9 w-9 inline-flex items-center justify-center rounded-full text-sm font-semibold ring-2 ring-white/20 shadow-sm",
+                  "bg-gradient-to-br from-primary/80 to-primary text-white"
                 )}
               >
                 {initials}
@@ -65,7 +67,7 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
             transition
             anchor="bottom end"
             className={clsx(
-              "z-30 mt-2 w-56 rounded-xl border border-divider/50 bg-white/90 backdrop-blur-md shadow-lg p-1 text-sm",
+              "z-30 mt-2 w-56 rounded-xl border border-divider/50 bg-white/90 backdrop-blur-md shadow-lg p-1 text-sm text-slate-700",
               "transition data-[closed]:opacity-0 data-[closed]:-translate-y-1"
             )}
           >
@@ -78,49 +80,49 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
                 <>
                   <Link
                     href={`/${locale}/account`}
-                    onClick={() => close()}
+                    onClick={close}
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
                   >
-                    <span className="flex-1 text-slate-700">{tAccount("menu.overview")}</span>
+                    <span className="flex-1">{tAccount("menu.overview")}</span>
                   </Link>
                   <Link
                     href={`/${locale}/account/profile`}
-                    onClick={() => close()}
+                    onClick={close}
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
                   >
-                    <span className="flex-1 text-slate-700">{tAccount("menu.profile")}</span>
+                    <span className="flex-1">{tAccount("menu.profile")}</span>
                   </Link>
                   <Link
                     href={`/${locale}/account/builtins`}
-                    onClick={() => close()}
+                    onClick={close}
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
                   >
-                    <span className="flex-1 text-slate-700">{tAccount("menu.builtIns")}</span>
+                    <span className="flex-1">{tAccount("menu.builtIns")}</span>
                   </Link>
                   <Link
                     href={`/${locale}/account/categories`}
-                    onClick={() => close()}
+                    onClick={close}
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
                   >
-                    <span className="flex-1 text-slate-700">{tAccount("menu.categories")}</span>
+                    <span className="flex-1">{tAccount("menu.categories")}</span>
                   </Link>
                 </>
               ) : (
                 <>
                   <Link
                     href={`/${locale}/account`}
-                    onClick={() => close()}
+                    onClick={close}
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
                   >
-                    <span className="flex-1 text-slate-700">{tAccount("menu.profile")}</span>
+                    <span className="flex-1">{tAccount("menu.profile")}</span>
                   </Link>
                 </>
               )}
               <button
                 onClick={() => { close(); signOut({ callbackUrl: `/${locale}` }) }}
-                className="flex w-full items-center gap-2 px-3 py-2 mt-1 rounded-lg hover:bg-black/5 text-left cursor-pointer"
+                className="flex w-full items-center gap-2 px-3 py-2 mt-1 rounded-lg hover:bg-black/5 text-left cursor-pointer text-danger"
               >
-                <span className="flex-1 text-slate-700">{tAccount("menu.logout")}</span>
+                <span className="flex-1">{tAccount("menu.signOut")}</span>
               </button>
             </div>
           </PopoverPanel>
@@ -134,8 +136,6 @@ type Props = {
   locale: string;
 };
 
-const SUPPORTED_LOCALES = locales;
-
 function replaceLocaleInPath(pathname: string, nextLocale: string) {
   // Expecting pathname like "/en/..." or "/th"
   const parts = pathname.split("/");
@@ -147,17 +147,19 @@ function replaceLocaleInPath(pathname: string, nextLocale: string) {
 }
 
 export function NavBar({ locale }: Props) {
+  const headerRef = useRef<HTMLElement>(null);
+  const [open, setOpen] = useState(false);
+  const [atTop, setAtTop] = useState(true);
+  const [hasExtended, setHasExtended] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const { data: session } = useSession();
+
   const tCommon = useTranslations("Common");
   const tNav = useTranslations("Nav");
   const tLocale = useTranslations("Locale");
   const tAccount = useTranslations("Account");
   const pathname = usePathname() || `/${locale}`;
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [atTop, setAtTop] = useState(true);
-  const [hasExtended, setHasExtended] = useState(false);
-  const { data: session } = useSession();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   // Fetch avatar separately because session may not include profile relation
   useEffect(() => {
     let cancelled = false;
@@ -221,10 +223,11 @@ export function NavBar({ locale }: Props) {
 
   // event handler
   const onScroll = useCallback(() => {
+    if (!headerRef.current) return;
     const { pageYOffset, scrollY } = window;
-    const isAtTop = pageYOffset < 20;
+    const isAtTop = pageYOffset < headerRef.current.offsetHeight;
     setAtTop(isAtTop);
-  }, []);
+  }, [headerRef.current]);
   const onSizeChange = useCallback(() => {
     const { innerWidth } = window;
     if (innerWidth > 768) {
@@ -249,10 +252,6 @@ export function NavBar({ locale }: Props) {
   function onChangeLocale(nextLocale: string) {
     const nextPath = replaceLocaleInPath(pathname, nextLocale);
     router.replace(nextPath, { scroll: false });
-  }
-
-  function toggleTheme() {
-
   }
 
   const Anchors = () => {
@@ -316,7 +315,9 @@ export function NavBar({ locale }: Props) {
         pinned={false}
         backdropBlur
       >
-        <header className={clsx(
+        <header 
+          ref={headerRef}
+          className={clsx(
           "min-h-14 items-center",
           "px-4 lg:px-12 xl:px-20",
           "transition-all duration-300 ease-in-out **:z-9999",
@@ -327,9 +328,6 @@ export function NavBar({ locale }: Props) {
               <Link href={`/${locale}`} className={clsx(
                 "inline-flex items-baseline gap-2 md:gap-4"
               )}>
-                {/* <span className="inline-block h-6 w-6 rounded bg-primary" aria-hidden="true" /> */}
-                {/* <span className="inline-block h-16 w-16 rounded bg-[url("/images/logo.png")] bg-cover bg-center" aria-hidden="true" /> */}
-
                 <span className="text-2xl md:text-3xl font-serif font-bold !text-primary">
                   {process.env.NEXT_PUBLIC_BRAND_ALIAS}
                 </span>
@@ -337,9 +335,6 @@ export function NavBar({ locale }: Props) {
                   {process.env.NEXT_PUBLIC_SITE_NAME}
                 </span>
               </Link>
-              {/* <nav className={`w-full space-x-2 px-4 ml-4  hidden lg:flex border-divider border-l-1`}>
-                <Anchors />
-              </nav> */}
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
@@ -349,7 +344,7 @@ export function NavBar({ locale }: Props) {
 
               {session?.user
                 ? <UserMenu locale={locale} session={session} avatarUrl={avatarUrl} />
-                : <LoginButton locale={locale} className="hidden lg:inline-flex" />
+                : <LoginButton className="hidden lg:inline-flex" />
               }
 
               <Popover className="relative">
@@ -366,7 +361,7 @@ export function NavBar({ locale }: Props) {
                   )}
                 >
                   <div className="flex flex-col gap-1">
-                    {SUPPORTED_LOCALES.map(l => {
+                    {locales.map(l => {
                       const isActive = l === locale;
                       return (
                         <button
@@ -387,10 +382,6 @@ export function NavBar({ locale }: Props) {
                 </PopoverPanel>
               </Popover>
 
-              {/* <button className={iconButtonClass} onClick={() => toggleTheme()}>
-                {false ? <Sun size={24} /> : <Moon size={24} />}
-              </button> */}
-
               <button className={`lg:hidden ${iconButtonClass}`} onClick={() => setOpen(!open)}>
                 {open ? <ChevronUp size={24} /> : <Menu size={24} />}
               </button>
@@ -407,10 +398,7 @@ export function NavBar({ locale }: Props) {
                 <Anchors />
               </nav>
               <div className="pt-4 border-t border-divider/40 flex flex-col gap-3">
-                {!session?.user && (
-                  <LoginButton locale={locale} className="inline-flex w-full justify-center" />
-                )}
-                {session?.user && (
+                {session?.user ? (
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
                       {(avatarUrl || session.user?.image || session.user?.avatarUrl || session.user?.profile?.avatarUrl) ? (
@@ -438,11 +426,13 @@ export function NavBar({ locale }: Props) {
                       ) : (
                         <Link href={`/${locale}/account`} className="px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-slate-700">{tAccount("menu.profile")}</Link>
                       )}
-                      <button onClick={() => signOut({ callbackUrl: `/${locale}` })} className="mt-1 px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-left text-red-600 font-medium">
-                        {tAccount("menu.logout")}
+                      <button onClick={() => signOut({ callbackUrl: `/${locale}` })} className="mt-1 px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-left text-danger font-medium">
+                        {tAccount("menu.signOut")}
                       </button>
                     </div>
                   </div>
+                ): (
+                  <LoginButton className="inline-flex w-full justify-center" />
                 )}
               </div>
             </div>

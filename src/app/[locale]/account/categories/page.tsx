@@ -23,5 +23,5 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
   const grouped = translations.reduce((acc: Record<string, string[]>, t: any) => { (acc[t.categoryId] ||= []).push(t.locale); return acc; }, {});
   const base = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th';
   const categories = cats.map(c => ({ ...c, languages: [base, ...(grouped[c.id] || [])].join(', ') }));
-  return <CategoriesManager initialCategories={categories} locale={locale} />;
+  return <CategoriesManager initialCategories={categories} />;
 }

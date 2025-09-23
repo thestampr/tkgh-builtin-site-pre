@@ -1,13 +1,19 @@
 "use client";
+
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import type { 
+  Category as _CT, 
+  CategoryTranslation as _CTT
+} from "@prisma/client";
+
+type Category = _CT & { translations?: _CTT[], languages?: string };
 
 interface CategoriesManagerProps {
-  initialCategories: any[];
-  locale: string;
+  initialCategories: Category[];
 }
 
-export default function CategoriesManager({ initialCategories, locale }: CategoriesManagerProps) {
+export default function CategoriesManager({ initialCategories }: CategoriesManagerProps) {
   const t = useTranslations("ProviderCategories");
   const [categories, setCategories] = useState(initialCategories);
   const [message, setMessage] = useState<string | null>(null);
@@ -134,7 +140,7 @@ export default function CategoriesManager({ initialCategories, locale }: Categor
             <p className="text-sm text-neutral-500 mt-1">{t("subtitle")}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <button onClick={openNew} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800 transition">{t("new")}</button>
+            <button onClick={openNew} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800 transition cursor-pointer">{t("new")}</button>
             {message && <span className="text-xs text-neutral-500">{message}</span>}
           </div>
         </div>
@@ -189,8 +195,8 @@ export default function CategoriesManager({ initialCategories, locale }: Categor
               <td className="px-2 text-[11px] text-neutral-500">{cat.languages || (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th")}</td>
               <td className="px-2 text-xs">{cat.published ? t("publish.published") : t("publish.unpublished")}</td>
               <td className="px-2 text-right text-xs space-x-3">
-                <button onClick={() => openEdit(cat)} className="text-neutral-600 hover:underline">Edit</button>
-                <button onClick={() => remove(cat)} className="text-red-600 hover:underline">Delete</button>
+                <button onClick={() => openEdit(cat)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>
+                <button onClick={() => remove(cat)} className="text-red-600 hover:underline cursor-pointer">Delete</button>
               </td>
             </tr>
           ))}

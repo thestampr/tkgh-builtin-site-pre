@@ -14,14 +14,16 @@ const schema = z.object({
   category: z.string().optional().or(z.literal("")),
   budget: z.string().optional().or(z.literal("")),
   detail: z.string().min(1),
+  providerId: z.string().optional().or(z.literal("")),
 });
 
 interface EstimateFormProps {
   locale: string;
   categories: Category[];
+  providerId?: string;
 }
 
-export function EstimateForm({ locale, categories }: EstimateFormProps) {
+export function EstimateForm({ locale, categories, providerId }: EstimateFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<boolean | null>(null);
@@ -47,6 +49,7 @@ export function EstimateForm({ locale, categories }: EstimateFormProps) {
       category: String(fd.get("category") || ""),
       budget: String(fd.get("budget") || ""),
       detail: String(fd.get("detail") || ""),
+      providerId: providerId || String(fd.get("providerId") || "") || undefined,
     };
 
     const parse = schema.safeParse(payload);
@@ -63,23 +66,25 @@ export function EstimateForm({ locale, categories }: EstimateFormProps) {
         body: JSON.stringify(payload),
       });
 
-      let data: any = null;
+      let data: unknown = null;
       try {
         data = await res.json();
       } catch {
         // Response is not JSON
       }
 
-      if (!res.ok || (data && data.ok === false)) {
-        const msg = data?.error || `Request failed with status ${res.status}`;
+      const isOkFlag = typeof data === 'object' && data !== null && 'ok' in data ? (data as any).ok : undefined;
+      if (!res.ok || isOkFlag === false) {
+        const msg = typeof data === 'object' && data !== null && 'error' in data ? String((data as any).error) : `Request failed with status ${res.status}`;
         throw new Error(msg);
       }
 
       setOk(true);
       formRef.current?.reset();
-    } catch (e: any) {
+    } catch (e: unknown) {
       setOk(false);
-      setError(e?.message || tc("failed"));
+      const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : tc("failed");
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -100,6 +105,7 @@ export function EstimateForm({ locale, categories }: EstimateFormProps) {
       aria-live="polite"
       noValidate
     >
+      {providerId && <input type="hidden" name="providerId" value={providerId} />}
       <fieldset disabled={loading} className="grid gap-4">
         <div className="grid md:grid-cols-2 gap-4">
           <div>

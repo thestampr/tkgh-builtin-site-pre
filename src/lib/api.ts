@@ -1,5 +1,6 @@
 import type { 
   BuiltIn, 
+  Estimate, 
   FavoriteBuiltIn, 
   Profile,
   User,
@@ -736,13 +737,13 @@ export async function getProviderPublicProfile(providerId: string, locale: strin
 
   let contacts = null;
   try {
-    contacts = JSON.parse(profile.contactJson || "{}").channels || null;
+    contacts = JSON.parse(profile.contactJson?.toString() || "{}").channels || null;
   } catch { /* ignored */ }
   let displayName = profile.displayName;
   let bio = profile.bio;
   let ctaBase: any = null;
   try {
-    ctaBase = JSON.parse(profile.ctaJson || "{}");
+    ctaBase = JSON.parse(profile.ctaJson?.toString() || "{}");
   } catch { /* ignored */ }
   if (locale !== DEFAULT_LANG && profile.translations) {
     const tr = profile.translations.find((t) => t.locale === locale && t.published);
@@ -773,9 +774,10 @@ export interface CreateFormSubmissionInput {
   budget?: string;
   detail: string;
   userId?: string; // optional if authenticated
+  providerId?: string; // target provider if any
 };
 export async function createFormSubmission(input: CreateFormSubmissionInput) {
-  return prisma.formSubmission.create({
+  return prisma.estimate.create({
     data: {
       locale: input.locale || null,
       name: input.name,
@@ -785,7 +787,47 @@ export async function createFormSubmission(input: CreateFormSubmissionInput) {
       category: input.category || null,
       budget: input.budget || null,
       detail: input.detail,
-      userId: input.userId || null
+      userId: input.userId || null,
+      // providerId is recently added; cast to satisfy types until prisma client regenerates
+      ...(input.providerId ? { providerId: input.providerId } as any : {})
     }
   });
+}
+
+// export interface ProviderSubmissionItem {
+//   id: string;
+//   createdAt: Date;
+//   name: string;
+//   phone: string;
+//   email?: string | null;
+//   location?: string | null;
+//   category?: CategoryBase | null;
+//   budget?: string | null;
+//   detail: string;
+//   viewed: boolean;
+// }
+
+export async function getProviderFormSubmissions(providerId: string): Promise<Estimate[]> {
+  const rows = await prisma.estimate.findMany({
+    where: { 
+      providerId 
+    },
+    include: {
+      category: true
+     },
+    orderBy: { createdAt: 'desc' }
+  });
+  // return rows.map(r => ({
+  //   id: r.id,
+  //   createdAt: r.createdAt,
+  //   name: r.name,
+  //   phone: r.phone,
+  //   email: r.email || null,
+  //   location: r.location || null,
+  //   category: r.category || null,
+  //   budget: r.budget || null,
+  //   detail: r.detail,
+  //   viewed: r.viewed
+  // }));
+  return rows;
 }

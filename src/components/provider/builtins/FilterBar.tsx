@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 
-import type { Category } from '@/types/builtins';
+import type { Category } from '@prisma/client';
 
 interface FilterBarProps {
   query: string;

@@ -32,14 +32,14 @@ export function FooterHero({ locale }: Props) {
             </p> */}
           </div>
 
-          <div className="grid grid-cols-2 gap-6 md:gap-12 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 mt-8">
             <div className="flex flex-col space-y-2">
               <a href="#" className="uppercase font-semibold hover:underline">Our Projects</a>
               <a href="#" className="uppercase font-semibold hover:underline">About Us</a>
               <a href="#" className="uppercase font-semibold hover:underline">News & Promotions</a>
               <a href="#" className="uppercase font-semibold hover:underline">Blog</a>
-              <a href="#" className="uppercase font-semibold hover:underline">Rasika Family</a>
             </div>
+            <hr className="md:hidden opacity-20" />
             <div className="flex flex-col space-y-2">
               <a href="#" className="uppercase font-semibold hover:underline">Contact</a>
               <a href="#" className="uppercase font-semibold hover:underline">Work With Us</a>

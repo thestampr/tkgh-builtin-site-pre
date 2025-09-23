@@ -1,7 +1,8 @@
 "use client";
+
+import type { Category } from '@prisma/client';
 import React from 'react';
 import { GalleryEditor } from './GalleryEditor';
-import type { Category } from '@/types/builtins';
 
 interface DraftShape { title: string; slug: string; price: number | null; currency: string | null; categoryId: string | null; content: string | null; gallery: string[]; }
 interface BaseLocaleFormProps {

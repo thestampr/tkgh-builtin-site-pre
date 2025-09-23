@@ -69,9 +69,11 @@ export default function Page() {
   return (
     <main className="bg-gray-50 text-gray-900">
       {/* Fake hero for extended behind appbar */}
-      <Hero extendBackground>
-        <div className="bg-gradient-to-tr from-zinc-900 via-indigo-900 to-emerald-700 h-[1000vh] fixed top-0 left-0 right-0 pointer-events-none" />
-      </Hero>
+      <div className="relative -z-10">
+        <Hero extendBackground>
+          <div className="bg-gradient-to-tr from-zinc-900 via-indigo-900 to-emerald-700 h-[1000vh] fixed top-0 left-0 right-0 pointer-events-none" />
+        </Hero>
+      </div>
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -113,11 +115,14 @@ export default function Page() {
 
               <div className="relative">
                 <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                  <Image
-                    src="https://t4.ftcdn.net/jpg/08/35/64/35/360_F_835643573_x3bTs6n77e9hjZPfE2QCtTrU2bVq6EIr.jpg"
-                    alt={t('hero.card.alt')}
-                    className="w-full h-72 object-cover"
-                  />
+                  <div className="w-full h-72 relative">
+                    <Image
+                      src="https://t4.ftcdn.net/jpg/08/35/64/35/360_F_835643573_x3bTs6n77e9hjZPfE2QCtTrU2bVq6EIr.jpg"
+                      alt={t('hero.card.alt')}
+                      className="object-cover"
+                      fill
+                    />
+                  </div>
                   <div className="p-6 bg-gradient-to-t from-black/50 to-transparent text-white">
                     <h3 className="text-xl font-semibold">{t('hero.card.title')}</h3>
                     <p className="mt-2 text-sm opacity-90">{t('hero.card.subtitle')}</p>
@@ -168,14 +173,14 @@ export default function Page() {
       <section className="max-w-7xl mx-auto px-6 py-12">
         <h3 className="text-2xl font-bold">{t('gallery.heading')}</h3>
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="rounded-2xl overflow-hidden shadow-lg">
-            <Image src="https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?q=80&w=1000&auto=format&fit=crop" alt={t('gallery.altInterior')} className="w-full h-48 object-cover" />
+          <div className="rounded-2xl overflow-hidden shadow-lg w-full h-48 relative">
+            <Image src="https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?q=80&w=1000&auto=format&fit=crop" alt={t('gallery.altInterior')} className="object-cover" fill />
           </div>
-          <div className="rounded-2xl overflow-hidden shadow-lg">
-            <Image src="https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?q=80&w=1000&auto=format&fit=crop" alt={t('gallery.altExterior')} className="w-full h-48 object-cover" />
+          <div className="rounded-2xl overflow-hidden shadow-lg w-full h-48 relative">
+            <Image src="https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?q=80&w=1000&auto=format&fit=crop" alt={t('gallery.altExterior')} className="object-cover" fill />
           </div>
-          <div className="rounded-2xl overflow-hidden shadow-lg">
-            <Image src="https://images.unsplash.com/photo-1505842465776-3d2d8a5b3b8a?q=80&w=1000&auto=format&fit=crop" alt={t('gallery.altSite')} className="w-full h-48 object-cover" />
+          <div className="rounded-2xl overflow-hidden shadow-lg w-full h-48 relative">
+            <Image src="https://images.unsplash.com/photo-1758072328635-586f3c121af2?q=80&w=1000&auto=format&fit=crop" alt={t('gallery.altSite')} className="object-cover" fill />
           </div>
         </div>
       </section>

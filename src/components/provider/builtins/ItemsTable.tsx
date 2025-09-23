@@ -2,15 +2,17 @@
 import React from 'react';
 import { ImageAvatars } from './ImageAvatars';
 import { PublishToggleButton } from './PublishToggleButton';
-import type { BuiltIn } from '@/types/builtins';
+import type { BuiltIn } from '@prisma/client';
+
+type BuiltInDto = BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; galleryJson?: string | null };
 
 interface ItemsTableProps {
-  items: BuiltIn[];
+  items: BuiltInDto[];
   t: (k: string) => string;
   defaultLocale: string;
-  onEdit: (item: BuiltIn) => void;
-  onDelete: (item: BuiltIn) => void;
-  onTogglePublish: (item: BuiltIn) => void;
+  onEdit: (item: BuiltInDto) => void;
+  onDelete: (item: BuiltInDto) => void;
+  onTogglePublish: (item: BuiltInDto) => void;
   publishingId: string | null;
   loading?: boolean;
   skeletonRows?: number;

@@ -44,6 +44,7 @@ const defaultCta: CTAConfig = {
 export default function ProfileEditor({ initialProfile, inline = false }: ProfileEditorProps) {
   const { data: session, update } = useSession();
   const t = useTranslations("Account.ui");
+  const tProfile = useTranslations("Profile");
   const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
   const [displayName, setDisplayName] = useState(initialProfile?.displayName || "");
@@ -211,8 +212,8 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     <div className={inline ? "space-y-8" : "max-w-5xl mx-auto px-6 pb-10 space-y-10"}>
       <div>
         {!inline && <>
-          <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">Profile</h1>
-          <p className="text-sm text-neutral-500 mt-1">Edit provider profile.</p>
+          <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
+          <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
         </>}
       </div>
       <div className="flex items-center gap-3 text-sm flex-wrap">
@@ -337,12 +338,8 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                   </div>
                   <div className="pt-2">
                     <div className="text-[11px] text-neutral-500">Preview:</div>
-                    {/* <button type="button" style={ctaConfig.label ? { background: ctaConfig.style === "solid" ? ctaConfig.color : "transparent", color: ctaConfig.style === "solid" ? "#fff" : ctaConfig.color, border: ctaConfig.style !== "solid" ? `1px solid ${ctaConfig.color}` : "none", padding: ctaConfig.size === "lg" ? "0.9rem 1.4rem" : ctaConfig.size === "sm" ? "0.4rem 0.9rem" : "0.6rem 1.1rem" } : { background: ctaConfig.style === "solid" ? ctaConfig.color : "transparent", color: ctaConfig.style === "solid" ? "#fff" : ctaConfig.color, border: ctaConfig.style !== "solid" ? `1px solid ${ctaConfig.color}` : "none", width: ctaConfig.size === "lg" ? 56 : ctaConfig.size === "sm" ? 40 : 48, height: ctaConfig.size === "lg" ? 56 : ctaConfig.size === "sm" ? 40 : 48, padding: 0 }} className={`mt-2 font-medium inline-flex items-center justify-center ${ctaConfig.label ? "gap-2" : "gap-0"} text-sm ${ctaConfig.radius === "full" ? "rounded-full" : ctaConfig.radius === "lg" ? "rounded-xl" : ctaConfig.radius === "md" ? "rounded-md" : "rounded-sm"}`}>
-                      {ctaConfig.icon && (() => { const I = (Lucide as any)[ctaConfig.icon]; return I ? <I size={ctaConfig.size === "lg" ? 24 : ctaConfig.size === "sm" ? 18 : 20} /> : null; })()}{ctaConfig.label && <span>{ctaConfig.label}</span>}
-                    </button> */}
                     <div className="py-12 flex items-center justify-center bg-neutral-100 rounded">
                       <ProviderCTA config={ctaConfig} preview />
-                      {/* <pre>{JSON.stringify(ctaConfig, null, 2)}</pre> */}
                     </div>
                   </div>
                 </fieldset>

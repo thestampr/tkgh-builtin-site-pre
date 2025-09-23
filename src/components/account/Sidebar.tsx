@@ -11,13 +11,14 @@ export default function AccountSidebar({ locale }: SidebarProps) {
   const { data: session } = useSession();
   const t = useTranslations("Account");
   const pathname = usePathname();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
 
   const baseLinks = [
     { href: (l: string) => `/${l}/account`, label: t("menu.overview"), roles: ["USER", "PROVIDER", "PUBLIC"] },
     { href: (l: string) => `/${l}/account/profile`, label: t("menu.profile"), roles: ["USER", "PROVIDER"] },
     { href: (l: string) => `/${l}/account/categories`, label: t("menu.categories"), roles: ["PROVIDER"] },
     { href: (l: string) => `/${l}/account/builtins`, label: t("menu.builtIns"), roles: ["PROVIDER"] },
+    { href: (l: string) => `/${l}/account/estimates`, label: t("menu.estimates"), roles: ["PROVIDER"] },
     { href: (l: string) => `/${l}/account/settings`, label: t("menu.settings"), roles: ["PROVIDER"] }
   ];
   const links = baseLinks.filter(l => !role || l.roles.includes(role));
