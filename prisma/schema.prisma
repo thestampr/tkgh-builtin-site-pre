@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["relationJoins"]
 }
 
@@ -8,68 +8,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  PUBLIC
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum BuiltInStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 model User {
-  id              String            @id @default(cuid())
-  email           String            @unique
-  passwordHash    String
-  role            String            @default("PUBLIC")
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  analytics       AnalyticsEvent[]  @relation("UserAnalytics")
-  builtIns        BuiltIn[]         @relation("ProviderBuiltIns")
-  categories      Category[]
-  favorites       FavoriteBuiltIn[]
-  formSubmissions FormSubmission[]
-  profile         Profile?
+  id                String            @id @default(cuid())
+  email             String            @unique @db.Citext
+  passwordHash      String
+  role              Role              @default(PUBLIC)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  analytics         AnalyticsEvent[]  @relation("UserAnalytics")
+  builtIns          BuiltIn[]         @relation("ProviderBuiltIns")
+  categories        Category[]
+  favorites         FavoriteBuiltIn[]
+  profile           Profile?
+  estimates         Estimate[]        @relation("SubmittingUser")
+  receivedEstimates Estimate[]        @relation("CategoryProvider")
 }
 
 model Profile {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  displayName       String?
-  bio               String?
-  avatarUrl         String?
-  contactJson       String?
-  coverImage        String?
-  ctaJson           String?   // serialized CTA configuration (base locale)
-  published         Boolean  @default(true)
-  updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id])
-  translations      ProfileTranslation[]
+  id           String               @id @default(cuid())
+  userId       String               @unique
+  displayName  String?
+  bio          String?
+  avatarUrl    String?
+  contactJson  Json?
+  coverImage   String?
+  ctaJson      Json?
+  published    Boolean              @default(true)
+  updatedAt    DateTime             @updatedAt
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  translations ProfileTranslation[]
+
+  @@index([published, updatedAt(sort: Desc)])
 }
 
 model ProfileTranslation {
   id          String   @id @default(cuid())
   profileId   String
-  locale      String
+  locale      String   @db.VarChar(16)
   displayName String?
   bio         String?
   ctaLabel    String?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  profile     Profile  @relation(fields: [profileId], references: [id])
+
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   @@unique([profileId, locale])
+  @@index([locale])
 }
 
 model Category {
   id           String                @id @default(cuid())
   providerId   String
   name         String
-  slug         String
+  slug         String                @db.VarChar(120)
   description  String?
   coverImage   String?
   excerpt      String?
   published    Boolean               @default(true)
-  styleJson    String?
+  styleJson    Json?
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
+
   builtIns     BuiltIn[]
-  provider     User                  @relation(fields: [providerId], references: [id])
+  provider     User                  @relation(fields: [providerId], references: [id], onDelete: Cascade)
   translations CategoryTranslation[]
+  estimates    Estimate[]            @relation("Estimates")
 
   @@unique([providerId, slug])
+  @@index([providerId, published, updatedAt(sort: Desc)])
 }
 
 model BuiltIn {
@@ -77,51 +100,57 @@ model BuiltIn {
   providerId   String
   categoryId   String?
   title        String
-  slug         String
+  slug         String               @db.VarChar(120)
   summary      String?
   content      String?
   coverImage   String?
-  galleryJson  String?
+  galleryJson  Json?
   price        Int?
-  currency     String?              // ISO currency code for base locale price (e.g. THB, USD)
-  status       String               @default("DRAFT")
+  currency     String?              @db.Char(3) // ISO 4217
+  status       BuiltInStatus        @default(DRAFT)
   publishedAt  DateTime?
   ctaLabel     String?
   ctaUrl       String?
   icon         String?
-  styleJson    String?
+  styleJson    Json?
   layout       String?
   viewCount    Int                  @default(0)
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
+
   analytics    AnalyticsEvent[]     @relation("BuiltInAnalytics")
-  category     Category?            @relation(fields: [categoryId], references: [id])
-  provider     User                 @relation("ProviderBuiltIns", fields: [providerId], references: [id])
+  category     Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  provider     User                 @relation("ProviderBuiltIns", fields: [providerId], references: [id], onDelete: Cascade)
   translations BuiltInTranslation[]
   favorites    FavoriteBuiltIn[]
 
   @@unique([providerId, slug])
+  @@index([providerId, status, publishedAt(sort: Desc)])
+  @@index([categoryId, status, publishedAt(sort: Desc)])
+  @@index([createdAt])
 }
 
 model CategoryTranslation {
   id          String   @id @default(cuid())
   categoryId  String
-  locale      String
+  locale      String   @db.VarChar(16)
   name        String?
   description String?
   excerpt     String?
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  category    Category @relation(fields: [categoryId], references: [id])
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([categoryId, locale])
+  @@index([locale])
 }
 
 model BuiltInTranslation {
   id        String   @id @default(cuid())
   builtInId String
-  locale    String
+  locale    String   @db.VarChar(16)
   title     String?
   summary   String?
   content   String?
@@ -130,20 +159,24 @@ model BuiltInTranslation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   price     Int?
-  currency  String?  // localized currency code
-  builtIn   BuiltIn  @relation(fields: [builtInId], references: [id])
+  currency  String?  @db.Char(3)
+
+  builtIn   BuiltIn  @relation(fields: [builtInId], references: [id], onDelete: Cascade)
 
   @@unique([builtInId, locale])
+  @@index([locale])
 }
 
 model FavoriteBuiltIn {
   userId    String
   builtInId String
   createdAt DateTime @default(now())
-  builtIn   BuiltIn  @relation(fields: [builtInId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+
+  builtIn   BuiltIn  @relation(fields: [builtInId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, builtInId])
+  @@index([userId, createdAt])
 }
 
 model AnalyticsEvent {
@@ -155,29 +188,39 @@ model AnalyticsEvent {
   userAgent String?
   ipHash    String?
   createdAt DateTime @default(now())
-  builtIn   BuiltIn? @relation("BuiltInAnalytics", fields: [builtInId], references: [id])
-  user      User?    @relation("UserAnalytics", fields: [userId], references: [id])
+
+  builtIn   BuiltIn? @relation("BuiltInAnalytics", fields: [builtInId], references: [id], onDelete: SetNull)
+  user      User?    @relation("UserAnalytics", fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([type, createdAt])
-  @@index([builtInId])
+  @@index([builtInId, createdAt])
+  @@index([userId, createdAt])
+  @@index([path])
 }
 
-model FormSubmission {
-  id        String   @id @default(cuid())
-  locale    String?
-  name      String
-  phone     String
-  email     String?
-  location  String?
-  category  String?
-  budget    String?
-  detail    String
-  createdAt DateTime @default(now())
-  viewed    Boolean  @default(false)
-  archived  Boolean  @default(false)
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
+model Estimate {
+  id         String   @id @default(cuid())
+  locale     String?  @db.VarChar(16)
+  name       String
+  phone      String
+  email      String?
+  location   String?
+  budget     String?
+  detail     String
+  createdAt  DateTime @default(now())
+  viewed     Boolean  @default(false)
+  archived   Boolean  @default(false)
+
+  userId     String
+  categoryId String
+  providerId String
+
+  user       User     @relation("SubmittingUser", fields: [userId], references: [id], onDelete: Cascade)
+  category   Category @relation("Estimates", fields: [categoryId], references: [id], onDelete: Cascade)
+  provider   User     @relation("CategoryProvider", fields: [providerId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([archived])
+  @@index([categoryId, createdAt])
+  @@index([providerId, createdAt])
 }

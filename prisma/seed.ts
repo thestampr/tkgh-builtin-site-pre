@@ -3,41 +3,194 @@ import { hashPassword } from '../src/lib/auth/password';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('Seeding database...');
-
-  // Clear existing (dev only)
-  await prisma.analyticsEvent.deleteMany();
-  await prisma.favoriteBuiltIn.deleteMany();
-  await prisma.builtIn.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.profile.deleteMany();
-  await prisma.user.deleteMany();
-
-  const password = await hashPassword('password123');
-
-  // Demo seed disabled for clean initial deployment.
-  // To re-enable, uncomment the block below.
-  /*
-  const provider = await prisma.user.create({
-    data: { email: 'provider@example.com', passwordHash: password, role: 'PROVIDER', profile: { create: { displayName: 'Demo Provider', published: true } } },
-    select: { id: true }
-  });
-  await prisma.user.create({
-    data: { email: 'user@example.com', passwordHash: password, role: 'USER', profile: { create: { displayName: 'Normal User', published: true } } }
-  });
-  const catLiving = await prisma.category.create({ data: { providerId: provider.id, name: 'Living Room', slug: 'living-room', description: 'Living concepts', published: true } });
-  const catKitchen = await prisma.category.create({ data: { providerId: provider.id, name: 'Kitchen', slug: 'kitchen', description: 'Kitchen ideas', published: true } });
-  await prisma.builtIn.create({ data: { providerId: provider.id, categoryId: catLiving.id, title: 'Modern Living Wall Unit', slug: 'modern-living-wall-unit', summary: 'Sleek storage + display for living room', content: '# Modern Living Wall Unit\\nA sample description in markdown.', coverImage: '/images/hero.jpg', galleryJson: JSON.stringify(['/images/hero.jpg']), price: 259900, status: 'PUBLISHED', publishedAt: new Date() } });
-  await prisma.builtIn.create({ data: { providerId: provider.id, categoryId: catKitchen.id, title: 'Minimalist Kitchen Cabinet', slug: 'minimalist-kitchen-cabinet', summary: 'Minimal lines, matte finish', content: 'Details coming soon', price: 189500, status: 'DRAFT' } });
-  console.log('Seed complete');
-  */
-  console.log('Seed skipped (clean deploy)');
+async function resetAll() {
+  // Order matters to satisfy FK constraints in case onDelete is not enough
+  await prisma.$transaction([
+    prisma.analyticsEvent.deleteMany(),
+    prisma.favoriteBuiltIn.deleteMany(),
+    prisma.builtInTranslation.deleteMany(),
+    prisma.builtIn.deleteMany(),
+    prisma.categoryTranslation.deleteMany(),
+    prisma.category.deleteMany(),
+    prisma.estimate.deleteMany(),
+    prisma.profileTranslation.deleteMany(),
+    prisma.profile.deleteMany(),
+    prisma.user.deleteMany(),
+  ]);
 }
 
-main().catch(e => {
-  console.error(e);
-  process.exit(1);
-}).finally(async () => {
-  await prisma.$disconnect();
-});
+async function demoData() {
+  const password = await hashPassword('password123');
+
+  // Users
+  const provider = await prisma.user.create({
+    data: {
+      email: 'provider@example.com',
+      passwordHash: password,
+      role: 'PROVIDER',
+      profile: {
+        create: {
+          displayName: 'Demo Provider',
+          bio: 'Quality built-ins, clear pricing, friendly service.',
+          avatarUrl: '/images/icon-w.png',
+          coverImage: '/images/hero.jpg',
+          contactJson: {
+            channels: [
+              { type: 'phone', value: '+66 80 000 0000' },
+              { type: 'line', value: '@demo' },
+            ],
+          } as any,
+          ctaJson: { label: 'Get a Quote', href: '/estimate', style: 'solid' } as any,
+          translations: {
+            create: [
+              { locale: 'th', displayName: 'ผู้ให้บริการเดโม่', bio: 'งานบิลท์อินคุณภาพ ราคาชัดเจน บริการเป็นกันเอง', ctaLabel: 'ขอใบเสนอราคา', published: true },
+              { locale: 'en', displayName: 'Demo Provider', bio: 'Quality built-ins, clear pricing, friendly service.', ctaLabel: 'Get a Quote', published: true },
+            ],
+          },
+        },
+      },
+    },
+    select: { id: true },
+  });
+
+  const customer = await prisma.user.create({
+    data: {
+      email: 'customer@example.com',
+      passwordHash: password,
+      role: 'CUSTOMER',
+      profile: { create: { displayName: 'Demo Customer', published: true } },
+    },
+    select: { id: true },
+  });
+
+  // Categories
+  const living = await prisma.category.create({
+    data: {
+      providerId: provider.id,
+      name: 'Living Room',
+      slug: 'living-room',
+      description: 'Living concepts',
+      coverImage: '/images/hero.jpg',
+      published: true,
+      translations: {
+        create: [
+          { locale: 'th', name: 'ห้องนั่งเล่น', description: 'แนวคิดสำหรับห้องนั่งเล่น', excerpt: 'ไอเดียบิลท์อินห้องนั่งเล่น', published: true },
+          { locale: 'en', name: 'Living Room', description: 'Living concepts', excerpt: 'Living built-in ideas', published: true },
+        ],
+      },
+    },
+  });
+
+  const kitchen = await prisma.category.create({
+    data: {
+      providerId: provider.id,
+      name: 'Kitchen',
+      slug: 'kitchen',
+      description: 'Kitchen ideas',
+      coverImage: '/images/hero.jpg',
+      published: true,
+      translations: {
+        create: [
+          { locale: 'th', name: 'ครัว', description: 'ไอเดียครัว', excerpt: 'ครัวบิลท์อิน', published: true },
+          { locale: 'en', name: 'Kitchen', description: 'Kitchen ideas', excerpt: 'Built-in kitchen', published: true },
+        ],
+      },
+    },
+  });
+
+  // Built-ins
+  const livingUnit = await prisma.builtIn.create({
+    data: {
+      providerId: provider.id,
+      categoryId: living.id,
+      title: 'Modern Living Wall Unit',
+      slug: 'modern-living-wall-unit',
+      summary: 'Sleek storage + display for living room',
+      content: '# Modern Living Wall Unit\nA sample description in markdown.',
+      coverImage: '/images/hero.jpg',
+  galleryJson: ['/images/hero.jpg'] as any,
+      price: 259900,
+  currency: 'THB',
+  status: 'PUBLISHED',
+      publishedAt: new Date(),
+      translations: {
+        create: [
+          { locale: 'th', title: 'ชั้นผนังห้องนั่งเล่นสมัยใหม่', summary: 'ที่เก็บของและโชว์งานที่สวยงาม', content: 'รายละเอียดตัวอย่าง', ctaLabel: 'ขอราคา', published: true },
+          { locale: 'en', title: 'Modern Living Wall Unit', summary: 'Sleek storage + display', content: 'Sample details', ctaLabel: 'Get Price', published: true },
+        ],
+      },
+    },
+  });
+
+  const kitchenCabinet = await prisma.builtIn.create({
+    data: {
+      providerId: provider.id,
+      categoryId: kitchen.id,
+      title: 'Minimalist Kitchen Cabinet',
+      slug: 'minimalist-kitchen-cabinet',
+      summary: 'Minimal lines, matte finish',
+      content: 'Details coming soon',
+      coverImage: '/images/hero.jpg',
+  galleryJson: ['/images/hero.jpg'] as any,
+      price: 189500,
+  currency: 'THB',
+  status: 'DRAFT',
+      translations: {
+        create: [
+          { locale: 'th', title: 'ตู้ครัวมินิมอล', summary: 'เส้นสายมินิมอล ผิวด้าน', content: 'รายละเอียดเร็วๆ นี้', published: false },
+          { locale: 'en', title: 'Minimalist Kitchen Cabinet', summary: 'Minimal lines, matte finish', content: 'Coming soon', published: false },
+        ],
+      },
+    },
+  });
+
+  // Favorite
+  await prisma.favoriteBuiltIn.create({
+    data: { userId: customer.id, builtInId: livingUnit.id },
+  });
+
+  // Analytics
+  await prisma.analyticsEvent.createMany({
+    data: [
+      { type: 'view', path: `/p/${provider.id}/b/${livingUnit.slug}`, builtInId: livingUnit.id, userId: customer.id, userAgent: 'seed', ipHash: 'seed' },
+      { type: 'view', path: `/p/${provider.id}/c/${living.slug}`, userAgent: 'seed', ipHash: 'seed' },
+    ],
+  });
+
+  // Estimate
+  await prisma.estimate.create({
+    data: {
+      locale: 'th',
+      name: 'คุณลูกค้า',
+      phone: '+66 89 000 0000',
+      email: 'lead@example.com',
+      location: 'Bangkok',
+      budget: '300,000-500,000',
+      detail: 'ต้องการบิลท์อินชั้นวางทีวีและตู้เก็บของ',
+      userId: customer.id,
+      categoryId: living.id,
+      providerId: provider.id,
+    } as any,
+  });
+
+  console.log('Seeded demo data:', { provider: provider.id, customer: customer.id });
+}
+
+async function main() {
+  console.log('Seeding database (clean reset + demo dataset)...');
+  await resetAll();
+
+  // By default, populate demo data that covers all tables
+  // await demoData();
+
+  console.log('Seed complete');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
