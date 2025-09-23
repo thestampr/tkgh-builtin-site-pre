@@ -52,10 +52,10 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
   const [trDisplayName, setTrDisplayName] = useState<string>("");
   const [trBio, setTrBio] = useState<string>("");
   const [loadingTranslation, setLoadingTranslation] = useState(false);
-  const [contacts, setContacts] = useState<ContactData>(() => parseJSON<ContactData>(initialProfile?.contactJson, { channels: [] }));
+  const [contacts, setContacts] = useState<ContactData>(() => parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }));
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => initialProfile?.avatarUrl || null);
   const [ctaConfig, setCtaConfig] = useState<CTAConfig>(() => {
-    const parsed = parseJSON<CTAConfig>(initialProfile?.ctaJson, defaultCta);
+    const parsed = parseJSON<CTAConfig>(initialProfile?.ctaJson as string, defaultCta);
     if (!parsed.radius) parsed.radius = "full";
     return parsed;
   });
@@ -110,10 +110,10 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
   function cancel() {
     setDisplayName(initialProfile?.displayName || "");
     setBio(initialProfile?.bio || "");
-    setContacts(parseJSON<ContactData>(initialProfile?.contactJson, { channels: [] }));
+    setContacts(parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }));
     setAvatarUrl(initialProfile?.avatarUrl || null);
     setCoverImage((initialProfile as any)?.coverImage || null);
-    setCtaConfig(parseJSON<CTAConfig>(initialProfile?.ctaJson, defaultCta));
+    setCtaConfig(parseJSON<CTAConfig>(initialProfile?.ctaJson as string, defaultCta));
     setTrDisplayName("");
     setTrBio("");
     setCtaLabelTr("");
