@@ -44,6 +44,7 @@ const defaultCta: CTAConfig = {
 export default function ProfileEditor({ initialProfile, inline = false }: ProfileEditorProps) {
   const { data: session, update } = useSession();
   const t = useTranslations("Account.ui");
+  const tErrors = useTranslations("Errors");
   const tProfile = useTranslations("Profile");
   const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
@@ -182,6 +183,10 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
         const newUser = { ...session.user, avatarUrl: json.url };
         update(newUser);
       }
+    } else {
+      const j = await res.json().catch(() => ({}));
+      const err = j.error === "TYPE" ? tErrors("invalidFileType") : j.error === "SIZE" ? tErrors("fileTooLarge", { maxSize: "2MB" }) : tErrors("avatarUploadFailed");
+      setErrors(er => [...er, err]);
     }
     setSaving(false);
   }

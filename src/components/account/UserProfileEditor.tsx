@@ -1,9 +1,13 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
 export default function UserProfileEditor() {
+  const { data: session, update } = useSession();
+
   const t = useTranslations("Account.ui.userProfile");
+  const tErrors = useTranslations("Errors");
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -23,14 +27,24 @@ export default function UserProfileEditor() {
     }).finally(() => setLoading(false));
   }, []);
 
-  function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     const form = new FormData();
     form.append("file", file);
-    fetch("/api/account/profile/avatar", { method: "POST", body: form })
-      .then(r => r.json())
-      .then(d => { if (d.url) { setAvatarUrl(d.url); setMessage(t("updated")); } else { setError(d.error || "Upload failed"); } });
+    const res = await fetch("/api/account/profile/avatar", { method: "POST", body: form })
+    if (res.ok) {
+      const json = await res.json();
+      if (json.url) setAvatarUrl(json.url);
+      if (update && session) {
+        // Update the user session with the new avatar URL
+        const newUser = { ...session.user, avatarUrl: json.url };
+        update(newUser);
+      }
+    } else {
+      const j = await res.json().catch(() => ({}));
+      setError(j.error === "TYPE" ? tErrors("invalidFileType") : j.error === "SIZE" ? tErrors("fileTooLarge", { maxSize: "2MB" }) : tErrors("avatarUploadFailed"));
+    }
   }
 
   function saveEmail() {

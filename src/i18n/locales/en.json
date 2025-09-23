@@ -550,5 +550,28 @@
     "ui": {
       "noData": "No estimates yet"
     }
+  },
+  "Errors": {
+    "403": {
+      "title": "Access Denied",
+      "message": "You do not have permission to access this page."
+    },
+    "404": {
+      "title": "Page Not Found",
+      "message": "The page you are looking for does not exist."
+    },
+    "500": {
+      "title": "Server Error",
+      "message": "An unexpected error occurred. Please try again later."
+    },
+    "media": {
+      "invalidFileType": "Invalid file type",
+      "fileTooLarge": "File too large (max {maxSize})",
+      "avatarUploadFailed": "Avatar upload failed"
+    },
+    "common": {
+      "required": "This field is required",
+      "unknown": "An unknown error occurred"
+    }
   }
 }
