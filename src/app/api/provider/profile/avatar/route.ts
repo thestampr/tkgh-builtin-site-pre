@@ -18,10 +18,7 @@ export async function POST(request: Request) {
     if (!["image/png", "image/jpeg", "image/webp"].includes(type)) {
       return NextResponse.json({ error: "TYPE" }, { status: 400 });
     }
-    if (file.size > 512 * 1024) {
-      return NextResponse.json({ error: "SIZE" }, { status: 400 });
-    }
-    const urls = await uploadFiles(form, { folder: "avatar", maxSizeMB: 0.5, maxCount: 1 });
+    const urls = await uploadFiles(form, { folder: "avatar", maxSizeMB: 2, maxCount: 1 });
     if (!urls.length) {
       return NextResponse.json({ error: "Upload failed" }, { status: 500 });
     }

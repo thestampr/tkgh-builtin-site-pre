@@ -7,6 +7,7 @@ type UploadOptions = {
   folder: "builtins" | "category" | string;
   maxSizeMB: number;
   maxCount?: number;
+  fileType?: string; // not implemented yet
 };
 
 const isVercel = !!process.env.VERCEL_URL || process.env.VERCEL === "1";
