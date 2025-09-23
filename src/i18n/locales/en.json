@@ -67,7 +67,13 @@
     "contactUs": "Contact Us",
     "provider": "Provider",
     "providerItems": "Items",
-    "providerCategories": "Categories"
+    "providerCategories": "Categories",
+    "register": "Register",
+    "login": "Login",
+    "logout": "Logout",
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
   },
   "ProviderCTA": {
     "label": "Contact",
@@ -296,7 +302,16 @@
     "providerCtaPrompt": "Want to offer services?",
     "providerCta": "Register as Provider",
     "wantNormalAccount": "Need a regular user account?",
-    "registerUserAlt": "Register as User"
+    "registerUserAlt": "Register as User",
+    "errors": {
+      "invalidCredentials": "Invalid credentials",
+      "invalidEmail": "Invalid email",
+      "emailInUse": "Email already in use",
+      "weakPassword": "Password must be at least 6 characters",
+      "required": "This field is required",
+      "passwordMismatch": "Passwords do not match",
+      "unknown": "An unknown error occurred"
+    }
   },
   "Account": {
     "titleUser": "Your Account",
@@ -308,8 +323,15 @@
       "profile": "Profile",
       "builtIns": "Built-ins",
       "categories": "Categories",
+      "estimates": "Estimates",
       "settings": "Settings",
-      "logout": "Logout"
+      "register": "Register",
+      "login": "Login",
+      "logout": "Logout",
+      "signUp": "Sign Up",
+      "signIn": "Sign In",
+      "signOut": "Sign Out"
+
     },
     "summary": {
       "builtIns": "Built-ins",
@@ -389,6 +411,10 @@
         "currentEmail": "Current Email"
       }
     }
+  },
+  "Profile": {
+    "title": "Profile",
+    "subtitle": "Manage your profile information."
   },
   "ProviderBuiltIns": {
     "title": "Built-ins",
@@ -495,6 +521,34 @@
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving..."
+    }
+  },
+  "ProviderEstimates": {
+    "title": "Estimates",
+    "subtitle": "View and manage incoming estimate requests.",
+    "view": "View Details",
+    "status": {
+      "new": "New",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search estimates...",
+      "status": "Status",
+      "all": "All",
+      "new": "New",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "sort": "Sort",
+      "sortNewest": "Newest",
+      "sortOldest": "Oldest"
+    },
+    "messages": {
+      "fetchFailed": "Fetch failed"
+    },
+    "ui": {
+      "noData": "No estimates yet"
     }
   }
 }

@@ -1,13 +1,37 @@
 {
   "Nav": {
-    "home": { "label": "หน้าแรก", "title": "หน้าแรก" },
-    "drafting": { "label": "งานออกแบบ", "title": "งานเขียนแบบ & BOQ" },
-    "categories": { "label": "หมวดหมู่", "title": "หมวดหมู่" },
-    "builtIn": { "label": "บิลท์อิน", "title": "บิลท์อิน" },
-    "estimate": { "label": "ประเมินราคา", "title": "ประเมินราคา" },
-    "contact": { "label": "ติดต่อ", "title": "ติดต่อ" },
-    "language": { "label": "ภาษา", "title": "ภาษา" },
-    "menu": { "label": "เมนู", "title": "เมนู" }
+    "home": {
+      "label": "หน้าแรก",
+      "title": "หน้าแรก"
+    },
+    "drafting": {
+      "label": "งานออกแบบ",
+      "title": "งานเขียนแบบ & BOQ"
+    },
+    "categories": {
+      "label": "หมวดหมู่",
+      "title": "หมวดหมู่"
+    },
+    "builtIn": {
+      "label": "บิลท์อิน",
+      "title": "บิลท์อิน"
+    },
+    "estimate": {
+      "label": "ประเมินราคา",
+      "title": "ประเมินราคา"
+    },
+    "contact": {
+      "label": "ติดต่อ",
+      "title": "ติดต่อ"
+    },
+    "language": {
+      "label": "ภาษา",
+      "title": "ภาษา"
+    },
+    "menu": {
+      "label": "เมนู",
+      "title": "เมนู"
+    }
   },
   "Home": {
     "title": "ออกแบบพื้นที่ในฝันของคุณ",
@@ -40,10 +64,16 @@
     "localeEN": "อังกฤษ",
     "localeTH": "ไทย",
     "lineChat": "LINE Chat",
-  "contactUs": "ติดต่อเรา",
-  "provider": "ผู้ให้บริการ",
-  "providerItems": "รายการ",
-  "providerCategories": "หมวดหมู่"
+    "contactUs": "ติดต่อเรา",
+    "provider": "ผู้ให้บริการ",
+    "providerItems": "รายการ",
+    "providerCategories": "หมวดหมู่",
+    "register": "ลงทะเบียน",
+    "login": "เข้าสู่ระบบ",
+    "logout": "ออกจากระบบ",
+    "signUp": "ลงทะเบียน",
+    "signIn": "เข้าสู่ระบบ",
+    "signOut": "ออกจากระบบ"
   },
   "ProviderCTA": {
     "label": "ติดต่อ",
@@ -74,8 +104,8 @@
     "desc": "สำรวจคอลเลกชันรายการบิลท์อินของเรา",
     "listTitle": "รายการบิลท์อิน",
     "listSubtitle": "สำรวจงานบิลท์อินของเรา",
-  "empty": "ยังไม่มีรายการ",
-  "emptySearch": "ไม่พบรายการที่ตรงกับการค้นหาหรือกรอง"
+    "empty": "ยังไม่มีรายการ",
+    "emptySearch": "ไม่พบรายการที่ตรงกับการค้นหาหรือกรอง"
   },
   "Estimate": {
     "title": "ขอใบประเมินราคา",
@@ -254,8 +284,7 @@
       "requestQuote": "ขอใบเสนอราคา",
       "scheduleCall": "นัดหมายโทร"
     }
-  }
-  ,
+  },
   "Auth": {
     "loginTitle": "เข้าสู่ระบบ",
     "loginSubtitle": "เข้าถึงบัญชีและเครื่องมือโปรเจกต์ของคุณ",
@@ -273,9 +302,17 @@
     "providerCtaPrompt": "ต้องการให้บริการ?",
     "providerCta": "สมัครเป็นผู้ให้บริการ",
     "wantNormalAccount": "ต้องการบัญชีผู้ใช้ทั่วไป?",
-    "registerUserAlt": "สมัครเป็นผู้ใช้"
-  }
-  ,
+    "registerUserAlt": "สมัครเป็นผู้ใช้",
+    "errors": {
+      "invalidCredentials": "ข้อมูลประจำตัวไม่ถูกต้อง",
+      "invalidEmail": "อีเมลไม่ถูกต้อง",
+      "emailInUse": "อีเมลนี้ถูกใช้งานแล้ว",
+      "weakPassword": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+      "required": "ฟิลด์นี้จำเป็นต้องกรอก",
+      "passwordMismatch": "รหัสผ่านไม่ตรงกัน",
+      "unknown": "เกิดข้อผิดพลาดที่ไม่รู้จัก"
+    }
+  },
   "Account": {
     "titleUser": "บัญชีของคุณ",
     "subtitleUser": "จัดการโปรไฟล์และกิจกรรมที่บันทึกไว้",
@@ -285,9 +322,15 @@
       "overview": "สรุป",
       "profile": "โปรไฟล์",
       "builtIns": "บิลท์อิน",
-  "categories": "หมวดหมู่",
-  "settings": "ตั้งค่า",
-      "logout": "ออกจากระบบ"
+      "categories": "หมวดหมู่",
+      "estimates": "ประเมินราคา",
+      "settings": "ตั้งค่า",
+      "register": "ลงทะเบียน",
+      "login": "เข้าสู่ระบบ",
+      "logout": "ออกจากระบบ",
+      "signUp": "สมัครสมาชิก",
+      "signIn": "เข้าสู่ระบบ",
+      "signOut": "ออกจากระบบ"
     },
     "summary": {
       "builtIns": "บิลท์อิน",
@@ -320,62 +363,66 @@
       "views30Days": "ยอดเข้าชม (30 วัน)",
       "topCategories": "หมวดหมู่ยอดนิยม",
       "noViewsYet": "ยังไม่มีการเข้าชม",
-  "noDataGeneric": "ไม่มีข้อมูล",
-  "saveDraft": "บันทึกร่าง",
-  "publish": "เผยแพร่",
-  "previewDraft": "ดูตัวอย่างร่าง",
-  "advancedJson": "โหมด JSON",
-  "contactChannels": "ช่องทางติดต่อ",
-  "addChannel": "เพิ่ม",
-  "avatar": "รูปโปรไฟล์",
-  "provider": "ผู้ให้บริการ",
-  "ownedBy": "โดย {name}",
-  "saving": "กำลังบันทึก...",
-  "saved": "บันทึกแล้ว",
-  "unsaved": "มีการแก้ไขยังไม่บันทึก",
-  "fileTooLarge": "ไฟล์ใหญ่เกิน (สูงสุด 512KB)",
-  "fileTypeInvalid": "ประเภทไฟล์ไม่รองรับ",
-  "userProfile": {
-    "title": "ตั้งค่าโปรไฟล์",
-    "avatar": "รูปโปรไฟล์",
-    "email": "อีเมล",
-    "changeEmail": "เปลี่ยนอีเมล",
-    "newEmail": "อีเมลใหม่",
-    "saveEmail": "บันทึกอีเมล",
-    "password": "รหัสผ่าน",
-    "currentPassword": "รหัสผ่านปัจจุบัน",
-    "newPassword": "รหัสผ่านใหม่",
-    "confirmPassword": "ยืนยันรหัสผ่านใหม่",
-    "updatePassword": "อัปเดตรหัสผ่าน",
-    "updating": "กำลังอัปเดต...",
-    "updated": "อัปเดตแล้ว",
-    "emailUpdated": "อัปเดตอีเมลแล้ว",
-    "passwordUpdated": "อัปเดตรหัสผ่านแล้ว",
-    "mismatch": "รหัสผ่านไม่ตรงกัน",
-    "weakPassword": "รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร",
-  "invalidEmail": "อีเมลไม่ถูกต้อง",
-  "emailInUse": "อีเมลถูกใช้แล้ว",
-  "invalidCurrent": "รหัสผ่านปัจจุบันไม่ถูกต้อง"
-  },
-  "settings": {
-    "title": "ตั้งค่าบัญชี",
-    "subtitle": "จัดการการตั้งค่าบัญชีพื้นฐาน",
-    "accountSectionTitle": "บัญชี",
-    "accountSectionSubtitle": "ข้อมูลบัญชีพื้นฐาน",
-    "passwordSectionTitle": "รหัสผ่าน",
-    "passwordSectionSubtitle": "อัปเดตรหัสผ่านของคุณ",
-    "currentEmail": "อีเมลปัจจุบัน"
-  }
+      "noDataGeneric": "ไม่มีข้อมูล",
+      "saveDraft": "บันทึกร่าง",
+      "publish": "เผยแพร่",
+      "previewDraft": "ดูตัวอย่างร่าง",
+      "advancedJson": "โหมด JSON",
+      "contactChannels": "ช่องทางติดต่อ",
+      "addChannel": "เพิ่ม",
+      "avatar": "รูปโปรไฟล์",
+      "provider": "ผู้ให้บริการ",
+      "ownedBy": "โดย {name}",
+      "saving": "กำลังบันทึก...",
+      "saved": "บันทึกแล้ว",
+      "unsaved": "มีการแก้ไขยังไม่บันทึก",
+      "fileTooLarge": "ไฟล์ใหญ่เกิน (สูงสุด 512KB)",
+      "fileTypeInvalid": "ประเภทไฟล์ไม่รองรับ",
+      "userProfile": {
+        "title": "ตั้งค่าโปรไฟล์",
+        "avatar": "รูปโปรไฟล์",
+        "email": "อีเมล",
+        "changeEmail": "เปลี่ยนอีเมล",
+        "newEmail": "อีเมลใหม่",
+        "saveEmail": "บันทึกอีเมล",
+        "password": "รหัสผ่าน",
+        "currentPassword": "รหัสผ่านปัจจุบัน",
+        "newPassword": "รหัสผ่านใหม่",
+        "confirmPassword": "ยืนยันรหัสผ่านใหม่",
+        "updatePassword": "อัปเดตรหัสผ่าน",
+        "updating": "กำลังอัปเดต...",
+        "updated": "อัปเดตแล้ว",
+        "emailUpdated": "อัปเดตอีเมลแล้ว",
+        "passwordUpdated": "อัปเดตรหัสผ่านแล้ว",
+        "mismatch": "รหัสผ่านไม่ตรงกัน",
+        "weakPassword": "รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร",
+        "invalidEmail": "อีเมลไม่ถูกต้อง",
+        "emailInUse": "อีเมลถูกใช้แล้ว",
+        "invalidCurrent": "รหัสผ่านปัจจุบันไม่ถูกต้อง"
+      },
+      "settings": {
+        "title": "ตั้งค่าบัญชี",
+        "subtitle": "จัดการการตั้งค่าบัญชีพื้นฐาน",
+        "accountSectionTitle": "บัญชี",
+        "accountSectionSubtitle": "ข้อมูลบัญชีพื้นฐาน",
+        "passwordSectionTitle": "รหัสผ่าน",
+        "passwordSectionSubtitle": "อัปเดตรหัสผ่านของคุณ",
+        "currentEmail": "อีเมลปัจจุบัน"
+      }
     }
+  },
+  "Profile": {
+    "title": "โปรไฟล์",
+    "subtitle": "จัดการข้อมูลโปรไฟล์ของคุณ"
   },
   "ProviderBuiltIns": {
     "title": "บิลท์อิน",
     "subtitle": "สร้างและจัดการรายการบิลท์อินของคุณ",
     "new": "เพิ่มรายการ",
-  "editTitle": "แก้ไขบิลท์อิน",
-  "cancel": "ยกเลิก",
-  "save": "บันทึก",
-  "saving": "กำลังบันทึก...",
+    "editTitle": "แก้ไขบิลท์อิน",
+    "cancel": "ยกเลิก",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
     "filters": {
       "search": "ค้นหา",
       "searchPlaceholder": "ค้นหารายการบิลท์อิน...",
@@ -403,7 +450,7 @@
       "title": "ชื่อ",
       "slug": "สลัก",
       "price": "ราคา",
-  "currency": "สกุลเงิน",
+      "currency": "สกุลเงิน",
       "category": "หมวดหมู่",
       "content": "เนื้อหา (Markdown)"
     },
@@ -427,8 +474,7 @@
       "published": "เผยแพร่แล้ว",
       "draft": "ฉบับร่าง"
     }
-  }
-  ,
+  },
   "ProviderCategories": {
     "title": "หมวดหมู่",
     "subtitle": "จัดระเบียบรายการบิลท์อินของคุณ",
@@ -474,6 +520,34 @@
       "cancel": "ยกเลิก",
       "save": "บันทึก",
       "saving": "กำลังบันทึก..."
+    }
+  },
+  "ProviderEstimates": {
+    "title": "คำขอประเมินราคา",
+    "subtitle": "ดูและจัดการคำขอประเมินราคาที่เข้ามา",
+    "view": "ดูรายละเอียด",
+    "status": {
+      "new": "ใหม่",
+      "inProgress": "กำลังดำเนินการ",
+      "completed": "เสร็จสิ้น"
+    },
+    "filters": {
+      "search": "ค้นหา",
+      "searchPlaceholder": "ค้นหาคำขอประเมินราคา...",
+      "status": "สถานะ",
+      "all": "ทั้งหมด",
+      "new": "ใหม่",
+      "inProgress": "กำลังดำเนินการ",
+      "completed": "เสร็จสิ้น",
+      "sort": "จัดเรียง",
+      "sortNewest": "ใหม่ล่าสุด",
+      "sortOldest": "เก่าไปใหม่"
+    },
+    "messages": {
+      "fetchFailed": "ดึงข้อมูลไม่สำเร็จ"
+    },
+    "ui": {
+      "noData": "ยังไม่มีคำขอประเมินราคา"
     }
   }
 }
