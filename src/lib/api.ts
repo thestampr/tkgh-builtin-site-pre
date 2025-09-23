@@ -369,13 +369,13 @@ export async function getBuiltInItem(
  * 
  * @example
  * // Get all built-ins of provider
- * getBuiltInItemsByProvider('provider123');
+ * getBuiltInItemsByProvider("provider123");
  *
- * // Get all provider's built-ins in a specific category
- * getBuiltInItemsByProvider('provider123', 'category456');
+ * // Get all provider"s built-ins in a specific category
+ * getBuiltInItemsByProvider("provider123", "category456");
  * 
  * // Get all built-ins including unpublished (for provider themselves)
- * getBuiltInItemsByProvider('provider123', { includeUnpublished: true });
+ * getBuiltInItemsByProvider("provider123", { includeUnpublished: true });
  */
 export async function getBuiltInItemsByProvider(
   providerId: string,
@@ -704,17 +704,17 @@ export async function queryBuiltIns(params: BuiltInQueryParams & LocaleParams): 
 // legacy fetcher
 export async function fetchBuiltInsDirect(providerId: string): Promise<BuiltIn[]> {
   try {
-    return await prisma.builtIn.findMany({ where: { providerId }, include: { translations: true, favorites: true }, orderBy: { updatedAt: 'desc' } });
+    return await prisma.builtIn.findMany({ where: { providerId }, include: { translations: true, favorites: true }, orderBy: { updatedAt: "desc" } });
   } catch (e) {
-    console.error('Failed to load built-ins', e);
+    console.error("Failed to load built-ins", e);
     return [];
   }
 }
 export async function fetchCategories(providerId: string): Promise<_C[]> {
   try {
-    return await prisma.category.findMany({ where: { providerId, published: true }, orderBy: { name: 'asc' } });
+    return await prisma.category.findMany({ where: { providerId, published: true }, orderBy: { name: "asc" } });
   } catch (e) {
-    console.error('Failed to load categories', e);
+    console.error("Failed to load categories", e);
     return [];
   }
 }
@@ -815,7 +815,7 @@ export async function getProviderFormSubmissions(providerId: string): Promise<Es
     include: {
       category: true
      },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" }
   });
   // return rows.map(r => ({
   //   id: r.id,
