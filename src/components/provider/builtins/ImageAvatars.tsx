@@ -1,5 +1,6 @@
 "use client";
-import React from 'react';
+
+import React from "react";
 
 interface ImageAvatarsProps {
   coverImage?: string | null;
@@ -8,7 +9,7 @@ interface ImageAvatarsProps {
   className?: string;
 }
 
-export const ImageAvatars: React.FC<ImageAvatarsProps> = ({ coverImage, gallery, max = 3, className = '' }) => {
+export const ImageAvatars: React.FC<ImageAvatarsProps> = ({ coverImage, gallery, max = 3, className = "" }) => {
   const raw = [coverImage, ...(gallery || [])].filter(Boolean) as string[];
   const dedup = raw.filter((src, idx) => idx === 0 || src !== raw[0]);
   const shown = dedup.slice(0, max);

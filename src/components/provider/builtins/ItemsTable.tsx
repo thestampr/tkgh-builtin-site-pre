@@ -1,10 +1,9 @@
 "use client";
-import React from 'react';
-import { ImageAvatars } from './ImageAvatars';
-import { PublishToggleButton } from './PublishToggleButton';
-import type { BuiltIn } from '@prisma/client';
 
-type BuiltInDto = BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; galleryJson?: string | null };
+import React from "react";
+import { ImageAvatars } from "./ImageAvatars";
+import { PublishToggleButton } from "./PublishToggleButton";
+import type { BuiltInDto } from "./types";
 
 interface ItemsTableProps {
   items: BuiltInDto[];
@@ -19,15 +18,26 @@ interface ItemsTableProps {
   className?: string;
 }
 
-export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, defaultLocale, onEdit, onDelete, onTogglePublish, publishingId, loading = false, skeletonRows = 5, className = '' }) => {
+export const ItemsTable: React.FC<ItemsTableProps> = ({
+  items,
+  t,
+  defaultLocale,
+  onEdit,
+  onDelete,
+  onTogglePublish,
+  publishingId,
+  loading = false,
+  skeletonRows = 5,
+  className = ""
+}) => {
   return (
     <table className={`w-full text-sm border-separate border-spacing-y-2 ${className}`}>
       <thead>
         <tr className="text-left text-xs uppercase tracking-wide text-neutral-500">
           <th className="py-1 px-2">Imgs</th>
-          <th className="py-1 px-2">{t('fields.title')}</th>
+          <th className="py-1 px-2">{t("fields.title")}</th>
           <th className="py-1 px-2">Langs</th>
-          <th className="py-1 px-2">{t('status.published')}</th>
+          <th className="py-1 px-2">{t("status.published")}</th>
           <th className="py-1 px-2">Views</th>
           <th className="py-1 px-2">Favs</th>
           <th className="py-1 px-2">Updated</th>
@@ -48,7 +58,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, defaultLocale,
           </tr>
         ))}
         {items.map(it => {
-          const gallery = (it.galleryJson ? JSON.parse(it.galleryJson) : it.gallery) || [];
+          const gallery = (it.galleryJson ? JSON.parse(it.galleryJson as string) : it.gallery) || [];
           return (
             <tr key={it.id} className="bg-white/70 backdrop-blur hover:bg-white/90 transition rounded shadow [&_td]:py-2">
               <td className="px-2">
