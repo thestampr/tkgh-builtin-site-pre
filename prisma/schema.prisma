@@ -21,6 +21,18 @@ enum BuiltInStatus {
   ARCHIVED
 }
 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expires])
+}
+
 model User {
   id                String            @id @default(cuid())
   email             String            @unique @db.Citext
@@ -36,6 +48,7 @@ model User {
   profile           Profile?
   estimates         Estimate[]        @relation("SubmittingUser")
   receivedEstimates Estimate[]        @relation("CategoryProvider")
+  sessions          Session[]
 }
 
 model Profile {

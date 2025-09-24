@@ -6,12 +6,40 @@ import { revalidateTag } from "next/cache";
 import prisma from "../db/prisma";
 import { verifyPassword } from "./password";
 
-// Extend default user session/jwt types via module augmentation (add later if needed)
+const prismaAdapter = PrismaAdapter(prisma as PrismaClient);
+
+// Extend adapter methods to include profile relation
+// Note: set strategy: "jwt" in session options to avoid session table usage
+
+// @ts-ignore
+prismaAdapter.getUser = async (id: string) => {
+  return await prisma.user.findUnique({ 
+    where: { id },
+    include: { profile: true }
+  });
+};
+
+// @ts-ignore
+prismaAdapter.getSessionAndUser = async (sessionToken: string) => {
+  const sessionAndUser = await prisma.session.findUnique({
+    where: { sessionToken },
+    include: { 
+      user: { 
+        include: { 
+          profile: true 
+        } 
+      } 
+    }
+  });
+  return sessionAndUser;
+};
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma as PrismaClient), // We'll customize user model fields; minimal for now
+  adapter: prismaAdapter,
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60 // 24 hours
   },
   pages: {
     signIn: "/auth/login"
@@ -23,13 +51,22 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
+      // @ts-ignore
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+
+        const user = await prisma.user.findUnique({ 
+          where: { email: credentials.email }
+        });
         if (!user) return null;
+        
         const ok = await verifyPassword(credentials.password, user.passwordHash);
         if (!ok) return null;
-        return { id: user.id, email: user.email, role: user.role } as any;
+        return { 
+          id: user.id, 
+          email: user.email, 
+          role: user.role
+        };
       }
     })
   ],
@@ -44,6 +81,20 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.sub as string;
         session.user.role = token.role as typeof session.user.role;
+      }
+      // get profile 
+      const profile = await prisma.profile.findUnique({
+        where: { userId: session.user.id },
+        select: { 
+          id: true, 
+          displayName: true, 
+          published: true, 
+          coverImage: true, 
+          avatarUrl: true 
+        }
+      });
+      if (profile) {
+        session.user.profile = profile;
       }
       return session;
     },

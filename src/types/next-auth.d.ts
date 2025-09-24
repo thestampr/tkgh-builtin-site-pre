@@ -25,7 +25,11 @@ declare module "next-auth" {
         role: 'PUBLIC' | 'USER' | 'PROVIDER' | 'ADMIN';
         avatarUrl?: string | null;
         profile?: {
-            avatarUrl?: string | null;
+            id: string;
+            displayName: string | null;
+            published: boolean;
+            coverImage: string | null;
+            avatarUrl: string | null;
         } | null;
     }
 
