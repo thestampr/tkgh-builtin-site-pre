@@ -1,7 +1,7 @@
 import { BuiltInSwiper } from "@/components/BuiltInGrid";
 import { CategorySwiper } from "@/components/CategoryGrid";
 import { getBuiltInItemsByProvider, getCategoriesByProvider, getProviderPublicProfile } from "@/lib/api";
-import Hero from "@/src/components/Hero";
+import Hero from "@/components/Hero";
 import { Link2, Mail, Phone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";

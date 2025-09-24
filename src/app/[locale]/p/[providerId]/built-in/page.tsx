@@ -1,7 +1,7 @@
 import { BuiltInGrid } from "@/components/BuiltInGrid";
 import SearchFilterBar from "@/components/SearchFilterBar";
 import { queryBuiltIns, queryCategories, type BuiltInQueryParams } from "@/lib/api";
-import ProviderButton from "@/src/components/ProviderButton";
+import ProviderButton from "@/components/ProviderButton";
 import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";

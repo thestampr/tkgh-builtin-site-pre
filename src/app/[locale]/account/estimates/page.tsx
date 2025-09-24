@@ -1,4 +1,4 @@
-import EstimateManager from "@/src/components/provider/EstimateManager";
+import EstimateManager from "@/components/provider/EstimateManager";
 import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";

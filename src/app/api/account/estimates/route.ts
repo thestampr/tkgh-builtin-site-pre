@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth/options";
 import prisma from "@/lib/db/prisma";
-import { assertProvider } from "@/src/lib/auth/assertProvider";
+import { assertProvider } from "@/lib/auth/assertProvider";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 

@@ -4,7 +4,7 @@ import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/lib/useBuiltInsService";
-import { locales } from "@/src/i18n/navigation";
+import { locales } from "@/i18n/navigation";
 import type { BuiltIn, BuiltInStatus, Category } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";

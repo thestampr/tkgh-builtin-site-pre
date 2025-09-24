@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { queryCategories } from "@/lib/api";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import SearchFilterBar from "@/components/SearchFilterBar";
-import ProviderButton from "@/src/components/ProviderButton";
+import ProviderButton from "@/components/ProviderButton";
 
 export const dynamic = "force-dynamic";
 

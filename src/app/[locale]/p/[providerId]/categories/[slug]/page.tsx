@@ -1,7 +1,7 @@
 import { BuiltInGrid } from "@/components/BuiltInGrid";
 import Hero from "@/components/Hero";
 import { getBuiltInItemsByProvider, getCategoryByProvider } from "@/lib/api";
-import ProviderButton from "@/src/components/ProviderButton";
+import ProviderButton from "@/components/ProviderButton";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";

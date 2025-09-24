@@ -1,8 +1,8 @@
 "use client";
 
 import { LocaleTabs } from "@/components/LocaleTabs";
-import { locales } from "@/src/i18n/navigation";
-import { kebabcase } from "@/src/lib/formatting";
+import { locales } from "@/i18n/navigation";
+import { kebabcase } from "@/lib/formatting";
 import type {
   Category as _CT,
   CategoryTranslation as _CTT

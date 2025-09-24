@@ -1,7 +1,7 @@
 import BuiltInsManager from "@/components/provider/builtins/BuiltInsManager";
 import { authOptions } from "@/lib/auth/options";
 import prisma from "@/lib/db/prisma";
-import { defaultLocale } from "@/src/i18n/navigation";
+import { defaultLocale } from "@/i18n/navigation";
 import type { BuiltIn } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
