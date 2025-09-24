@@ -196,13 +196,14 @@ body {
 }
 
 .btn-danger {
-  background: transparent;
-  color: var(--danger);
-  border-color: rgba(220, 38, 38, 0.35);
+  background: var(--danger);;
+  color: white;
+  border-color: transparent;
 }
 
 .btn-danger:hover {
-  background: rgba(220, 38, 38, 0.18);
+  background-image: linear-gradient(var(--hover-tint), var(--hover-tint));
+  background-blend-mode: overlay;
 }
 
 /* btn-xs btn-sm btn-md btn-lg utilities */
