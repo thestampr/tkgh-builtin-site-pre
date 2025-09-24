@@ -473,6 +473,14 @@
       "unpublishing": "กำลังถอน...",
       "published": "เผยแพร่แล้ว",
       "draft": "ฉบับร่าง"
+    },
+    "confirm": {
+      "delete": {
+        "title": "ลบบิลท์อิน",
+        "message": "คุณแน่ใจหรือไม่ว่าต้องการลบบิลท์อินนี้?",
+        "confirmText": "ลบ",
+        "cancelText": "ยกเลิก"
+      }
     }
   },
   "ProviderCategories": {
@@ -511,6 +519,14 @@
     "publish": {
       "published": "เผยแพร่",
       "unpublished": "ยังไม่เผยแพร่"
+    },
+    "confirm": {
+      "delete": {
+        "title": "ลบหมวดหมู่",
+        "message": "คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?",
+        "confirmText": "ลบ",
+        "cancelText": "ยกเลิก"
+      }
     },
     "ui": {
       "removeImage": "ลบ",

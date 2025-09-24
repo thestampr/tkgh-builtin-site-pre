@@ -473,6 +473,14 @@
       "unpublishing": "Unpublishing...",
       "published": "Published",
       "draft": "Draft"
+    },
+    "confirm": {
+      "delete": {
+        "title": "Delete Built-in",
+        "message": "Are you sure you want to delete this built-in?",
+        "confirmText": "Delete",
+        "cancelText": "Cancel"
+      }
     }
   },
   "ProviderCategories": {
@@ -511,6 +519,14 @@
     "publish": {
       "published": "Published",
       "unpublished": "Unpublished"
+    },
+    "confirm": {
+      "delete": {
+        "title": "Delete Category",
+        "message": "Are you sure you want to delete this category?",
+        "confirmText": "Delete",
+        "cancelText": "Cancel"
+      }
     },
     "ui": {
       "removeImage": "Remove",
