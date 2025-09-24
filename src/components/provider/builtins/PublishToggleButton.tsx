@@ -1,4 +1,6 @@
 "use client";
+
+import clsx from 'clsx';
 import React from 'react';
 
 interface PublishToggleButtonProps {
@@ -15,7 +17,13 @@ export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status
     <button
       onClick={onClick}
       disabled={loading}
-      className={`px-2 py-0.5 rounded border text-[11px] transition disabled:opacity-50 ${isPub ? 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100' : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'} ${className}`}
+      className={clsx(
+        "px-2 py-0.5 rounded border text-[11px] transition disabled:opacity-50 cursor-pointer",
+        isPub 
+          ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100" 
+          : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100",
+        className
+      )}
       title={isPub ? t('publish.unpublish') : t('publish.publish')}
     >
       {loading ? (isPub ? t('publish.unpublishing') : t('publish.publishing')) : (isPub ? t('publish.published') : t('publish.draft'))}
