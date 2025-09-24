@@ -1,0 +1,14 @@
+.modal-panel:has(.modal-body > .app-bar[data-floating="true"]) {
+  /* padding: 0px 16px 16px 16px !important; */
+  padding: 0 0 16px 0;
+}
+
+.modal-panel > .modal-body > .app-bar[data-floating="true"] {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.modal-panel > .modal-body > .app-bar[data-floating="true"] + * {
+  margin-left: 16px;
+  margin-right: 16px;
+}
