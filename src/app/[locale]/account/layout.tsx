@@ -19,9 +19,8 @@ export default async function AccountLayout({
   if (!session?.user) redirect(`/${locale}/login`);
 
   const role = session.user.role;
-  const showSidebar = role === "PROVIDER";
 
-  const content = showSidebar
+  const content = role === "PROVIDER"
     ? (
       <div className="md:flex md:items-start gap-8 max-w-7xl mx-auto w-full px-6 py-10">
         <div className="md:w-56 flex-shrink-0 mb-6 md:mb-0">

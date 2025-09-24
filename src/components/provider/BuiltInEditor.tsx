@@ -50,7 +50,7 @@ export default function BuiltInEditor({ initialItem, locale }: BuiltInEditorProp
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-6 pb-10 space-y-10">
+        <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">Edit Built-in</h1>

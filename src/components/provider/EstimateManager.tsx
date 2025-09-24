@@ -13,7 +13,7 @@ export default function EstimateManager({ initialEstimates }: EstimateManagerPro
   const [estimates, setEstimates] = useState(initialEstimates);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 pb-10 space-y-10">
+    <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
       <main className="flex-1">
         <div className="mb-4">
           <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{t("title")}</h1>

@@ -266,7 +266,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   }, [runFetch]);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 pb-10 space-y-10">
+    <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>

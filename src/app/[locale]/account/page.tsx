@@ -118,7 +118,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
   };
 
   return (
-    <div className="px-6 pb-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-10">
+    <div className="md:px-6 pb-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-10">
       <div className="flex-1 space-y-10">
         <div>
           <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{t('titleProvider')}</h1>

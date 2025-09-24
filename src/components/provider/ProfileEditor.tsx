@@ -215,7 +215,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
   }
 
   return (
-    <div className={inline ? "space-y-8" : "max-w-5xl mx-auto px-6 pb-10 space-y-10"}>
+    <div className={inline ? "space-y-8" : "max-w-5xl mx-auto md:px-6 pb-10 space-y-10"}>
       <div>
         {!inline && <>
           <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
