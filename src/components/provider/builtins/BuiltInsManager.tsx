@@ -308,7 +308,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           />
         ) : (
           <TranslationForm
-            draft={translationDraft}
+            value={translationDraft}
             onChange={d => setTranslationDraft(d)}
             t={t}
             localeLabel="EN"

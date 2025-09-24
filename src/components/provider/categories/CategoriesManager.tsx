@@ -2,7 +2,7 @@
 
 import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
-import { locales } from "@/i18n/navigation";
+import { defaultLocale, locales } from "@/i18n/navigation";
 import { confirmModal } from "@/src/lib/confirm";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -164,8 +164,6 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     });
   }
 
-  const defaultLocale = activeLocale === (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th");
-
   function scheduleFetch() {
     if (fetchTimer.current) clearTimeout(fetchTimer.current);
     fetchTimer.current = setTimeout(runFetch, 400);
@@ -177,7 +175,10 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     if (publishedFilter !== "ALL") params.set("published", publishedFilter);
     if (sort) params.set("sort", sort);
     const res = await fetch(`/api/provider/categories?${params.toString()}`);
-    if (res.ok) { const j = await res.json(); setCategories(j.categories); }
+    if (res.ok) { 
+      const j = await res.json(); 
+      setCategories(j.categories); 
+    }
   }
 
   return (
@@ -206,6 +207,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           t={(k) => t(k)}
         />
       </div>
+
       <ItemsTable items={categories} t={(k) => t(k)} onEdit={openEdit} onDelete={remove} />
 
       <ModalShell
@@ -232,7 +234,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
       >
         <LocaleTabs className="justify-end" locales={locales} active={activeLocale} onChange={setActiveLocale} />
 
-        {defaultLocale ? (
+        {activeLocale === defaultLocale ? (
           <BaseLocaleForm
             draft={draft}
             onChange={(patch) => update(patch)}
@@ -244,11 +246,10 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
         ) : (
           <TranslationForm 
             value={translationDraft} 
-            onChange={(p) => setTranslationDraft(d => ({ ...d, ...p }))} 
+            onChange={d => setTranslationDraft(d)} 
             t={t} 
           />
         )}
-
       </ModalShell>
     </div>
   );
