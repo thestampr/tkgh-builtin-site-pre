@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React from "react";
 
 interface GalleryEditorProps {
   images: string[];
@@ -10,15 +10,15 @@ interface GalleryEditorProps {
   className?: string;
 }
 
-export const GalleryEditor: React.FC<GalleryEditorProps> = ({ images, onChange, onUpload, t, max = 12, className = '' }) => {
+export const GalleryEditor: React.FC<GalleryEditorProps> = ({ images, onChange, onUpload, t, max = 12, className = "" }) => {
   return (
     <div className={`space-y-1 ${className}`}>
-      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('imagesLabel')}</label>
+      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("imagesLabel")}</label>
       <div className="flex flex-wrap gap-2">
         {images.map((g, i) => (
           <div key={i} className="relative group">
-            <img src={g} className={`h-24 w-24 object-cover rounded border ${i === 0 ? 'ring-2 ring-primary/70 ring-offset-2 ring-offset-white' : ''}`} />
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/30 flex items-center justify-center gap-2 text-[10px] text-white transition">
+            <img src={g} className={`h-24 w-24 object-cover rounded border ${i === 0 ? "ring-2 ring-primary/70 ring-offset-2 ring-offset-white" : ""}`} />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/30 flex flex-col items-center justify-center gap-2 text-[10px] text-white transition">
               {i !== 0 && (
                 <button
                   type="button"
@@ -27,22 +27,22 @@ export const GalleryEditor: React.FC<GalleryEditorProps> = ({ images, onChange, 
                     const [img] = arr.splice(i, 1);
                     onChange([img, ...arr]);
                   }}
-                  className="px-2 py-1 bg-white/90 text-neutral-800 rounded"
+                  className="btn btn-secondary btn-xs !border-white/40"
                 >
-                  {t('makeCover')}
+                  {t("makeCover")}
                 </button>
               )}
               <button
                 type="button"
                 onClick={() => onChange(images.filter((_, idx) => idx !== i))}
-                className="px-2 py-1 bg-red-600 rounded"
+                className="btn btn-danger btn-xs"
               >
-                {t('remove')}
+                {t("remove")}
               </button>
             </div>
             {i === 0 && (
               <span className="absolute bottom-1 left-1 bg-black/60 text-[10px] px-1.5 py-0.5 rounded">
-                {t('coverBadge')}
+                {t("coverBadge")}
               </span>
             )}
           </div>
@@ -56,11 +56,11 @@ export const GalleryEditor: React.FC<GalleryEditorProps> = ({ images, onChange, 
               className="hidden"
               onChange={e => onUpload(e.target.files)}
             />
-            {t('upload')}
+            {t("upload")}
           </label>
         )}
       </div>
-      <p className="text-[10px] text-neutral-400">{t('imagesHint')}</p>
+      <p className="text-[10px] text-neutral-400">{t("imagesHint")}</p>
     </div>
   );
 };
