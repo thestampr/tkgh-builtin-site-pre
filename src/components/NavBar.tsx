@@ -145,7 +145,7 @@ export function NavBar() {
   const tNav = useTranslations("Nav");
   const tAccount = useTranslations("Account");
   const pathname = usePathname() || `/${locale}`;
-  
+
   // Fetch avatar separately because session may not include profile relation
   useEffect(() => {
     let cancelled = false;
@@ -207,19 +207,21 @@ export function NavBar() {
     setOpen(false);
   }, [pathname]);
 
-  // event handler
+  // Scroll and resize handlers
   const onScroll = useCallback(() => {
     if (!headerRef.current) return;
     const { pageYOffset, scrollY } = window;
     const isAtTop = pageYOffset < headerRef.current.offsetHeight;
     setAtTop(isAtTop);
   }, [headerRef.current]);
+
   const onSizeChange = useCallback(() => {
     const { innerWidth } = window;
     if (innerWidth > 768) {
       setOpen(false);
     }
   }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -231,9 +233,9 @@ export function NavBar() {
     }
   }, []);
 
-  function isPathActive(href: string): boolean {
+  const isPathActive = useCallback((href: string): boolean => {
     return href === pathname;
-  }
+  }, [pathname]);
 
   const Anchors = () => {
     const anchorClass = clsx(
