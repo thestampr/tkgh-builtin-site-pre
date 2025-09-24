@@ -79,7 +79,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
               <td className="px-2 text-xs text-neutral-500">{new Date(it.updatedAt).toLocaleDateString()}</td>
               <td className="px-2 text-right text-xs space-x-3">
                 <button onClick={() => onEdit(it)} className="text-neutral-600 hover:underline">Edit</button>
-                <button onClick={() => onDelete(it)} className="text-red-600 hover:underline">Delete</button>
+                <button onClick={() => onDelete(it)} className="text-danger hover:underline">Delete</button>
               </td>
             </tr>
           );

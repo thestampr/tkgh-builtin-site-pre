@@ -209,7 +209,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
               <td className="px-2 text-xs">{cat.published ? t("publish.published") : t("publish.unpublished")}</td>
               <td className="px-2 text-right text-xs space-x-3">
                 <button onClick={() => openEdit(cat)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>
-                <button onClick={() => remove(cat)} className="text-red-600 hover:underline cursor-pointer">Delete</button>
+                <button onClick={() => remove(cat)} className="text-danger hover:underline cursor-pointer">Delete</button>
               </td>
             </tr>
           ))}

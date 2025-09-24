@@ -240,7 +240,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
           {message && <span className="text-xs text-neutral-500">{message}</span>}
         </div>
         {!!errors.length && (
-          <ul className="text-xs text-red-600 space-y-1">
+          <ul className="text-xs text-danger space-y-1">
             {errors.map(e => <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>)}
           </ul>
         )}

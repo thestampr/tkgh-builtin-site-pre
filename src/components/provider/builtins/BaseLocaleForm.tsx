@@ -75,7 +75,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
               ))}
             </select>
           ) : (
-            <div className="text-[11px] text-red-600">Create a category first.</div>
+            <div className="text-[11px] text-danger">Create a category first.</div>
           )}
         </div>
       </div>

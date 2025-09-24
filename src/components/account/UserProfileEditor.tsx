@@ -81,7 +81,7 @@ export default function UserProfileEditor() {
           <h2 className="text-sm font-semibold tracking-wide text-neutral-700 uppercase">{t("title")}</h2>
           <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">Manage your basic profile information. Only email, password and profile image are editable.</p>
           {message && <div className="text-[11px] text-green-600">{message}</div>}
-          {error && <div className="text-[11px] text-red-600">{error}</div>}
+          {error && <div className="text-[11px] text-danger">{error}</div>}
         </section>
         <div className="md:col-span-2 space-y-12">
           <section className="space-y-4">
