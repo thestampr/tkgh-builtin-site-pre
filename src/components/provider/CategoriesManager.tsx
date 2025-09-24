@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
-import type { 
-  Category as _CT, 
+import { kebabcase } from "@/src/lib/formatting";
+import type {
+  Category as _CT,
   CategoryTranslation as _CTT
 } from "@prisma/client";
+import clsx from "clsx";
+import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 type Category = _CT & { translations?: _CTT[], languages?: string };
 
@@ -29,17 +32,9 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const slugManuallyEdited = useRef(false);
   const fetchTimer = useRef<any>(null);
 
-  function slugify(str: string) {
-    return str
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9ก-๙\s-]/g, "")
-      .replace(/\s+/g, "-");
-  }
-
   useEffect(() => {
     if (modalOpen && !editing && !slugManuallyEdited.current) {
-      setDraft((d: any) => ({ ...d, slug: slugify(d.name || "") }));
+      setDraft((d: any) => ({ ...d, slug: kebabcase(d.name || "") }));
     }
   }, [draft.name, modalOpen, editing]);
 
@@ -131,6 +126,20 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     if (res.ok) { const j = await res.json(); setCategories(j.categories); }
   }
 
+  const onCoverImageChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/provider/categories/upload", { method: "POST", body: fd });
+    if (res.ok) {
+      const j = await res.json();
+      updateDraft({ coverImage: j.url });
+    } else {
+      setMessage("Upload failed");
+    }
+  }, []);
+
   return (
     <div className="max-w-5xl mx-auto px-6 pb-10 space-y-10">
       <div className="flex flex-col gap-4">
@@ -140,7 +149,10 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             <p className="text-sm text-neutral-500 mt-1">{t("subtitle")}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <button onClick={openNew} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800 transition cursor-pointer">{t("new")}</button>
+            <button onClick={openNew} className="btn btn-secondary">
+              <Plus size={14} />
+              {t("new")}
+            </button>
             {message && <span className="text-xs text-neutral-500">{message}</span>}
           </div>
         </div>
@@ -207,18 +219,22 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           )}
         </tbody>
       </table>
+
       {modalOpen && (
         <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => !pending && setModalOpen(false)} />
           <div className="relative z-10 w-full max-w-xl bg-white rounded-lg shadow-xl border border-neutral-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
               <h2 className="text-lg font-semibold">{editing ? t("editTitle") : t("new")}</h2>
-              <button onClick={() => !pending && setModalOpen(false)} className="text-neutral-400 hover:text-neutral-600">✕</button>
+              <button onClick={() => !pending && setModalOpen(false)} className="btn btn-ghost !px-3 !border-0">✕</button>
             </div>
             <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto text-sm">
-              <div className="flex gap-2 mb-2 text-xs">
+              <div className="flex gap-2 mb-2 text-xs justify-end">
                 {[(process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"), "en"].map(loc => (
-                  <button key={loc} onClick={() => setActiveLocale(loc)} className={`px-3 py-1 rounded border ${activeLocale === loc ? "bg-neutral-900 text-white border-neutral-900" : "border-neutral-300 text-neutral-600 bg-white"}`}>{loc}</button>
+                  <button key={loc} onClick={() => setActiveLocale(loc)} className={clsx(
+                    "btn btn-sm",
+                    activeLocale === loc ? "btn-secondary" : "btn-ghost"
+                  )}>{loc}</button>
                 ))}
               </div>
               {defaultLocale ? (
@@ -252,9 +268,6 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
                 </div>
               )}
               {defaultLocale && (
-                <></>
-              )}
-              {defaultLocale && (
                 <div className="flex items-center gap-3">
                   <label className="inline-flex items-center gap-2 text-xs text-neutral-600">
                     <input type="checkbox" checked={!!draft.published} onChange={e => updateDraft({ published: e.target.checked })} /> {t("publish.published")}
@@ -263,22 +276,20 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
               )}
               {defaultLocale && (
                 <div className="space-y-2">
-                  <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.coverImage")}</label>
-                  {draft.coverImage ? (
-                    <img src={draft.coverImage} alt="cover" className="h-40 w-full object-cover rounded border border-neutral-200" />
-                  ) : (
-                    <div className="h-40 w-full rounded border border-dashed border-neutral-300 flex items-center justify-center text-[11px] text-neutral-400 bg-neutral-50">
-                      <span>{t("ui.noImage")}</span>
-                    </div>
-                  )}
+                  <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image">
+                    <span className="text-[11px] uppercase tracking-wide">{t("fields.coverImage")}</span>
+                    <input id="cover-image" type="file" accept="image/*" onChange={onCoverImageChange} className="hidden" />
+                    <span className="cursor-pointer">
+                      {draft.coverImage ? (
+                        <img src={draft.coverImage} alt="cover" className="h-40 w-full object-cover rounded border border-neutral-200" />
+                      ) : (
+                        <div className="h-40 w-full rounded border border-dashed border-neutral-300 flex items-center justify-center text-[11px] text-neutral-400 bg-neutral-50">
+                          <span>{t("ui.noImage")}</span>
+                        </div>
+                      )}
+                    </span>
+                  </label>
                   <div className="flex items-center gap-2">
-                    <input type="file" accept="image/*" onChange={async e => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const fd = new FormData(); fd.append("file", file);
-                      const res = await fetch("/api/provider/categories/upload", { method: "POST", body: fd });
-                      if (res.ok) { const j = await res.json(); updateDraft({ coverImage: j.url }); } else { setMessage("Upload failed"); }
-                    }} className="text-xs" />
                     {draft.coverImage && <button onClick={() => updateDraft({ coverImage: "" })} className="text-xs text-red-500 hover:underline">{t("ui.removeImage")}</button>}
                   </div>
                 </div>
@@ -299,8 +310,8 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             <div className="px-6 py-4 border-t border-neutral-100 flex items-center justify-between bg-neutral-50/60">
               <div className="text-xs text-neutral-500">{message}</div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setModalOpen(false)} className="text-sm px-4 py-2 rounded border border-neutral-300 hover:bg-white">{t("ui.cancel")}</button>
-                <button disabled={pending} onClick={saveCategory} className="text-sm px-5 py-2 rounded bg-neutral-900 text-white disabled:opacity-50">{pending ? t("ui.saving") : t("ui.save")}</button>
+                <button onClick={() => setModalOpen(false)} className="btn btn-ghost">{t("ui.cancel")}</button>
+                <button onClick={saveCategory} disabled={pending} className="btn btn-secondary">{pending ? t("ui.saving") : t("ui.save")}</button>
               </div>
             </div>
           </div>

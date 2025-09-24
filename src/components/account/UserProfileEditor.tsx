@@ -53,7 +53,7 @@ export default function UserProfileEditor() {
     startTransition(async () => {
       const res = await fetch("/api/account/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: newEmail }) });
       if (res.ok) { setEmail(newEmail); setMessage(t("emailUpdated")); } else {
-        const j = await res.json().catch(()=>({}));
+        const j = await res.json().catch(() => ({}));
         setError(j.error === "EMAIL_IN_USE" ? t("emailInUse") : t("invalidEmail"));
       }
     });
@@ -66,7 +66,7 @@ export default function UserProfileEditor() {
     startTransition(async () => {
       const res = await fetch("/api/account/profile/password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ currentPassword, newPassword }) });
       if (res.ok) { setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); setMessage(t("passwordUpdated")); } else {
-        const j = await res.json().catch(()=>({}));
+        const j = await res.json().catch(() => ({}));
         setError(j.error === "INVALID_CURRENT" ? "Current password incorrect" : t("weakPassword"));
       }
     });
@@ -101,8 +101,8 @@ export default function UserProfileEditor() {
               <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("email")}</label>
               <input disabled value={email} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm bg-neutral-50" />
               <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("newEmail")}</label>
-              <input value={newEmail} onChange={e=>setNewEmail(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
-              <button onClick={saveEmail} disabled={isPending} className="px-4 py-2 rounded-md bg-neutral-900 text-white text-xs disabled:opacity-50">{isPending ? t("updating") : t("saveEmail")}</button>
+              <input value={newEmail} onChange={e => setNewEmail(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+              <button onClick={saveEmail} disabled={isPending} className="btn btn-secondary">{isPending ? t("updating") : t("saveEmail")}</button>
             </div>
           </section>
           <section className="space-y-4">
@@ -110,18 +110,18 @@ export default function UserProfileEditor() {
             <div className="grid gap-3 md:grid-cols-2">
               <div className="space-y-1 md:col-span-2">
                 <label className="text-[11px] uppercase tracking-wide text-neutral-500">{t("currentPassword")}</label>
-                <input type="password" value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+                <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] uppercase tracking-wide text-neutral-500">{t("newPassword")}</label>
-                <input type="password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] uppercase tracking-wide text-neutral-500">{t("confirmPassword")}</label>
-                <input type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
               </div>
               <div className="md:col-span-2">
-                <button onClick={updatePassword} disabled={isPending} className="px-4 py-2 rounded-md bg-[#8a6a40] text-white text-xs disabled:opacity-50">{isPending ? t("updating") : t("updatePassword")}</button>
+                <button onClick={updatePassword} disabled={isPending} className="btn btn-primary">{isPending ? t("updating") : t("updatePassword")}</button>
               </div>
             </div>
           </section>

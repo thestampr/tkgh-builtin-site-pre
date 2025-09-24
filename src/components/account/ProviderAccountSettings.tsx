@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState, useTransition } from "react";
 
 export default function ProviderAccountSettings() {
   const t = useTranslations("Account.ui");
@@ -68,7 +68,7 @@ export default function ProviderAccountSettings() {
             <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("userProfile.newEmail")}</label>
             <input value={newEmail} onChange={e => setNewEmail(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
             <div>
-              <button onClick={saveEmail} disabled={isPending} className="px-4 py-2 rounded-md bg-neutral-900 text-white text-xs disabled:opacity-50">{isPending ? t("userProfile.updating") : t("userProfile.saveEmail")}</button>
+              <button onClick={saveEmail} disabled={isPending} className="btn btn-secondary">{isPending ? t("userProfile.updating") : t("userProfile.saveEmail")}</button>
             </div>
           </div>
         </div>
@@ -93,7 +93,9 @@ export default function ProviderAccountSettings() {
             <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
           </div>
           <div className="md:col-span-2">
-            <button onClick={updatePassword} disabled={isPending} className="px-4 py-2 rounded-md bg-[#8a6a40] text-white text-xs disabled:opacity-50">{isPending ? t("userProfile.updating") : t("userProfile.updatePassword")}</button>
+            <button onClick={updatePassword} disabled={isPending} className="btn btn-primary">
+              {isPending ? t("userProfile.updating") : t("userProfile.updatePassword")}
+            </button>
           </div>
         </div>
       </section>

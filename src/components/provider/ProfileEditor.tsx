@@ -1,6 +1,7 @@
 "use client";
 
 import { Profile, ProfileTranslation } from "@prisma/client";
+import clsx from "clsx";
 import * as Lucide from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
@@ -221,22 +222,28 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
           <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
         </>}
       </div>
-      <div className="flex items-center gap-3 text-sm flex-wrap">
-        <button onClick={activeLocale === defaultLocale ? saveBase : saveTranslation} disabled={saving} className="px-4 py-2 rounded-md bg-primary text-white disabled:opacity-50">Save</button>
-        <button type="button" onClick={cancel} className="px-4 py-2 rounded-md border border-neutral-300 text-neutral-700 bg-white">Cancel</button>
-        <div className="flex items-center gap-2">
-          {[defaultLocale, "en"].map(loc => (
-            <button key={loc} type="button" onClick={() => setActiveLocale(loc)} className={`px-3 py-1 rounded text-xs border ${activeLocale === loc ? "bg-neutral-900 text-white border-neutral-900" : "border-neutral-300 text-neutral-600 bg-white"}`}>{loc.toUpperCase()}</button>
-          ))}
+      <div className={clsx(
+        "grid ",
+        inline ? "md:grid-cols-2 gap-10" : "max-w-2xl gap-10"
+      )}>
+        <div className="flex items-center gap-2 text-sm flex-wrap">
+          <button onClick={activeLocale === defaultLocale ? saveBase : saveTranslation} disabled={saving} className="btn btn-primary">Save</button>
+          <button type="button" onClick={cancel} className="btn btn-ghost">Cancel</button>
+          <div className="flex items-center gap-2 ml-auto">
+            {[defaultLocale, "en"].map(loc => (
+              <button key={loc} onClick={() => setActiveLocale(loc)} className={clsx(
+                "btn btn-sm",
+                activeLocale === loc ? "btn-secondary" : "btn-ghost"
+              )}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {message && <span className="text-xs text-neutral-500">{message}</span>}
         </div>
-        {message && <span className="text-xs text-neutral-500">{message}</span>}
-      </div>
-      {!!errors.length && (
-        <ul className="text-xs text-red-600 space-y-1">
-          {errors.map(e => <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>)}
-        </ul>
-      )}
-      <div className={inline ? "grid md:grid-cols-2 gap-10" : "max-w-2xl gap-10"}>
+        {!!errors.length && (
+          <ul className="text-xs text-red-600 space-y-1">
+            {errors.map(e => <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>)}
+          </ul>
+        )}
         <form onSubmit={e => { e.preventDefault(); activeLocale === defaultLocale ? saveBase() : saveTranslation(); }} className="space-y-6">
           {activeLocale !== defaultLocale && (
             <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">Editing translation for locale <strong>{activeLocale}</strong></div>
@@ -361,7 +368,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             )}
             <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
               <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex items-center justify-between">{t("contactChannels")}
-                <button type="button" onClick={addChannel} className="text-[11px] px-2 py-1 rounded bg-secondary text-white">{t("addChannel")}</button>
+                <button type="button" onClick={addChannel} className="btn btn-secondary btn-xs">{t("addChannel")}</button>
               </h3>
               <fieldset className="space-y-3">
                 <div className="space-y-3">
@@ -374,7 +381,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                         <option value="line">Line</option>
                       </select>
                       <input value={ch.value} placeholder="Value" onChange={e => updateChannel(i, "value", e.target.value)} className="flex-1 rounded border border-neutral-300 px-2 py-1 text-xs" />
-                      <button type="button" onClick={() => removeChannel(i)} className="text-[10px] px-2 py-1 rounded border border-neutral-300 hover:bg-neutral-100">✕</button>
+                      <button type="button" onClick={() => removeChannel(i)} className="btn btn-ghost btn-xs">✕</button>
                     </div>
                   ))}
                   {!contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
@@ -383,7 +390,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             </section>
           </div>
           <div className="flex items-center gap-3 pt-2">
-            <button type="submit" disabled={saving} className="px-4 py-2 rounded-md bg-primary text-white disabled:opacity-50">{loadingTranslation && activeLocale !== defaultLocale ? "..." : "Save"}</button>
+            <button type="submit" disabled={saving} className="btn btn-primary btn-md">{loadingTranslation && activeLocale !== defaultLocale ? "..." : "Save"}</button>
             {activeLocale !== defaultLocale && <button type="button" onClick={() => { setTrDisplayName(""); setTrBio(""); setCtaLabelTr(""); }} className="text-xs underline text-neutral-500">Reset EN</button>}
           </div>
         </form>

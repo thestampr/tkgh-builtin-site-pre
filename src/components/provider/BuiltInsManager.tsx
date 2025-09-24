@@ -11,6 +11,7 @@ import { ItemsTable } from "./builtins/ItemsTable";
 import { LocaleTabs } from "./builtins/LocaleTabs";
 import { ModalShell } from "./builtins/ModalShell";
 import { TranslationForm } from "./builtins/TranslationForm";
+import { Plus } from "lucide-react";
 
 type UIBuiltIn = Omit<BuiltIn, 'galleryJson'> & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; translations?: BuiltInTranslation[] };
 type TableItem = BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; galleryJson?: string | null };
@@ -33,39 +34,6 @@ interface DraftShape {
 
 export default function BuiltInsManager({ initialItems, categories }: BuiltInsManagerProps) {
   const t = useTranslations("ProviderBuiltIns");
-  const parseGallery = (val: unknown): string[] => {
-    if (!val) return [];
-    if (Array.isArray(val)) return val.filter((x): x is string => typeof x === 'string');
-    if (typeof val === 'string') {
-      try { const arr = JSON.parse(val); return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []; } catch { return []; }
-    }
-    return [];
-  };
-  const normalizeItem = (i: InitialItem): UIBuiltIn => {
-    const gallery = parseGallery((i as any).gallery) || parseGallery(i.galleryJson);
-    const { galleryJson: _drop, ...rest } = i as any;
-    return {
-      ...rest,
-      languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
-      favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
-      gallery,
-    } as UIBuiltIn;
-  };
-  const [items, setItems] = useState<TableItem[]>(() => initialItems.map(i => ({
-    ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
-    favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
-    gallery: parseGallery((i as any).gallery) || parseGallery(i.galleryJson),
-    galleryJson: null,
-  })));
-
-  const normalizeService = (i: BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null }): TableItem => ({
-    ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
-    favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
-    gallery: Array.isArray(i.gallery) ? i.gallery : [],
-    galleryJson: null,
-  });
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<TableItem | null>(null);
   const emptyDraft: DraftShape = { title: "", slug: "", price: null, currency: null, categoryId: null, content: null, gallery: [] };
@@ -84,6 +52,30 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
 
   const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService, state: serviceState } = useBuiltInsService();
 
+
+  const parseGallery = (val: unknown): string[] => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.filter((x): x is string => typeof x === 'string');
+    if (typeof val === 'string') {
+      try { const arr = JSON.parse(val); return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []; } catch { return []; }
+    }
+    return [];
+  };
+  const [items, setItems] = useState<TableItem[]>(() => initialItems.map(i => ({
+    ...(i as BuiltIn),
+    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
+    favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
+    gallery: parseGallery((i as any).gallery) || parseGallery(i.galleryJson),
+    galleryJson: null,
+  })));
+  const normalizeService = (i: BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null }): TableItem => ({
+    ...(i as BuiltIn),
+    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
+    favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
+    gallery: Array.isArray(i.gallery) ? i.gallery : [],
+    galleryJson: null,
+  });
+
   function openNew() {
     const firstCat = categories[0]?.id || "";
     setEditing(null);
@@ -92,6 +84,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     setActiveLocale(defaultLocale);
     setModalOpen(true);
   }
+
   async function openEdit(item: TableItem) {
     setEditing(item);
     const gallery = (item.gallery && Array.isArray(item.gallery)) ? item.gallery : (item.galleryJson ? JSON.parse(item.galleryJson as string) : []);
@@ -113,7 +106,9 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
       if (en) setTranslationDraft({ title: en.title || "", content: en.content || "", price: en.price ?? null, currency: en.currency || "", published: !!en.published });
     } catch {/* ignore */ }
   }
-  function update(patch: Partial<DraftShape>) { setDraft((d) => ({ ...d, ...patch })); }
+  function update(patch: Partial<DraftShape>) { 
+    setDraft((d) => ({ ...d, ...patch })); 
+  }
 
   async function uploadImages(files: FileList | null) {
     if (!files || !files.length) return;
@@ -207,7 +202,10 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             <p className="text-sm text-neutral-500 mt-1">{t("subtitle")}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <button onClick={openNew} className="px-4 py-2 rounded bg-neutral-900 text-white hover:bg-neutral-800 transition">{t("new")}</button>
+            <button onClick={openNew} className="btn btn-secondary">
+              <Plus size={14} />
+              {t("new")}
+            </button>
             {message && <span className="text-xs text-neutral-500">{message}</span>}
           </div>
         </div>
@@ -242,8 +240,8 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           <>
             <div className="text-xs text-neutral-500">{message}</div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setModalOpen(false)} className="text-sm px-4 py-2 rounded border border-neutral-300 hover:bg-white">{t("cancel") || "Cancel"}</button>
-              <button disabled={pending} onClick={save} className="text-sm px-5 py-2 rounded bg-neutral-900 text-white disabled:opacity-50">{pending ? (t("saving") || "Saving...") : (t("save") || "Save")}</button>
+              <button onClick={() => setModalOpen(false)} className="btn btn-ghost">{t("cancel") || "Cancel"}</button>
+              <button disabled={pending} onClick={save} className="btn btn-secondary">{pending ? (t("saving") || "Saving...") : (t("save") || "Save")}</button>
             </div>
           </>
         )}
