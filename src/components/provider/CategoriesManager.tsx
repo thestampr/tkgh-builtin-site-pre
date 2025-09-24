@@ -1,5 +1,6 @@
 "use client";
 
+import { LocaleTabs } from "@/components/LocaleTabs";
 import { locales } from "@/src/i18n/navigation";
 import { kebabcase } from "@/src/lib/formatting";
 import type {
@@ -9,7 +10,6 @@ import type {
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { LocaleTabs } from "./builtins/LocaleTabs";
 
 type Category = _CT & { translations?: _CTT[], languages?: string };
 

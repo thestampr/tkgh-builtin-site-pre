@@ -1,6 +1,7 @@
-import BuiltInsManager from "@/components/provider/BuiltInsManager";
+import BuiltInsManager from "@/components/provider/builtins/BuiltInsManager";
 import { authOptions } from "@/lib/auth/options";
 import prisma from "@/lib/db/prisma";
+import { defaultLocale } from "@/src/i18n/navigation";
 import type { BuiltIn } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -20,8 +21,9 @@ async function fetchBuiltIns(providerId: string): Promise<BuiltIn[]> {
       }, 
       include: { 
         translations: true, 
-        favorites: true 
-      }, orderBy: { 
+        favorites: true
+      }, 
+      orderBy: { 
         updatedAt: "desc" 
       } 
     });
@@ -33,7 +35,15 @@ async function fetchBuiltIns(providerId: string): Promise<BuiltIn[]> {
 
 async function fetchCategories(providerId: string) {
   try {
-    return await prisma.category.findMany({ where: { providerId, published: true }, orderBy: { name: "asc" } });
+    return await prisma.category.findMany({ 
+      where: { 
+        providerId, 
+        published: true 
+      }, 
+      orderBy: { 
+        createdAt: "asc" 
+      } 
+    });
   } catch (e) {
     console.error("Failed to load categories", e);
     return [];
@@ -67,11 +77,15 @@ export default async function BuiltInsManagerPage({ params }: { params: Promise<
       } 
     });
   }
+
   const grouped = translations.reduce((acc: Record<string, string[]>, t: BuiltInTranslation) => { 
     (acc[t.builtInId] ||= []).push(t.locale); 
     return acc; 
   }, {});
-  const base = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
-  const items = itemsRaw.map(i => ({ ...i, languages: [base, ...(grouped[i.id] || [])].join(", ") }));
+  const items = itemsRaw.map(i => ({ 
+    ...i, 
+    languages: [defaultLocale, ...(grouped[i.id] || [])].join(", "),
+    galleryJson: i.galleryJson
+  }));
   return <BuiltInsManager initialItems={items} categories={categories} />;
 }

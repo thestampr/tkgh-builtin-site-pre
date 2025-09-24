@@ -1,22 +1,19 @@
 "use client";
 
+import { LocaleTabs } from "@/components/LocaleTabs";
+import { ModalShell } from "@/components/ModalShell";
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/lib/useBuiltInsService";
 import { locales } from "@/src/i18n/navigation";
-import type { BuiltIn, BuiltInStatus, BuiltInTranslation, Category } from "@prisma/client";
+import type { BuiltIn, BuiltInStatus, Category } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { BaseLocaleForm } from "./builtins/BaseLocaleForm";
-import { FilterBar } from "./builtins/FilterBar";
-import { ItemsTable } from "./builtins/ItemsTable";
-import { LocaleTabs } from "./builtins/LocaleTabs";
-import { ModalShell } from "./builtins/ModalShell";
-import { TranslationForm } from "./builtins/TranslationForm";
-
-type UIBuiltIn = Omit<BuiltIn, 'galleryJson'> & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; translations?: BuiltInTranslation[] };
-type TableItem = BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; galleryJson?: string | null };
-type InitialItem = BuiltIn & { languages?: string | null; favoritesCount?: number | null; galleryJson?: unknown; translations?: BuiltInTranslation[] };
+import { BaseLocaleForm } from "./BaseLocaleForm";
+import { FilterBar } from "./FilterBar";
+import { ItemsTable } from "./ItemsTable";
+import { TranslationForm } from "./TranslationForm";
+import type { BuiltInDto, InitialItem } from "./types";
 
 interface BuiltInsManagerProps {
   initialItems: InitialItem[];
@@ -36,7 +33,7 @@ interface DraftShape {
 export default function BuiltInsManager({ initialItems, categories }: BuiltInsManagerProps) {
   const t = useTranslations("ProviderBuiltIns");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<TableItem | null>(null);
+  const [editing, setEditing] = useState<BuiltInDto | null>(null);
   const emptyDraft: DraftShape = { title: "", slug: "", price: null, currency: null, categoryId: null, content: null, gallery: [] };
   const [draft, setDraft] = useState<DraftShape>(emptyDraft);
   const [translationDraft, setTranslationDraft] = useState<{ title?: string; content?: string; price?: number | null; currency?: string | null; published?: boolean }>({});
@@ -56,23 +53,23 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
 
   const parseGallery = (val: unknown): string[] => {
     if (!val) return [];
-    if (Array.isArray(val)) return val.filter((x): x is string => typeof x === 'string');
-    if (typeof val === 'string') {
-      try { const arr = JSON.parse(val); return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : []; } catch { return []; }
+    if (Array.isArray(val)) return val.filter((x): x is string => typeof x === "string");
+    if (typeof val === "string") {
+      try { const arr = JSON.parse(val); return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === "string") : []; } catch { return []; }
     }
     return [];
   };
-  const [items, setItems] = useState<TableItem[]>(() => initialItems.map(i => ({
+  const [items, setItems] = useState<BuiltInDto[]>(() => initialItems.map(i => ({
     ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
-    favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
+    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
+    favoritesCount: typeof i.favoritesCount === "number" ? i.favoritesCount : 0,
     gallery: parseGallery(i.galleryJson),
     galleryJson: null,
   })));
-  const normalizeService = (i: BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null }): TableItem => ({
+  const normalizeService = (i: BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null }): BuiltInDto => ({
     ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
-    favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
+    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
+    favoritesCount: typeof i.favoritesCount === "number" ? i.favoritesCount : 0,
     gallery: Array.isArray(i.gallery) ? i.gallery : [],
     galleryJson: null,
   });
@@ -86,7 +83,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     setModalOpen(true);
   }
 
-  async function openEdit(item: TableItem) {
+  async function openEdit(item: BuiltInDto) {
     setEditing(item);
     const gallery = (item.gallery && Array.isArray(item.gallery)) ? item.gallery : (item.galleryJson ? JSON.parse(item.galleryJson as string) : []);
     setDraft({
@@ -107,8 +104,8 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
       if (en) setTranslationDraft({ title: en.title || "", content: en.content || "", price: en.price ?? null, currency: en.currency || "", published: !!en.published });
     } catch {/* ignore */ }
   }
-  function update(patch: Partial<DraftShape>) { 
-    setDraft((d) => ({ ...d, ...patch })); 
+  function update(patch: Partial<DraftShape>) {
+    setDraft((d) => ({ ...d, ...patch }));
   }
 
   async function uploadImages(files: FileList | null) {
@@ -127,11 +124,11 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     startTransition(async () => {
       setMessage(null);
       const derivedCover = draft.gallery[0] || null;
-      let currentItem: TableItem | null = null;
+      let currentItem: BuiltInDto | null = null;
       try {
         if (!editing) {
-          const created = await create({ 
-            title: draft.title, 
+          const created = await create({
+            title: draft.title,
             slug: draft.slug || kebabcase(draft.title),
             price: draft.price ? Number(draft.price) : null,
             currency: draft.currency || null,
@@ -141,35 +138,35 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           });
           currentItem = normalizeService(created.item);
           if (hasTranslationInput) {
-            const trans = await upsertTranslation(currentItem.id, "en", { 
-              title: translationDraft.title || null, 
-              content: translationDraft.content || null, 
-              price: translationDraft.price ?? null, 
-              currency: translationDraft.currency || null, 
-              published: !!translationDraft.published 
+            const trans = await upsertTranslation(currentItem.id, "en", {
+              title: translationDraft.title || null,
+              content: translationDraft.content || null,
+              price: translationDraft.price ?? null,
+              currency: translationDraft.currency || null,
+              published: !!translationDraft.published
             });
             currentItem = normalizeService(trans.item);
           }
           setItems([currentItem, ...items]);
         } else {
-          const updated = await updateItem(editing.id, { 
-            direct: true, 
-            title: draft.title, 
-            content: draft.content || null, 
-            price: draft.price ? Number(draft.price) : null, 
-            currency: draft.currency || null, 
-            categoryId: draft.categoryId || null, 
-            coverImage: derivedCover, 
-            gallery: draft.gallery 
+          const updated = await updateItem(editing.id, {
+            direct: true,
+            title: draft.title,
+            content: draft.content || null,
+            price: draft.price ? Number(draft.price) : null,
+            currency: draft.currency || null,
+            categoryId: draft.categoryId || null,
+            coverImage: derivedCover,
+            gallery: draft.gallery
           });
           currentItem = normalizeService(updated.item);
           if (hasTranslationInput) {
-            const trans = await upsertTranslation(editing.id, "en", { 
-              title: translationDraft.title || null, 
-              content: translationDraft.content || null, 
-              price: translationDraft.price ?? null, 
-              currency: translationDraft.currency || null, 
-              published: !!translationDraft.published 
+            const trans = await upsertTranslation(editing.id, "en", {
+              title: translationDraft.title || null,
+              content: translationDraft.content || null,
+              price: translationDraft.price ?? null,
+              currency: translationDraft.currency || null,
+              published: !!translationDraft.published
             });
             currentItem = normalizeService(trans.item);
           }
@@ -182,16 +179,16 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     });
   }
 
-  async function remove(item: TableItem) { if (!confirm("Delete item?")) return; startTransition(async () => { try { await removeItem(item.id); setItems(items.filter(i => i.id !== item.id)); } catch { /* ignore */ } }); }
+  async function remove(item: BuiltInDto) { if (!confirm("Delete item?")) return; startTransition(async () => { try { await removeItem(item.id); setItems(items.filter(i => i.id !== item.id)); } catch { /* ignore */ } }); }
 
-  async function togglePublish(it: TableItem) {
+  async function togglePublish(it: BuiltInDto) {
     if (publishingId) return;
     setPublishingId(it.id);
     const action = it.status === "PUBLISHED" ? "unpublish" : "publish";
     try {
       const j = await publishToggle(it.id, action);
       setItems(items.map(x => x.id === it.id ? { ...x, status: j.item.status, favoritesCount: (j.item).favoritesCount ?? x.favoritesCount } : x));
-    } catch {/* ignore */ } 
+    } catch {/* ignore */ }
     finally { setPublishingId(null); }
   }
 
@@ -243,7 +240,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           query={query}
           onQueryChange={v => { setQuery(v); scheduleFetch(); }}
           statusFilter={statusFilter}
-          onStatusChange={v => { setStatusFilter(v as BuiltInStatus | 'ALL'); scheduleFetch(); }}
+          onStatusChange={v => { setStatusFilter(v as BuiltInStatus | "ALL"); scheduleFetch(); }}
           categoryFilter={categoryFilter}
           onCategoryChange={v => { setCategoryFilter(v); scheduleFetch(); }}
           sort={sort}
@@ -252,6 +249,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           t={t}
         />
       </div>
+
       <ItemsTable
         items={items}
         t={t}
@@ -262,6 +260,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
         publishingId={publishingId}
         loading={serviceState.loading}
       />
+
       <ModalShell
         open={modalOpen}
         title={editing ? (t("editTitle") || "Edit Built-in") : (t("new"))}
@@ -277,7 +276,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
         )}
       >
         <LocaleTabs className="justify-end" locales={locales} active={activeLocale} onChange={setActiveLocale} />
-        
+
         {activeLocale === defaultLocale ? (
           <BaseLocaleForm
             draft={draft}
