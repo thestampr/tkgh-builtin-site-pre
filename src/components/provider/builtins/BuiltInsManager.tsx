@@ -5,6 +5,7 @@ import { ModalShell } from "@/components/ModalShell";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/lib/useBuiltInsService";
+import { confirmModal } from "@/src/lib/confirm";
 import type { BuiltIn, BuiltInStatus, Category } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -20,7 +21,6 @@ import type {
   TranslationDraft,
   sortKind
 } from "./types";
-import { confirmModal } from "@/src/lib/confirm";
 
 interface BuiltInsManagerProps {
   initialItems: InitialItem[];

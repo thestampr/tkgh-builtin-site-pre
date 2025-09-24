@@ -3,16 +3,15 @@
 import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
 import { locales } from "@/i18n/navigation";
-import { kebabcase } from "@/lib/formatting";
+import { confirmModal } from "@/src/lib/confirm";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { BaseLocaleForm } from "./BaseLocaleForm";
 import { FilterBar } from "./FilterBar";
 import { ItemsTable } from "./ItemsTable";
 import { TranslationForm } from "./TranslationForm";
 import type { CategoryDto, DraftShape, SortKind, TranslationDraft } from "./types";
-import { confirmModal } from "@/src/lib/confirm";
 
 interface CategoriesManagerProps {
   initialCategories: CategoryDto[];
@@ -98,7 +97,6 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
 
   async function saveCategory() {
     setMessage(null);
-    const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
     if (!draft.name || !draft.slug) { setMessage(t("messages.nameSlugRequired")); return; }
     const hasTranslationInput = Object.values(translationDraft || {}).some(v => v !== null && v !== "" && v !== false);
     if (hasTranslationInput && !translationDraft.name) { setMessage(t("messages.translationNameRequired")); return; }
