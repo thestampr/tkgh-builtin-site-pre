@@ -208,8 +208,8 @@ body {
 
 /* btn-xs btn-sm btn-md btn-lg utilities */
 @layer utilities {
-  .btn-xs { padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; } /* text-xs */
-  .btn-sm { padding: 0.375rem 0.75rem !important; font-size: 0.875rem !important; } /* text-sm */
-  .btn-md { padding: 0.5rem 1rem !important; font-size: 1rem !important; } /* text-base */
-  .btn-lg { padding: 0.75rem 1.5rem !important; font-size: 1.125rem !important; } /* text-lg */
+  .btn-xs { padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; border-radius: 0.25rem !important; } /* text-xs */
+  .btn-sm { padding: 0.375rem 0.75rem !important; font-size: 0.875rem !important; border-radius: 0.375rem !important; } /* text-sm */
+  .btn-md { padding: 0.5rem 1rem !important; font-size: 1rem !important; border-radius: 0.5rem !important; } /* text-base */
+  .btn-lg { padding: 0.75rem 1.5rem !important; font-size: 1.125rem !important; border-radius: 0.75rem !important; } /* text-lg */
 }
