@@ -481,6 +481,9 @@
         "confirmText": "Delete",
         "cancelText": "Cancel"
       }
+    },
+    "ui": {
+      "refresh": "Refresh"
     }
   },
   "ProviderCategories": {
@@ -534,6 +537,7 @@
       "chooseImage": "Choose image",
       "shortTeaserPlaceholder": "Short teaser",
       "longerDescriptionPlaceholder": "Longer description",
+      "refresh": "Refresh",
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving..."

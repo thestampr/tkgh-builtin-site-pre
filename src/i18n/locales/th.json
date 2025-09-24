@@ -481,6 +481,9 @@
         "confirmText": "ลบ",
         "cancelText": "ยกเลิก"
       }
+    },
+    "ui": {
+      "refresh": "รีเฟรช"
     }
   },
   "ProviderCategories": {
@@ -534,6 +537,7 @@
       "chooseImage": "เลือกรูปภาพ",
       "shortTeaserPlaceholder": "คำโปรยสั้น",
       "longerDescriptionPlaceholder": "คำอธิบายเพิ่มเติม",
+      "refresh": "รีเฟรช",
       "cancel": "ยกเลิก",
       "save": "บันทึก",
       "saving": "กำลังบันทึก..."
