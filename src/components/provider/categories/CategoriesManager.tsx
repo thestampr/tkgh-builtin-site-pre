@@ -12,6 +12,7 @@ import { FilterBar } from "./FilterBar";
 import { ItemsTable } from "./ItemsTable";
 import { TranslationForm } from "./TranslationForm";
 import type { CategoryDto, DraftShape, SortKind, TranslationDraft } from "./types";
+import { confirmModal } from "@/src/lib/confirm";
 
 interface CategoriesManagerProps {
   initialCategories: CategoryDto[];
@@ -82,6 +83,19 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     } catch {/* ignore */ }
   }
 
+  function onSelectCoverFile(file: File | null) {
+    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
+    setCoverFile(file);
+    setCoverPreviewUrl(file ? URL.createObjectURL(file) : null);
+  }
+
+  function onRemoveCoverImage() {
+    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
+    setCoverFile(null);
+    setCoverPreviewUrl(null);
+    update({ coverImage: null });
+  }
+
   async function saveCategory() {
     setMessage(null);
     const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
@@ -137,8 +151,15 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     setDraft((d) => ({ ...d, ...patch }));
   }
 
-  function remove(cat: CategoryDto) {
-    if (!confirm("Delete category?")) return; // Could be internationalized if desired with t("ui.confirmDelete")
+  async function remove(cat: CategoryDto) {
+    const confirm = await confirmModal(t("confirm.delete.message"), {
+      title: t("confirm.delete.title") || "Delete Category",
+      confirmText: t("confirm.delete.confirmText") || "Delete",
+      cancelText: t("confirm.delete.cancelText") || "Cancel",
+      danger: true
+    });
+    if (!confirm) return; 
+
     startTransition(async () => {
       const res = await fetch(`/api/provider/categories/${cat.id}`, { method: "DELETE" });
       if (res.ok) setCategories(categories.filter(c => c.id !== cat.id));
@@ -147,7 +168,11 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
 
   const defaultLocale = activeLocale === (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th");
 
-  function scheduleFetch() { if (fetchTimer.current) clearTimeout(fetchTimer.current); fetchTimer.current = setTimeout(runFetch, 400); }
+  function scheduleFetch() {
+    if (fetchTimer.current) clearTimeout(fetchTimer.current);
+    fetchTimer.current = setTimeout(runFetch, 400);
+  }
+
   async function runFetch() {
     const params = new URLSearchParams();
     if (search.trim()) params.set("search", search.trim());
@@ -155,19 +180,6 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     if (sort) params.set("sort", sort);
     const res = await fetch(`/api/provider/categories?${params.toString()}`);
     if (res.ok) { const j = await res.json(); setCategories(j.categories); }
-  }
-
-  function onSelectCoverFile(file: File | null) {
-    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
-    setCoverFile(file);
-    setCoverPreviewUrl(file ? URL.createObjectURL(file) : null);
-  }
-
-  function onRemoveCoverImage() {
-    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
-    setCoverFile(null);
-    setCoverPreviewUrl(null);
-    update({ coverImage: null });
   }
 
   return (

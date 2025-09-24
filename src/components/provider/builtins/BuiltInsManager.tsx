@@ -20,6 +20,7 @@ import type {
   TranslationDraft,
   sortKind
 } from "./types";
+import { confirmModal } from "@/src/lib/confirm";
 
 interface BuiltInsManagerProps {
   initialItems: InitialItem[];
@@ -53,7 +54,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const fetchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService, state: serviceState } = useBuiltInsService();
-
 
   const parseGallery = (val: unknown): string[] => {
     if (!val) return [];
@@ -183,7 +183,22 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     });
   }
 
-  async function remove(item: BuiltInDto) { if (!confirm("Delete item?")) return; startTransition(async () => { try { await removeItem(item.id); setItems(items.filter(i => i.id !== item.id)); } catch { /* ignore */ } }); }
+  async function remove(item: BuiltInDto) { 
+    const confirm = await confirmModal(t("confirm.delete.message"), {
+      title: t("confirm.delete.title") || "Delete Built-in",
+      confirmText: t("confirm.delete.confirmText") || "Delete",
+      cancelText: t("confirm.delete.cancelText") || "Cancel",
+      danger: true
+    });
+    if (!confirm) return; 
+
+    startTransition(async () => { 
+      try { 
+        await removeItem(item.id); 
+        setItems(items.filter(i => i.id !== item.id)); 
+      } catch { /* ignore */ } 
+    }); 
+  }
 
   async function togglePublish(it: BuiltInDto) {
     if (publishingId) return;
