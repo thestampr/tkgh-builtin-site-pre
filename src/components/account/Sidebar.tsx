@@ -35,7 +35,7 @@ export default function AccountSidebar({ locale }: SidebarProps) {
               key={href}
               href={href}
               className={clsx(
-                "flex items-center gap-2 rounded px-3 py-2 transition border text-xs tracking-wide uppercase",
+                "flex items-center gap-2 rounded px-3 py-2 transition border text-xs tracking-wide uppercase text-nowrap",
                 active ? "bg-secondary text-white border-neutral-900 shadow" : "border-neutral-200 text-neutral-700 hover:bg-neutral-100"
               )}
             >
