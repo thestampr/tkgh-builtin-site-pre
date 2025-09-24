@@ -1,4 +1,4 @@
-import CategoriesManager from '@/components/provider/CategoriesManager';
+import CategoriesManager from '@/components/provider/categories/CategoriesManager';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { getServerSession } from 'next-auth';
