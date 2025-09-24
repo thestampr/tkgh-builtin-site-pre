@@ -276,7 +276,8 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           </>
         )}
       >
-        <LocaleTabs locales={[defaultLocale, "en"]} active={activeLocale} onChange={setActiveLocale} />
+        <LocaleTabs className="justify-end" locales={locales} active={activeLocale} onChange={setActiveLocale} />
+        
         {activeLocale === defaultLocale ? (
           <BaseLocaleForm
             draft={draft}

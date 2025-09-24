@@ -1,14 +1,15 @@
 "use client";
 
+import { locales } from "@/src/i18n/navigation";
 import { kebabcase } from "@/src/lib/formatting";
 import type {
   Category as _CT,
   CategoryTranslation as _CTT
 } from "@prisma/client";
-import clsx from "clsx";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { LocaleTabs } from "./builtins/LocaleTabs";
 
 type Category = _CT & { translations?: _CTT[], languages?: string };
 
@@ -229,14 +230,9 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
               <button onClick={() => !pending && setModalOpen(false)} className="btn btn-ghost !px-3 !border-0">✕</button>
             </div>
             <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto text-sm">
-              <div className="flex gap-2 mb-2 text-xs justify-end">
-                {[(process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"), "en"].map(loc => (
-                  <button key={loc} onClick={() => setActiveLocale(loc)} className={clsx(
-                    "btn btn-sm",
-                    activeLocale === loc ? "btn-secondary" : "btn-ghost"
-                  )}>{loc}</button>
-                ))}
-              </div>
+              
+              <LocaleTabs className="justify-end" locales={locales} active={activeLocale} onChange={setActiveLocale} />
+
               {defaultLocale ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
