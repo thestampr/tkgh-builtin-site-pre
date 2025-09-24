@@ -2,6 +2,7 @@
 
 import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
+import { RefreshButton } from "@/components/provider/common/RefreshButton";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/lib/useBuiltInsService";
@@ -27,14 +28,14 @@ interface BuiltInsManagerProps {
   categories: Category[];
 }
 
-const emptyDraft: DraftShape = { 
-  title: "", 
+const emptyDraft: DraftShape = {
+  title: "",
   slug: "",
-  price: null, 
-  currency: null, 
-  categoryId: null, 
-  content: null, 
-  gallery: [] 
+  price: null,
+  currency: null,
+  categoryId: null,
+  content: null,
+  gallery: []
 };
 
 export default function BuiltInsManager({ initialItems, categories }: BuiltInsManagerProps) {
@@ -51,7 +52,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const [statusFilter, setStatusFilter] = useState<"ALL" | BuiltInStatus>("ALL");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sort, setSort] = useState<sortKind>("updated_desc");
-  const fetchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fetchAbort = useRef<AbortController | null>(null);
 
   const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService, state: serviceState } = useBuiltInsService();
 
@@ -63,6 +64,13 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     }
     return [];
   };
+  const [rawItems, setRawItems] = useState<BuiltInDto[]>(() => initialItems.map(i => ({
+    ...(i as BuiltIn),
+    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
+    favoritesCount: typeof i.favoritesCount === "number" ? i.favoritesCount : 0,
+    gallery: parseGallery(i.galleryJson),
+    galleryJson: null,
+  })));
   const [items, setItems] = useState<BuiltInDto[]>(() => initialItems.map(i => ({
     ...(i as BuiltIn),
     languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
@@ -77,6 +85,25 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     gallery: Array.isArray(i.gallery) ? i.gallery : [],
     galleryJson: null,
   });
+
+  function applyLocal(
+    source: BuiltInDto[],
+    params: { query: string; status: "ALL" | BuiltInStatus; categoryId: string; sort: sortKind }
+  ): BuiltInDto[] {
+    const term = params.query.trim().toLowerCase();
+    let out = source;
+    if (params.status !== "ALL") out = out.filter(i => i.status === params.status);
+    if (params.categoryId) out = out.filter(i => i.categoryId === params.categoryId);
+    if (term) out = out.filter(i => (i.title || "").toLowerCase().includes(term) || (i.summary || "").toLowerCase().includes(term));
+    switch (params.sort) {
+      case "title_asc": out = [...out].sort((a, b) => (a.title || "").localeCompare(b.title || "")); break;
+      case "title_desc": out = [...out].sort((a, b) => (b.title || "").localeCompare(a.title || "")); break;
+      case "views_desc": out = [...out].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)); break;
+      case "favorites_desc": out = [...out].sort((a, b) => (b.favoritesCount || 0) - (a.favoritesCount || 0)); break;
+      default: out = [...out].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    }
+    return out;
+  }
 
   function openNew() {
     const firstCat = categories[0]?.id || "";
@@ -151,7 +178,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             });
             currentItem = normalizeService(trans.item);
           }
-          setItems([currentItem, ...items]);
+          await runFetch();
         } else {
           const updated = await updateItem(editing.id, {
             direct: true,
@@ -174,7 +201,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             });
             currentItem = normalizeService(trans.item);
           }
-          setItems(items.map(it => it.id === currentItem!.id ? currentItem! : it));
+          await runFetch();
         }
         setModalOpen(false);
       } catch {
@@ -183,21 +210,21 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     });
   }
 
-  async function remove(item: BuiltInDto) { 
+  async function remove(item: BuiltInDto) {
     const confirm = await confirmModal(t("confirm.delete.message"), {
       title: t("confirm.delete.title") || "Delete Built-in",
       confirmText: t("confirm.delete.confirmText") || "Delete",
       cancelText: t("confirm.delete.cancelText") || "Cancel",
       danger: true
     });
-    if (!confirm) return; 
+    if (!confirm) return;
 
-    startTransition(async () => { 
-      try { 
-        await removeItem(item.id); 
-        setItems(items.filter(i => i.id !== item.id)); 
-      } catch { /* ignore */ } 
-    }); 
+    startTransition(async () => {
+      try {
+        await removeItem(item.id);
+        await runFetch();
+      } catch { /* ignore */ }
+    });
   }
 
   async function togglePublish(it: BuiltInDto) {
@@ -205,32 +232,31 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     setPublishingId(it.id);
     const action = it.status === "PUBLISHED" ? "unpublish" : "publish";
     try {
-      const j = await publishToggle(it.id, action);
-      setItems(items.map(x => x.id === it.id ? { ...x, status: j.item.status, favoritesCount: (j.item).favoritesCount ?? x.favoritesCount } : x));
+      await publishToggle(it.id, action);
+      await runFetch();
     } catch {/* ignore */ }
     finally { setPublishingId(null); }
   }
 
   const runFetch = useCallback(async () => {
     try {
+      if (fetchAbort.current) fetchAbort.current.abort();
+      const controller = new AbortController();
+      fetchAbort.current = controller;
       const j = await list({
-        search: query.trim() || undefined,
-        status: statusFilter !== "ALL" ? statusFilter : undefined,
-        categoryId: categoryFilter || undefined,
-        sort: sort || undefined,
+        signal: controller.signal,
       });
-      setItems(j.items.map(normalizeService));
+      if (!controller.signal.aborted) {
+        const normalized = j.items.map(normalizeService);
+        setRawItems(normalized);
+        setItems(applyLocal(normalized, { query, status: statusFilter, categoryId: categoryFilter, sort }));
+      }
     } catch {
       /* ignore */
     }
   }, [list, query, statusFilter, categoryFilter, sort]);
 
-  function scheduleFetch() {
-    if (fetchTimer.current) clearTimeout(fetchTimer.current);
-    fetchTimer.current = setTimeout(() => { void runFetch(); }, 400);
-  }
-
-  // Auto refresh favorites / views count every 20s and on tab focus
+  // Auto refresh on tab focus/visibility
   useEffect(() => {
     function onVisibility() { if (document.visibilityState === "visible") runFetch(); }
     document.addEventListener("visibilitychange", onVisibility);
@@ -248,6 +274,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             <p className="text-sm text-neutral-500 mt-1">{t("subtitle")}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
+            <RefreshButton onRefresh={() => runFetch()} label={t("ui.refresh") || "Refresh"} refreshingLabel={t("ui.refreshing") || "Refreshing..."} />
             <button onClick={openNew} className="btn btn-secondary">
               <Plus size={14} />
               {t("new")}
@@ -257,13 +284,13 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
         </div>
         <FilterBar
           query={query}
-          onQueryChange={v => { setQuery(v); scheduleFetch(); }}
+          onQueryChange={v => { setQuery(v); setItems(applyLocal(rawItems, { query: v, status: statusFilter, categoryId: categoryFilter, sort })); }}
           statusFilter={statusFilter}
-          onStatusChange={v => { setStatusFilter(v as BuiltInStatus | "ALL"); scheduleFetch(); }}
+          onStatusChange={v => { const nv = v as BuiltInStatus | "ALL"; setStatusFilter(nv); setItems(applyLocal(rawItems, { query, status: nv, categoryId: categoryFilter, sort })); }}
           categoryFilter={categoryFilter}
-          onCategoryChange={v => { setCategoryFilter(v); scheduleFetch(); }}
+          onCategoryChange={v => { setCategoryFilter(v); setItems(applyLocal(rawItems, { query, status: statusFilter, categoryId: v, sort })); }}
           sort={sort}
-          onSortChange={v => { setSort(v as typeof sort); scheduleFetch(); }}
+          onSortChange={v => { const ns = v as typeof sort; setSort(ns); setItems(applyLocal(rawItems, { query, status: statusFilter, categoryId: categoryFilter, sort: ns })); }}
           categories={categories}
           t={t}
         />

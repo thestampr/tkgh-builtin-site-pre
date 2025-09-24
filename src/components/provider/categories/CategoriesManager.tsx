@@ -2,11 +2,13 @@
 
 import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
+import { RefreshButton } from "@/components/provider/common/RefreshButton";
 import { defaultLocale, locales } from "@/i18n/navigation";
+import { useCategoriesService } from "@/lib/useCategoriesService";
 import { confirmModal } from "@/src/lib/confirm";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { BaseLocaleForm } from "./BaseLocaleForm";
 import { FilterBar } from "./FilterBar";
 import { ItemsTable } from "./ItemsTable";
@@ -28,6 +30,7 @@ const emptyDraft: DraftShape = {
 
 export default function CategoriesManager({ initialCategories }: CategoriesManagerProps) {
   const t = useTranslations("ProviderCategories");
+  const [rawCategories, setRawCategories] = useState<CategoryDto[]>(initialCategories);
   const [categories, setCategories] = useState<CategoryDto[]>(initialCategories);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -39,16 +42,53 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const [search, setSearch] = useState("");
   const [publishedFilter, setPublishedFilter] = useState<"ALL" | "true" | "false">("ALL");
   const [sort, setSort] = useState<SortKind>("updated_desc");
-  const fetchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fetchAbort = useRef<AbortController | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
+  const { list, detail, create, update: updateService, upsertTranslation, remove: removeService, uploadCover, state: serviceState } = useCategoriesService();
+
+  function applyLocal(
+    source: CategoryDto[],
+    params: { search: string; published: "ALL" | "true" | "false"; sort: SortKind }
+  ): CategoryDto[] {
+    const term = params.search.trim().toLowerCase();
+    let out = source;
+    if (params.published !== "ALL") {
+      const flag = params.published === "true";
+      out = out.filter(c => !!c.published === flag);
+    }
+    if (term) {
+      out = out.filter(c =>
+        (c.name || "").toLowerCase().includes(term) ||
+        (c.slug || "").toLowerCase().includes(term) ||
+        (c.excerpt || "").toLowerCase().includes(term)
+      );
+    }
+    switch (params.sort) {
+      case "name_asc":
+        out = [...out].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+        break;
+      case "name_desc":
+        out = [...out].sort((a, b) => (b.name || "").localeCompare(a.name || ""));
+        break;
+      case "created_desc":
+        out = [...out].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case "created_asc":
+        out = [...out].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        break;
+      default:
+        out = [...out].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    }
+    return out;
+  }
 
   function openNew() {
     setEditing(null);
     setDraft({ ...emptyDraft, published: true });
     setTranslationDraft({});
     setActiveLocale(process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th");
-    setModalOpen(true); 
+    setModalOpen(true);
     setDraft(emptyDraft);
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
     setCoverFile(null);
@@ -71,14 +111,10 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
     setCoverFile(null);
     setCoverPreviewUrl(null);
-    // Load translations
     try {
-      const res = await fetch(`/api/provider/categories/${cat.id}`);
-      if (res.ok) {
-        const json = await res.json();
-        const en = (json.category?.translations || []).find((t: { locale: string }) => t.locale === "en");
-        if (en) setTranslationDraft({ name: en.name || "", excerpt: en.excerpt || "", description: en.description || "", published: !!en.published });
-      }
+      const d = await detail(cat.id);
+      const en = d.category?.translations?.find(tr => tr.locale === "en");
+      if (en) setTranslationDraft({ name: en.name || "", excerpt: en.excerpt || "", description: en.description || "", published: !!en.published });
     } catch {/* ignore */ }
   }
 
@@ -95,7 +131,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     update({ coverImage: null });
   }
 
-  async function saveCategory() {
+  async function save() {
     setMessage(null);
     if (!draft.name || !draft.slug) { setMessage(t("messages.nameSlugRequired")); return; }
     const hasTranslationInput = Object.values(translationDraft || {}).some(v => v !== null && v !== "" && v !== false);
@@ -103,37 +139,25 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     startTransition(async () => {
       try {
         let coverUrl: string | null = draft.coverImage || null;
-        if (coverFile) {
-          const fd = new FormData();
-          fd.append("file", coverFile);
-          const up = await fetch("/api/provider/categories/upload", { method: "POST", body: fd });
-          if (!up.ok) { setMessage(t("messages.uploadFailed") || "Upload failed"); return; }
-          const upj = await up.json();
-          coverUrl = upj.url as string;
-        }
+        if (coverFile) coverUrl = await uploadCover(coverFile);
         let current: CategoryDto;
         if (!editing) {
-          // create base first
-          const res = await fetch("/api/provider/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: draft.name, slug: draft.slug, published: draft.published, coverImage: coverUrl, excerpt: draft.excerpt || null, description: draft.description || null }) });
-          if (!res.ok) { try { const e = await res.json(); setMessage(e.error || t("messages.createFailed")); } catch { setMessage(t("messages.createFailed")); } return; }
-          const json = await res.json(); current = json.category as CategoryDto;
+          const created = await create({ name: draft.name, slug: draft.slug, published: draft.published, coverImage: coverUrl, excerpt: draft.excerpt || null, description: draft.description || null });
+          current = created.category as CategoryDto;
           if (hasTranslationInput) {
-            const transRes = await fetch(`/api/provider/categories/${current.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ translationLocale: "en", translation: { name: translationDraft.name || null, description: translationDraft.description || null, excerpt: translationDraft.excerpt || null, published: !!translationDraft.published } }) });
-            if (!transRes.ok) { setMessage(t("messages.translationFailed")); return; }
-            const transJson = await transRes.json(); current = transJson.category as CategoryDto;
+            const trans = await upsertTranslation(current.id, "en", { name: translationDraft.name || "", description: translationDraft.description || "", excerpt: translationDraft.excerpt || "", published: !!translationDraft.published });
+            current = trans.category as CategoryDto;
           }
-          setCategories([current, ...categories]);
+          await runFetch();
         } else {
           // update base
-          const res = await fetch(`/api/provider/categories/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: draft.name, published: draft.published, coverImage: coverUrl, excerpt: draft.excerpt || null, description: draft.description || null }) });
-          if (!res.ok) { setMessage(t("messages.updateFailed")); return; }
-          const json = await res.json(); current = json.category as CategoryDto;
+          const upd = await updateService(editing.id, { name: draft.name, published: draft.published, coverImage: coverUrl, excerpt: draft.excerpt || null, description: draft.description || null });
+          current = upd.category as CategoryDto;
           if (hasTranslationInput) {
-            const transRes = await fetch(`/api/provider/categories/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ translationLocale: "en", translation: { name: translationDraft.name || null, description: translationDraft.description || null, excerpt: translationDraft.excerpt || null, published: !!translationDraft.published } }) });
-            if (!transRes.ok) { setMessage(t("messages.translationFailed")); return; }
-            const transJson = await transRes.json(); current = transJson.category as CategoryDto;
+            const trans = await upsertTranslation(editing.id, "en", { name: translationDraft.name || "", description: translationDraft.description || "", excerpt: translationDraft.excerpt || "", published: !!translationDraft.published });
+            current = trans.category as CategoryDto;
           }
-          setCategories(categories.map(c => c.id === current.id ? current : c));
+          await runFetch();
         }
         setModalOpen(false);
         if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
@@ -156,30 +180,39 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
       cancelText: t("confirm.delete.cancelText") || "Cancel",
       danger: true
     });
-    if (!confirm) return; 
+    if (!confirm) return;
 
     startTransition(async () => {
-      const res = await fetch(`/api/provider/categories/${cat.id}`, { method: "DELETE" });
-      if (res.ok) setCategories(categories.filter(c => c.id !== cat.id));
+      try {
+        await removeService(cat.id);
+        await runFetch();
+      } catch { /* ignore */ }
     });
   }
 
-  function scheduleFetch() {
-    if (fetchTimer.current) clearTimeout(fetchTimer.current);
-    fetchTimer.current = setTimeout(runFetch, 400);
-  }
-
   async function runFetch() {
-    const params = new URLSearchParams();
-    if (search.trim()) params.set("search", search.trim());
-    if (publishedFilter !== "ALL") params.set("published", publishedFilter);
-    if (sort) params.set("sort", sort);
-    const res = await fetch(`/api/provider/categories?${params.toString()}`);
-    if (res.ok) { 
-      const j = await res.json(); 
-      setCategories(j.categories); 
+    if (fetchAbort.current) fetchAbort.current.abort();
+    const controller = new AbortController();
+    fetchAbort.current = controller;
+    try {
+      const j = await list({
+        signal: controller.signal,
+      });
+      if (!controller.signal.aborted) {
+        setRawCategories(j.categories);
+        setCategories(applyLocal(j.categories, { search, published: publishedFilter, sort }));
+      }
+    } catch (e) {
+      // ignore abort errors
     }
   }
+
+  // Auto refresh on tab focus/visibility
+  useEffect(() => {
+    function onVisibility() { if (document.visibilityState === "visible") void runFetch(); }
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => { document.removeEventListener("visibilitychange", onVisibility); };
+  }, [runFetch]);
 
   return (
     <div className="max-w-5xl mx-auto px-6 pb-10 space-y-10">
@@ -190,6 +223,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             <p className="text-sm text-neutral-500 mt-1">{t("subtitle")}</p>
           </div>
           <div className="flex items-center gap-3 text-sm">
+            <RefreshButton onRefresh={() => runFetch()} label={t("ui.refresh") || "Refresh"} refreshingLabel={t("ui.refreshing") || "Refreshing..."} />
             <button onClick={openNew} className="btn btn-secondary">
               <Plus size={14} />
               {t("new")}
@@ -199,11 +233,11 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
         </div>
         <FilterBar
           search={search}
-          onSearchChange={(v) => { setSearch(v); scheduleFetch(); }}
+          onSearchChange={(v) => { setSearch(v); setCategories(applyLocal(rawCategories, { search: v, published: publishedFilter, sort })); }}
           published={publishedFilter}
-          onPublishedChange={(v) => { setPublishedFilter(v); scheduleFetch(); }}
+          onPublishedChange={(v) => { setPublishedFilter(v); setCategories(applyLocal(rawCategories, { search, published: v, sort })); }}
           sort={sort}
-          onSortChange={(v) => { setSort(v as SortKind); scheduleFetch(); }}
+          onSortChange={(v) => { setSort(v); setCategories(applyLocal(rawCategories, { search, published: publishedFilter, sort: v })); }}
           t={(k) => t(k)}
         />
       </div>
@@ -226,7 +260,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             <div className="text-xs text-neutral-500">{message}</div>
             <div className="flex items-center gap-3">
               <button onClick={() => setModalOpen(false)} className="btn btn-ghost">{t("ui.cancel")}</button>
-              <button onClick={saveCategory} disabled={pending} className="btn btn-secondary">{pending ? t("ui.saving") : t("ui.save")}</button>
+              <button onClick={save} disabled={pending} className="btn btn-secondary">{pending ? t("ui.saving") : t("ui.save")}</button>
             </div>
           </>
         )}
@@ -244,10 +278,10 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             onRemoveCoverImage={onRemoveCoverImage}
           />
         ) : (
-          <TranslationForm 
-            value={translationDraft} 
-            onChange={d => setTranslationDraft(d)} 
-            t={t} 
+          <TranslationForm
+            value={translationDraft}
+            onChange={d => setTranslationDraft(d)}
+            t={t}
           />
         )}
       </ModalShell>

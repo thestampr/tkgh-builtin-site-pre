@@ -1,17 +1,17 @@
 "use client";
 import React from "react";
-
-import type { Category } from "@prisma/client";
+import type { Category, BuiltInStatus } from "@prisma/client";
+import type { sortKind } from "./types";
 
 interface FilterBarProps {
   query: string;
   onQueryChange: (v: string) => void;
-  statusFilter: string;
-  onStatusChange: (v: string) => void;
+  statusFilter: BuiltInStatus | "ALL";
+  onStatusChange: (v: BuiltInStatus | "ALL") => void;
   categoryFilter: string;
   onCategoryChange: (v: string) => void;
-  sort: string;
-  onSortChange: (v: string) => void;
+  sort: sortKind;
+  onSortChange: (v: sortKind) => void;
   categories: Category[];
   t: (k: string) => string;
   className?: string;
@@ -45,7 +45,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <label className="block font-medium mb-1 text-neutral-600">{t("filters.status")}</label>
         <select
           value={statusFilter}
-          onChange={e => onStatusChange(e.target.value)}
+          onChange={e => onStatusChange(e.target.value as BuiltInStatus | 'ALL')}
           className="w-full rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400/40"
         >
           <option value="ALL">{t("filters.all")}</option>
@@ -70,7 +70,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <label className="block font-medium mb-1 text-neutral-600">{t("filters.sort")}</label>
         <select
           value={sort}
-          onChange={e => onSortChange(e.target.value)}
+          onChange={e => onSortChange(e.target.value as sortKind)}
           className="w-full rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400/40"
         >
           <option value="updated_desc">{t("filters.sortNewest")}</option>

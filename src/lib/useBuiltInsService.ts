@@ -8,6 +8,7 @@ type BuiltInListParams = {
   categoryId?: string;
   sort?: 'updated_desc' | 'title_asc' | 'title_desc' | 'views_desc' | 'favorites_desc';
 };
+type BuiltInListParamsInternal = BuiltInListParams & { signal?: AbortSignal };
 
 type SaveBuiltInInput = Pick<BuiltIn, 'title' | 'slug' | 'price' | 'currency' | 'categoryId' | 'content'> & {
   gallery: string[];
@@ -77,14 +78,14 @@ export function useBuiltInsService() {
     } as BuiltInDto;
   };
 
-  const list = useCallback((params: BuiltInListParams): Promise<ListResult> => {
-    const qs = new URLSearchParams();
-    if (params.search) qs.set('search', params.search);
-    if (params.status) qs.set('status', params.status);
-    if (params.categoryId) qs.set('categoryId', params.categoryId);
-    if (params.sort) qs.set('sort', params.sort);
+  const list = useCallback((params: BuiltInListParamsInternal): Promise<ListResult> => {
     return wrap(async () => {
-      const res = await fetch(`/api/provider/builtins?${qs.toString()}`);
+      const res = await fetch(`/api/provider/builtins`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list', ...params }),
+        signal: params.signal,
+      });
       if (!res.ok) throw new Error('List failed');
       const data = (await res.json()) as { items: ApiBuiltIn[] };
       return { items: (data.items || []).map(mapBuiltIn) };

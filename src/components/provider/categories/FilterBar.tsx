@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
+import type { SortKind } from "./types";
 
 interface FilterBarProps {
   search: string;
   onSearchChange: (v: string) => void;
   published: "ALL" | "true" | "false";
   onPublishedChange: (v: "ALL" | "true" | "false") => void;
-  sort: string;
-  onSortChange: (v: string) => void;
+  sort: SortKind;
+  onSortChange: (v: SortKind) => void;
   t: (k: string) => string;
   className?: string;
 }
@@ -50,7 +51,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <label className="block font-medium mb-1 text-neutral-600">{t("filters.sort")}</label>
         <select
           value={sort}
-          onChange={e => onSortChange(e.target.value)}
+          onChange={e => onSortChange(e.target.value as SortKind)}
           className="w-full rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400/40"
         >
           <option value="updated_desc">{t("filters.sortUpdated")}</option>
