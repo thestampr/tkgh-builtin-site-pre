@@ -38,7 +38,23 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
           />
         </div>
       </div>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-1 md:col-span-2">
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.category')}</label>
+          {categories.length ? (
+            <select
+              value={draft.categoryId || ''}
+              onChange={e => onChange({ categoryId: e.target.value })}
+              className="w-full border border-neutral-300 rounded px-2 py-1 bg-white"
+            >
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          ) : (
+            <div className="text-[11px] text-danger">Create a category first.</div>
+          )}
+        </div>
         <div className="space-y-1">
           <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.price')}</label>
           <input
@@ -61,22 +77,6 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
             <option value="EUR">EUR</option>
             <option value="JPY">JPY</option>
           </select>
-        </div>
-        <div className="space-y-1 md:col-span-2">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.category')}</label>
-          {categories.length ? (
-            <select
-              value={draft.categoryId || ''}
-              onChange={e => onChange({ categoryId: e.target.value })}
-              className="w-full border border-neutral-300 rounded px-2 py-1 bg-white"
-            >
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          ) : (
-            <div className="text-[11px] text-danger">Create a category first.</div>
-          )}
         </div>
       </div>
       <div className="space-y-1">
