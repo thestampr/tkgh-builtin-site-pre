@@ -483,7 +483,8 @@
       }
     },
     "ui": {
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "refreshing": "Refreshing..."
     }
   },
   "ProviderCategories": {
@@ -538,6 +539,7 @@
       "shortTeaserPlaceholder": "Short teaser",
       "longerDescriptionPlaceholder": "Longer description",
       "refresh": "Refresh",
+      "refreshing": "Refreshing...",
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving..."
