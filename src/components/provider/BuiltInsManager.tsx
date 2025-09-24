@@ -2,7 +2,9 @@
 
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/lib/useBuiltInsService";
+import { locales } from "@/src/i18n/navigation";
 import type { BuiltIn, BuiltInStatus, BuiltInTranslation, Category } from "@prisma/client";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { BaseLocaleForm } from "./builtins/BaseLocaleForm";
@@ -11,7 +13,6 @@ import { ItemsTable } from "./builtins/ItemsTable";
 import { LocaleTabs } from "./builtins/LocaleTabs";
 import { ModalShell } from "./builtins/ModalShell";
 import { TranslationForm } from "./builtins/TranslationForm";
-import { Plus } from "lucide-react";
 
 type UIBuiltIn = Omit<BuiltIn, 'galleryJson'> & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; translations?: BuiltInTranslation[] };
 type TableItem = BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null; galleryJson?: string | null };
@@ -65,7 +66,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     ...(i as BuiltIn),
     languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th'),
     favoritesCount: typeof i.favoritesCount === 'number' ? i.favoritesCount : 0,
-    gallery: parseGallery((i as any).gallery) || parseGallery(i.galleryJson),
+    gallery: parseGallery(i.galleryJson),
     galleryJson: null,
   })));
   const normalizeService = (i: BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null }): TableItem => ({
@@ -129,19 +130,48 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
       let currentItem: TableItem | null = null;
       try {
         if (!editing) {
-          const created = await create({ title: draft.title, slug: draft.slug || kebabcase(draft.title), price: draft.price ? Number(draft.price) : null, currency: draft.currency || null, categoryId: draft.categoryId || null, content: draft.content || null, gallery: draft.gallery, });
-          currentItem = normalizeService(created.item as any);
+          const created = await create({ 
+            title: draft.title, 
+            slug: draft.slug || kebabcase(draft.title),
+            price: draft.price ? Number(draft.price) : null,
+            currency: draft.currency || null,
+            categoryId: draft.categoryId || null,
+            content: draft.content || null,
+            gallery: draft.gallery,
+          });
+          currentItem = normalizeService(created.item);
           if (hasTranslationInput) {
-            const trans = await upsertTranslation(currentItem.id, "en", { title: translationDraft.title || null, content: translationDraft.content || null, price: translationDraft.price ?? null, currency: translationDraft.currency || null, published: !!translationDraft.published });
-            currentItem = normalizeService(trans.item as any);
+            const trans = await upsertTranslation(currentItem.id, "en", { 
+              title: translationDraft.title || null, 
+              content: translationDraft.content || null, 
+              price: translationDraft.price ?? null, 
+              currency: translationDraft.currency || null, 
+              published: !!translationDraft.published 
+            });
+            currentItem = normalizeService(trans.item);
           }
           setItems([currentItem, ...items]);
         } else {
-          const updated = await updateItem(editing.id, { direct: true, title: draft.title, content: draft.content || null, price: draft.price ? Number(draft.price) : null, currency: draft.currency || null, categoryId: draft.categoryId || null, coverImage: derivedCover, gallery: draft.gallery });
-          currentItem = normalizeService(updated.item as any);
+          const updated = await updateItem(editing.id, { 
+            direct: true, 
+            title: draft.title, 
+            content: draft.content || null, 
+            price: draft.price ? Number(draft.price) : null, 
+            currency: draft.currency || null, 
+            categoryId: draft.categoryId || null, 
+            coverImage: derivedCover, 
+            gallery: draft.gallery 
+          });
+          currentItem = normalizeService(updated.item);
           if (hasTranslationInput) {
-            const trans = await upsertTranslation(editing.id, "en", { title: translationDraft.title || null, content: translationDraft.content || null, price: translationDraft.price ?? null, currency: translationDraft.currency || null, published: !!translationDraft.published });
-            currentItem = normalizeService(trans.item as any);
+            const trans = await upsertTranslation(editing.id, "en", { 
+              title: translationDraft.title || null, 
+              content: translationDraft.content || null, 
+              price: translationDraft.price ?? null, 
+              currency: translationDraft.currency || null, 
+              published: !!translationDraft.published 
+            });
+            currentItem = normalizeService(trans.item);
           }
           setItems(items.map(it => it.id === currentItem!.id ? currentItem! : it));
         }
@@ -160,7 +190,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     const action = it.status === "PUBLISHED" ? "unpublish" : "publish";
     try {
       const j = await publishToggle(it.id, action);
-      setItems(items.map(x => x.id === it.id ? { ...x, status: j.item.status, favoritesCount: (j.item as any).favoritesCount ?? (x as any).favoritesCount } : x));
+      setItems(items.map(x => x.id === it.id ? { ...x, status: j.item.status, favoritesCount: (j.item).favoritesCount ?? x.favoritesCount } : x));
     } catch {/* ignore */ } 
     finally { setPublishingId(null); }
   }
