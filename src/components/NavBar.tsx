@@ -4,7 +4,7 @@ import AppBar from "@/components/appbar";
 import { LoginButton } from "@/components/auth/LoginButton";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
-import { ChevronUp, Menu } from "lucide-react";
+import { ChevronUp, Menu, User } from "lucide-react";
 import type { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
@@ -12,27 +12,18 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LocaleSwitcher from "./LocaleSwitcher";
+import UserAvatar from "./user/Avatar";
 
 type UserMenuProps = {
   session: Session | null;
   locale: string;
-  mobile?: boolean;
-  avatarUrl?: string | null;
+  showName?: boolean;
 };
 
-function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
+function UserMenu({ session, locale, showName }: UserMenuProps) {
   const tAccount = useTranslations("Account");
   const user = session?.user;
   const role = user?.role;
-  
-  const internalAvatar = user?.image || user?.avatarUrl || user?.profile?.avatarUrl;
-  const finalAvatar = avatarUrl ?? internalAvatar ?? null;
-  const initials = (user?.name || user?.email || "?")
-    .split(/\s+/)
-    .map((p: string) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <Popover className="relative">
@@ -40,23 +31,10 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
         <>
           <PopoverButton className={clsx(
             "flex items-center gap-2 rounded-full group cursor-pointer",
-            mobile ? "w-full justify-start px-2 py-2 hover:bg-black/5 rounded-lg" : "px-1"
+            showName ? "w-full justify-start px-2 py-2 hover:bg-black/5 rounded-lg" : "px-1"
           )}>
-            {finalAvatar ? (
-              <span className="h-9 w-9 rounded-full ring-2 ring-white/20 shadow-sm overflow-hidden bg-neutral-200">
-                <img src={finalAvatar} alt="avatar" className="h-full w-full object-cover" />
-              </span>
-            ) : (
-              <span
-                className={clsx(
-                  "h-9 w-9 inline-flex items-center justify-center rounded-full text-sm font-semibold ring-2 ring-white/20 shadow-sm",
-                  "bg-gradient-to-br from-primary/80 to-primary text-white"
-                )}
-              >
-                {initials}
-              </span>
-            )}
-            {mobile && (
+            <UserAvatar padding={1} />
+            {showName && (
               <span className="flex flex-col text-left">
                 <span className="text-sm font-medium text-slate-900 line-clamp-1">{user?.name || user?.email}</span>
                 <span className="text-xs text-gray-500 line-clamp-1">{user?.email}</span>
@@ -132,52 +110,25 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
   );
 }
 
+interface LinkProps {
+  href: string;
+  label: string;
+  title?: string;
+};
+
 export function NavBar() {
+  const { data: session } = useSession();
+
   const locale = useLocale();
   const headerRef = useRef<HTMLElement>(null);
 
   const [open, setOpen] = useState(false);
   const [atTop, setAtTop] = useState(true);
   const [hasExtended, setHasExtended] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const { data: session } = useSession();
 
   const tNav = useTranslations("Nav");
   const tAccount = useTranslations("Account");
   const pathname = usePathname() || `/${locale}`;
-
-  // Fetch avatar separately because session may not include profile relation
-  useEffect(() => {
-    let cancelled = false;
-    async function loadAvatar() {
-      if (!session?.user) { setAvatarUrl(null); return; }
-      try {
-        // Try account profile first
-        const res = await fetch("/api/account/profile", { cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          if (!cancelled && json?.avatarUrl) { setAvatarUrl(json.avatarUrl); return; }
-        }
-      } catch { }
-      try {
-        // Fallback provider profile (if provider)
-        if (session.user.role === "PROVIDER") {
-          const res2 = await fetch("/api/provider/profile", { cache: "no-store" });
-          if (res2.ok) {
-            const json2 = await res2.json();
-            if (!cancelled && json2?.profile?.avatarUrl) { setAvatarUrl(json2.profile.avatarUrl); return; }
-          }
-        }
-      } catch { }
-      // fallback session internal fields
-      if (!cancelled) {
-        const internal = session.user?.image || session.user?.avatarUrl || session.user?.profile?.avatarUrl || null;
-        setAvatarUrl(internal);
-      }
-    }
-    loadAvatar();
-    return () => { cancelled = true; };
-  }, [session]);
 
   const links = useMemo(
     () => [
@@ -190,6 +141,16 @@ export function NavBar() {
     ],
     [locale, tNav]
   );
+
+  const providerLinks = [
+    { href: `/${locale}/account`, label: tAccount("menu.overview") },
+    { href: `/${locale}/account/profile`, label: tAccount("menu.profile") },
+    { href: `/${locale}/account/builtins`, label: tAccount("menu.builtIns") },
+    { href: `/${locale}/account/categories`, label: tAccount("menu.categories") },
+  ]
+  const userLinks = [
+    { href: `/${locale}/account`, label: tAccount("menu.profile") }
+  ];
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
@@ -237,7 +198,7 @@ export function NavBar() {
     return href === pathname;
   }, [pathname]);
 
-  const Anchors = () => {
+  const Anchors = ({ links }: { links: LinkProps[] }) => {
     const anchorClass = clsx(
       "block px-4 py-2 rounded-md",
       "text-gray-500 hover:bg-neutral-400/10",
@@ -322,19 +283,28 @@ export function NavBar() {
 
             <div className="flex items-center gap-2 md:gap-4">
               <nav className={`w-full space-x-2 px-4 hidden lg:flex`}>
-                <Anchors />
+                <Anchors links={links} />
               </nav>
 
-              {session?.user
-                ? <UserMenu locale={locale} session={session} avatarUrl={avatarUrl} />
-                : <LoginButton className="hidden lg:inline-flex" />
-              }
+              <span className="hidden lg:inline-flex">
+                {session?.user
+                  ? <UserMenu locale={locale} session={session} />
+                  : <LoginButton />
+                }
+              </span>
 
               <LocaleSwitcher className={iconButtonClass} />
 
-              <button className={`lg:hidden ${iconButtonClass}`} onClick={() => setOpen(!open)}>
-                {open ? <ChevronUp size={24} /> : <Menu size={24} />}
-              </button>
+              <span className="lg:hidden">
+                {session?.user
+                  ? <button className={clsx(iconButtonClass, "!p-1")} onClick={() => setOpen(!open)}>
+                    <UserAvatar padding={1} />
+                  </button>
+                  : <button className={iconButtonClass} onClick={() => setOpen(!open)}>
+                    {open ? <ChevronUp size={24} /> : <Menu size={24} />}
+                  </button>
+                }
+              </span>
             </div>
           </div>
           <div className={clsx(
@@ -345,38 +315,25 @@ export function NavBar() {
           )}>
             <div className="flex flex-col gap-4 w-full">
               <nav className="flex flex-col gap-2">
-                <Anchors />
+                <Anchors links={links} />
               </nav>
               <div className="pt-4 border-t border-divider/40 flex flex-col gap-3">
                 {session?.user ? (
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                      {(avatarUrl || session.user?.image || session.user?.avatarUrl || session.user?.profile?.avatarUrl) ? (
-                        <span className="h-10 w-10 rounded-full ring-2 ring-white/20 shadow-sm overflow-hidden bg-neutral-200">
-                          <img src={avatarUrl || session.user?.image || session.user?.avatarUrl || session.user?.profile?.avatarUrl || ""} alt="avatar" className="h-full w-full object-cover" />
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-primary/80 to-primary text-white text-sm font-semibold ring-2 ring-white/20 shadow-sm">
-                          {(session.user?.name || session.user?.email || "?").split(/\s+/).map(p => p[0]).join("").slice(0, 2).toUpperCase()}
-                        </span>
-                      )}
+                    <div className="flex items-center gap-3 px-3">
+                      <UserAvatar letterIcon />
                       <div className="flex flex-col text-left">
                         <span className="text-sm font-medium text-slate-900 line-clamp-1">{session.user?.name || session.user?.email}</span>
                         {session.user?.email && <span className="text-xs text-gray-500 line-clamp-1">{session.user.email}</span>}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
-                      {session.user?.role === "PROVIDER" ? (
-                        <>
-                          <Link href={`/${locale}/account`} className="px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-slate-700">{tAccount("menu.overview")}</Link>
-                          <Link href={`/${locale}/account/profile`} className="px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-slate-700">{tAccount("menu.profile")}</Link>
-                          <Link href={`/${locale}/account/builtins`} className="px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-slate-700">{tAccount("menu.builtIns")}</Link>
-                          <Link href={`/${locale}/account/categories`} className="px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-slate-700">{tAccount("menu.categories")}</Link>
-                        </>
-                      ) : (
-                        <Link href={`/${locale}/account`} className="px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-slate-700">{tAccount("menu.profile")}</Link>
-                      )}
-                      <button onClick={() => signOut({ callbackUrl: `/${locale}` })} className="mt-1 px-3 py-2 rounded-lg hover:bg-black/5 text-sm text-left text-danger font-medium">
+                      {session.user?.role === "PROVIDER" ? <Anchors links={providerLinks} /> : <Anchors links={userLinks} />}
+
+                      <button 
+                        className="mt-1 px-4 py-2 rounded-lg hover:bg-black/5 text-left text-danger"
+                        onClick={() => signOut({ callbackUrl: `/${locale}` })} 
+                      >
                         {tAccount("menu.signOut")}
                       </button>
                     </div>
