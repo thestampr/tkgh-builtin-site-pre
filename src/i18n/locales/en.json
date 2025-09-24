@@ -515,6 +515,7 @@
     "ui": {
       "removeImage": "Remove",
       "noImage": "No image selected",
+      "chooseImage": "Choose image",
       "shortTeaserPlaceholder": "Short teaser",
       "longerDescriptionPlaceholder": "Longer description",
       "cancel": "Cancel",

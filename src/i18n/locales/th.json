@@ -515,6 +515,7 @@
     "ui": {
       "removeImage": "ลบ",
       "noImage": "ยังไม่มีรูป",
+      "chooseImage": "เลือกรูปภาพ",
       "shortTeaserPlaceholder": "คำโปรยสั้น",
       "longerDescriptionPlaceholder": "คำอธิบายเพิ่มเติม",
       "cancel": "ยกเลิก",
