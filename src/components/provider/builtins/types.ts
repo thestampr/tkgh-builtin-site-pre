@@ -14,3 +14,23 @@ export type InitialItem = BuiltIn & {
   galleryJson?: JsonValue;
   translations?: BuiltInTranslation[];
 };
+
+export interface TranslationDraft { 
+  title?: string; 
+  content?: string; 
+  price?: number | null; 
+  currency?: string | null; 
+  published?: boolean; 
+}
+
+export interface DraftShape {
+  title: string;
+  slug: string;
+  price: number | null;
+  currency: string | null;
+  categoryId: string | null;
+  content: string | null;
+  gallery: string[];
+}
+
+export type sortKind = "updated_desc" | "title_asc" | "title_desc" | "views_desc" | "favorites_desc";

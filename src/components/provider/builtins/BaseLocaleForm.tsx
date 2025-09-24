@@ -3,8 +3,8 @@
 import type { Category } from '@prisma/client';
 import React from 'react';
 import { GalleryEditor } from './GalleryEditor';
+import type { DraftShape } from './types';
 
-interface DraftShape { title: string; slug: string; price: number | null; currency: string | null; categoryId: string | null; content: string | null; gallery: string[]; }
 interface BaseLocaleFormProps {
   draft: DraftShape;
   onChange: (patch: Partial<DraftShape>) => void;

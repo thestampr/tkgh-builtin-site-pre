@@ -2,9 +2,9 @@
 
 import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
+import { defaultLocale, locales } from "@/i18n/navigation";
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/lib/useBuiltInsService";
-import { locales } from "@/i18n/navigation";
 import type { BuiltIn, BuiltInStatus, Category } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -13,31 +13,35 @@ import { BaseLocaleForm } from "./BaseLocaleForm";
 import { FilterBar } from "./FilterBar";
 import { ItemsTable } from "./ItemsTable";
 import { TranslationForm } from "./TranslationForm";
-import type { BuiltInDto, InitialItem } from "./types";
+import type {
+  BuiltInDto,
+  DraftShape,
+  InitialItem,
+  TranslationDraft,
+  sortKind
+} from "./types";
 
 interface BuiltInsManagerProps {
   initialItems: InitialItem[];
   categories: Category[];
 }
 
-interface DraftShape {
-  title: string;
-  slug: string;
-  price: number | null;
-  currency: string | null;
-  categoryId: string | null;
-  content: string | null;
-  gallery: string[];
-}
+const emptyDraft: DraftShape = { 
+  title: "", 
+  slug: "",
+  price: null, 
+  currency: null, 
+  categoryId: null, 
+  content: null, 
+  gallery: [] 
+};
 
 export default function BuiltInsManager({ initialItems, categories }: BuiltInsManagerProps) {
   const t = useTranslations("ProviderBuiltIns");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<BuiltInDto | null>(null);
-  const emptyDraft: DraftShape = { title: "", slug: "", price: null, currency: null, categoryId: null, content: null, gallery: [] };
   const [draft, setDraft] = useState<DraftShape>(emptyDraft);
-  const [translationDraft, setTranslationDraft] = useState<{ title?: string; content?: string; price?: number | null; currency?: string | null; published?: boolean }>({});
-  const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
+  const [translationDraft, setTranslationDraft] = useState<TranslationDraft>({});
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -45,7 +49,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | BuiltInStatus>("ALL");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [sort, setSort] = useState<"updated_desc" | "title_asc" | "title_desc" | "views_desc" | "favorites_desc">("updated_desc");
+  const [sort, setSort] = useState<sortKind>("updated_desc");
   const fetchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService, state: serviceState } = useBuiltInsService();

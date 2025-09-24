@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
+import type { TranslationDraft } from './types';
 
-interface TranslationDraft { title?: string; content?: string; price?: number | null; currency?: string | null; published?: boolean; }
 interface TranslationFormProps {
   draft: TranslationDraft;
   onChange: (d: TranslationDraft) => void;
