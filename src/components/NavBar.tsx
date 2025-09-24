@@ -2,16 +2,16 @@
 
 import AppBar from "@/components/appbar";
 import { LoginButton } from "@/components/auth/LoginButton";
-import { locales } from "@/i18n/navigation";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
-import { Check, ChevronUp, Menu } from "lucide-react";
+import { ChevronUp, Menu } from "lucide-react";
 import type { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import LocaleSwitcher from "./LocaleSwitcher";
 
 type UserMenuProps = {
   session: Session | null;
@@ -132,34 +132,20 @@ function UserMenu({ session, locale, mobile, avatarUrl }: UserMenuProps) {
   );
 }
 
-type Props = {
-  locale: string;
-};
-
-function replaceLocaleInPath(pathname: string, nextLocale: string) {
-  // Expecting pathname like "/en/..." or "/th"
-  const parts = pathname.split("/");
-  if (parts.length >= 2) {
-    parts[1] = nextLocale;
-    return parts.join("/") || `/${nextLocale}`;
-  }
-  return `/${nextLocale}`;
-}
-
-export function NavBar({ locale }: Props) {
+export function NavBar() {
+  const locale = useLocale();
   const headerRef = useRef<HTMLElement>(null);
+
   const [open, setOpen] = useState(false);
   const [atTop, setAtTop] = useState(true);
   const [hasExtended, setHasExtended] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const { data: session } = useSession();
 
-  const tCommon = useTranslations("Common");
   const tNav = useTranslations("Nav");
-  const tLocale = useTranslations("Locale");
   const tAccount = useTranslations("Account");
   const pathname = usePathname() || `/${locale}`;
-  const router = useRouter();
+  
   // Fetch avatar separately because session may not include profile relation
   useEffect(() => {
     let cancelled = false;
@@ -247,11 +233,6 @@ export function NavBar({ locale }: Props) {
 
   function isPathActive(href: string): boolean {
     return href === pathname;
-  }
-
-  function onChangeLocale(nextLocale: string) {
-    const nextPath = replaceLocaleInPath(pathname, nextLocale);
-    router.replace(nextPath, { scroll: false });
   }
 
   const Anchors = () => {
@@ -347,40 +328,7 @@ export function NavBar({ locale }: Props) {
                 : <LoginButton className="hidden lg:inline-flex" />
               }
 
-              <Popover className="relative">
-                <PopoverButton className={iconButtonClass} >
-                  <div className="w-6">{locale.toUpperCase()}</div>
-                </PopoverButton>
-                <PopoverPanel
-                  transition
-                  anchor="bottom end"
-                  className={clsx(
-                    "z-30 mt-2 w-48 rounded-xl border border-divider/50 bg-white/90 backdrop-blur-md shadow-lg p-1 text-sm",
-                    "transition duration-200 ease-in-out",
-                    "[--anchor-gap:var(--spacing-5)] data-[closed]:-translate-y-1 data-[closed]:opacity-0"
-                  )}
-                >
-                  <div className="flex flex-col gap-1">
-                    {locales.map(l => {
-                      const isActive = l === locale;
-                      return (
-                        <button
-                          key={l}
-                          onClick={() => onChangeLocale(l)}
-                          className={clsx(
-                            "flex w-full items-center gap-2 px-3 py-2 rounded-lg text-left cursor-pointer",
-                            "hover:bg-black/5",
-                            isActive ? "text-primary" : "text-slate-600"
-                          )}
-                        >
-                          <span className="flex-1">{tLocale(l)}</span>
-                          {isActive && <Check size={16} className="opacity-80" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </PopoverPanel>
-              </Popover>
+              <LocaleSwitcher className={iconButtonClass} />
 
               <button className={`lg:hidden ${iconButtonClass}`} onClick={() => setOpen(!open)}>
                 {open ? <ChevronUp size={24} /> : <Menu size={24} />}
