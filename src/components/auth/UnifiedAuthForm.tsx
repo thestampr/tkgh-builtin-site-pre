@@ -4,7 +4,8 @@ import type { Role } from "@prisma/client";
 import clsx from "clsx";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type Mode = "login" | "register";
 
@@ -20,9 +21,18 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
+	const [redirect, setRedirect] = useState<string | null>(null);
 
 	const t = useTranslations("Common");
 	const tAuth = useTranslations("Auth");
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		const params = new URLSearchParams(window.location.search);
+		const r = params.get("redirect");
+		if (r) setRedirect(r);
+	}, []);
 
 	const handleErrors = (res: Response) => {
 		switch (res.status) {
@@ -38,8 +48,8 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 
 	async function onSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		setError(null); 
-		setSuccess(null); 
+		setError(null);
+		setSuccess(null);
 		setLoading(true);
 		try {
 			if (mode === "register") {
@@ -55,17 +65,17 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 				setSuccess("Registered. You can login now.");
 				setMode("login");
 			} else {
-				const r = await signIn("credentials", { 
-					redirect: false, 
-					email, password 
+				const r = await signIn("credentials", {
+					redirect: false,
+					email, password
 				});
 				if (r?.error) throw new Error(r.error);
 				if (!r?.ok) throw new Error("Login failed");
 				setSuccess("Logged in");
-				window.location.href = "/";
+				window.location.href = redirect || "/";
 			}
 		} catch (e: unknown) {
-			if (e instanceof Error){
+			if (e instanceof Error) {
 				setError(e.message || "Failed");
 			}
 		} finally {

@@ -1,7 +1,9 @@
 "use client";
 
 import clsx from "clsx";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface FavoriteButtonProps {
@@ -12,9 +14,11 @@ interface FavoriteButtonProps {
 }
 
 export function FavoriteButton({ builtInId, initial = null, className = "", iconButton = false }: FavoriteButtonProps) {
+  const { data: session } = useSession();
   const [favorited, setFavorited] = useState<boolean | null>(initial);
   const [loading, setLoading] = useState(false);
   const t = useTranslations("Common");
+  const router = useRouter();
 
   useEffect(() => {
     if (favorited !== null) return; // already have state
@@ -27,6 +31,9 @@ export function FavoriteButton({ builtInId, initial = null, className = "", icon
   }, [builtInId, favorited]);
 
   async function toggle() {
+    if (!session) {
+      return router.push(`/login?redirect=${encodeURIComponent(window.location.href)}`);
+    }
     if (loading) return;
     setLoading(true);
     setFavorited(prev => prev === null ? true : !prev);
