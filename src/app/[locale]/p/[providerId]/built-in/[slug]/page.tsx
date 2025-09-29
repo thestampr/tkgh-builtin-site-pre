@@ -21,6 +21,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
   const { locale, providerId, slug } = await params;
   const session = await getServerSession(authOptions);
   const tCommon = await getTranslations({ locale, namespace: "Common" });
+  const tBuiltIn = await getTranslations({ locale, namespace: "BuiltIn" });
 
   const item = await getBuiltInItem(providerId, slug, { userId: session?.user?.id, locale});
   if (!item) return notFound();
@@ -94,7 +95,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
                 {DOMPurify.sanitize(item.content)}
               </Markdown>
             ) : (
-              <div className="text-slate-600">No content provided.</div>
+              <div className="text-slate-600">{tBuiltIn("noContent")}</div>
             )}
           </article>
 
