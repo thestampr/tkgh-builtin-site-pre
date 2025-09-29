@@ -3,16 +3,15 @@
 import ResponsiveSwiper from "@/components/responsive-swiper";
 import type { BuiltInItem } from "@/lib/api";
 import { formatPrice } from "@/lib/formatting";
+import clsx from "clsx";
 import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useLocale } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SwiperSlide } from "swiper/react";
 import { FavoriteButton } from "./FavoriteButton";
 import ProviderButton from "./ProviderButton";
-import clsx from "clsx";
 
 interface Props {
   items: BuiltInItem[];
