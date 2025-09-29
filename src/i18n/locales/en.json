@@ -97,6 +97,10 @@
     "listTitle": "All Categories",
     "listSubtitle": "Pick a category to explore items.",
     "empty": "No categories available.",
+    "emptyDesc": "No categories available yet.",
+    "emptySearch": "No categories match your search or filters.",
+    "notExist": "This category does not exist.",
+    "providerNoCategories": "This provider has no categories.",
     "noItems": "No items available in this category yet."
   },
   "BuiltIn": {
@@ -105,7 +109,9 @@
     "listTitle": "Built-in Items",
     "listSubtitle": "Explore our built-in selections.",
     "empty": "No items available.",
-    "emptySearch": "No built-in items match your search or filters."
+    "emptyDesc": "No built-in items available yet.",
+    "emptySearch": "No built-in items match your search or filters.",
+    "providerNoItems": "This provider has no built-in items."
   },
   "Estimate": {
     "title": "Get Your Estimate",
