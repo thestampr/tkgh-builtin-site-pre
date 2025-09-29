@@ -9,6 +9,7 @@ import type {
 } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { prisma } from "./db/prisma";
+import type { CTAConfig } from "@/components/ProviderCTA";
 
 export interface ProviderInfo {
   id: string;
@@ -58,14 +59,7 @@ export interface ProviderPublicProfile {
     type: string; 
     value: string 
   }[] | null;
-  cta?: { 
-    label?: string; 
-    color?: string; 
-    size?: string; 
-    icon?: string; 
-    style?: string; 
-    href?: string 
-  } | null;
+  cta?: CTAConfig | null;
 }
 export type OrderKind = "title_asc" | "title_desc" | "newest" | "price_low" | "price_high" | "popular"; 
 
