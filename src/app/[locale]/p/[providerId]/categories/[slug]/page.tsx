@@ -52,19 +52,13 @@ export default async function CategoryByProviderSlug({ params }: { params: Promi
             <span>{category.title}</span>
           </div>
         )}
-        {items.length > 0 ? (
-          <>
-            <div className="mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold">{tBuiltIn("listTitle")}</h1>
-              <p className="mt-2 text-slate-600">{tBuiltIn("listSubtitle")}</p>
-            </div>
-            <BuiltInGrid items={items} showProvider={false} showCategory={false} />
-          </>
-        ) : (
-          <div className="rounded-xl border border-divider bg-white p-8 text-center text-slate-600">
-            {category.title} — {tCategories("noItems")}
+        {items.length > 0 && (
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold">{tBuiltIn("listTitle")}</h1>
+            <p className="mt-2 text-slate-600">{tBuiltIn("listSubtitle")}</p>
           </div>
         )}
+        <BuiltInGrid items={items} showProvider={false} showCategory={false} type={`category-${category.title}`} />
       </section>
     </>
   );
