@@ -28,10 +28,6 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
   const hero = item.images?.[0] || null;
   const hasGallery = item.images;
 
-  const backHref = (item.category?.slug && item.provider?.id)
-    ? `/${locale}/p/${item.provider.id}/categories/${item.category.slug}`
-    : `/${locale}/`;
-
   return (
     <main className="bg-white">
       <TrackBuiltInView slug={slug} />
