@@ -1,12 +1,12 @@
 "use client";
 
-import { defaultLocale } from "@/src/i18n/navigation";
+import { defaultLocale } from "@/i18n/navigation";
 import { Profile, ProfileTranslation } from "@prisma/client";
 import clsx from "clsx";
 import * as Lucide from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IconPicker } from "../IconPicker";
 import { defaultCta, ProviderCTA, type CTAConfig } from "../ProviderCTA";
 
@@ -36,30 +36,64 @@ function isValidFullHex(v: string) {
   return /^#[0-9a-fA-F]{6}$/.test(v);
 }
 
+// Baseline state types to track last saved values (base + translations)
+interface BaseLocaleState {
+  displayName: string;
+  bio: string;
+  contacts: ContactData;
+  avatarUrl: string | null;
+  coverImage: string | null;
+  ctaConfig: CTAConfig;
+}
+
+interface TranslationState {
+  displayName: string;
+  bio: string;
+  ctaLabel: string;
+}
+
 export default function ProfileEditor({ initialProfile, inline = false }: ProfileEditorProps) {
   const { data: session, update } = useSession();
   const t = useTranslations("Account.ui");
   const tErrors = useTranslations("Errors");
   const tProfile = useTranslations("Profile");
+
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
+
+  // Editable states (base locale)
   const [displayName, setDisplayName] = useState(initialProfile?.displayName || "");
   const [bio, setBio] = useState(initialProfile?.bio || "");
-  const [trDisplayName, setTrDisplayName] = useState<string>("");
-  const [trBio, setTrBio] = useState<string>("");
-  const [loadingTranslation, setLoadingTranslation] = useState(false);
   const [contacts, setContacts] = useState<ContactData>(() => parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }));
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => initialProfile?.avatarUrl || null);
+  const [coverImage, setCoverImage] = useState<string | null>(initialProfile ? initialProfile.coverImage || null : null);
   const [ctaConfig, setCtaConfig] = useState<CTAConfig>(() => {
     const parsed = parseJSON<CTAConfig>(initialProfile?.ctaJson as string, defaultCta);
     if (!parsed.radius) parsed.radius = "full";
     return parsed;
   });
-  const [coverImage, setCoverImage] = useState<string | null>(initialProfile ? initialProfile.coverImage || null : null);
-  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+
+  // Editable states (translation)
+  const [trDisplayName, setTrDisplayName] = useState<string>("");
+  const [trBio, setTrBio] = useState<string>("");
   const [ctaLabelTr, setCtaLabelTr] = useState<string>("");
+
+  // Baseline (last saved) states
+  const [baselineBase, setBaselineBase] = useState<BaseLocaleState>(() => ({
+    displayName: initialProfile?.displayName || "",
+    bio: initialProfile?.bio || "",
+    contacts: parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }),
+    avatarUrl: initialProfile?.avatarUrl || null,
+    coverImage: initialProfile?.coverImage || null,
+    ctaConfig: parseJSON<CTAConfig>(initialProfile?.ctaJson as string, { ...defaultCta })
+  }));
+  const [baselineTranslations, setBaselineTranslations] = useState<Record<string, TranslationState>>({});
+
+  // UI states
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loadingTranslation, setLoadingTranslation] = useState(false);
 
   // Local controlled hex inputs for colors
   const [textColorHex, setTextColorHex] = useState<string>(ctaConfig.textColor || "#ffffff");
@@ -105,6 +139,52 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     return !errs.length;
   }
 
+  // Deep compare helpers
+  function shallowCompareCTA(a: CTAConfig, b: CTAConfig) {
+    const keys: (keyof CTAConfig)[] = ["label", "href", "textColor", "color", "size", "icon", "style", "radius"];
+    return keys.every(k => (a[k] || "") === (b[k] || ""));
+  }
+
+  function contactsEqual(a: ContactData, b: ContactData) {
+    if (a.channels.length !== b.channels.length) return false;
+    for (let i = 0; i < a.channels.length; i++) {
+      if (a.channels[i].type !== b.channels[i].type || a.channels[i].value !== b.channels[i].value) return false;
+    }
+    return true;
+  }
+
+  const dirty = useMemo(() => {
+    if (activeLocale === defaultLocale) {
+      if (displayName !== baselineBase.displayName) return true;
+      if (bio !== baselineBase.bio) return true;
+      if (!contactsEqual(contacts, baselineBase.contacts)) return true;
+      if (avatarUrl !== baselineBase.avatarUrl) return true;
+      if (coverImage !== baselineBase.coverImage) return true;
+      if (!shallowCompareCTA(ctaConfig, baselineBase.ctaConfig)) return true;
+      return false;
+    } else {
+      const baseTr = baselineTranslations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
+      if (trDisplayName !== baseTr.displayName) return true;
+      if (trBio !== baseTr.bio) return true;
+      if (ctaLabelTr !== baseTr.ctaLabel) return true;
+      return false;
+    }
+  }, [
+    activeLocale,
+    baselineBase,
+    baselineTranslations,
+    displayName,
+    bio,
+    contacts,
+    avatarUrl,
+    coverImage,
+    ctaConfig,
+    trDisplayName,
+    trBio,
+    ctaLabelTr,
+    defaultLocale
+  ]);
+
   async function saveBase() {
     if (!validate()) return;
     setSaving(true);
@@ -122,46 +202,88 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       })
     });
     setSaving(false);
-    setMessage(res.ok ? "Saved" : "Save failed");
-    if (res.ok && update) {
-      const newUser = await res.json();
-      update(newUser);
+    if (res.ok) {
+      setMessage("Saved");
+      // Update baseline to reflect last saved state (optimistic)
+      setBaselineBase({
+        displayName,
+        bio,
+        contacts: JSON.parse(JSON.stringify(contacts)),
+        avatarUrl,
+        coverImage,
+        ctaConfig: { ...ctaConfig }
+      });
+      if (update) {
+        try {
+          const newUser = await res.json();
+          update(newUser);
+        } catch {
+          // Ignore JSON parse error if server not returning user object
+        }
+      }
+    } else {
+      setMessage("Save failed");
     }
   }
 
   function cancel() {
-    setDisplayName(initialProfile?.displayName || "");
-    setBio(initialProfile?.bio || "");
-    setContacts(parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }));
-    setAvatarUrl(initialProfile?.avatarUrl || null);
-    setCoverImage(initialProfile?.coverImage || null);
-    setCtaConfig(parseJSON<CTAConfig>(initialProfile?.ctaJson as string, defaultCta));
-    setTrDisplayName("");
-    setTrBio("");
-    setCtaLabelTr("");
+    if (activeLocale === defaultLocale) {
+      // Reset to last saved baseline
+      setDisplayName(baselineBase.displayName);
+      setBio(baselineBase.bio);
+      setContacts(JSON.parse(JSON.stringify(baselineBase.contacts)));
+      setAvatarUrl(baselineBase.avatarUrl);
+      setCoverImage(baselineBase.coverImage);
+      setCtaConfig({ ...baselineBase.ctaConfig });
+      setTextColorHex(baselineBase.ctaConfig.textColor || "#ffffff");
+      setBgColorHex(baselineBase.ctaConfig.color || "#8a6a40");
+    } else {
+      const baseTr = baselineTranslations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
+      setTrDisplayName(baseTr.displayName);
+      setTrBio(baseTr.bio);
+      setCtaLabelTr(baseTr.ctaLabel);
+    }
     setMessage("Canceled");
+    setErrors([]);
   }
 
   useEffect(() => {
     if (activeLocale === defaultLocale) return;
+    // Load translation when switching locale (except default)
     setLoadingTranslation(true);
-    fetch(`/api/provider/profile?withTranslations=1`).then(r => r.json()).then(json => {
-      const tr = json.profile?.translations?.find((x: ProfileTranslation) => x.locale === activeLocale);
-      if (tr) {
-        setTrDisplayName(tr.displayName || "");
-        setTrBio(tr.bio || "");
-        setCtaLabelTr(tr.ctaLabel || "");
-      } else {
-        setTrDisplayName("");
-        setTrBio("");
-        setCtaLabelTr("");
-      }
-    }).finally(() => setLoadingTranslation(false));
+    fetch(`/api/provider/profile?withTranslations=1`)
+      .then(r => r.json())
+      .then(json => {
+        const tr = json.profile?.translations?.find((x: ProfileTranslation) => x.locale === activeLocale);
+        if (tr) {
+          setTrDisplayName(tr.displayName || "");
+          setTrBio(tr.bio || "");
+          setCtaLabelTr(tr.ctaLabel || "");
+          setBaselineTranslations(prev => ({
+            ...prev,
+            [activeLocale]: {
+              displayName: tr.displayName || "",
+              bio: tr.bio || "",
+              ctaLabel: tr.ctaLabel || ""
+            }
+          }));
+        } else {
+          setTrDisplayName("");
+          setTrBio("");
+          setCtaLabelTr("");
+          setBaselineTranslations(prev => ({
+            ...prev,
+            [activeLocale]: { displayName: "", bio: "", ctaLabel: "" }
+          }));
+        }
+      })
+      .finally(() => setLoadingTranslation(false));
   }, [activeLocale, defaultLocale]);
 
   function saveTranslation() {
     if (activeLocale === defaultLocale) return;
     setSaving(true);
+    setMessage(null);
     fetch("/api/provider/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -175,7 +297,17 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       })
     })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(() => setMessage("Saved"))
+      .then(() => {
+        setMessage("Saved");
+        setBaselineTranslations(prev => ({
+          ...prev,
+          [activeLocale]: {
+            displayName: trDisplayName,
+            bio: trBio,
+            ctaLabel: ctaLabelTr
+          }
+        }));
+      })
       .catch(() => setMessage("Save failed"))
       .finally(() => setSaving(false));
   }
@@ -197,10 +329,13 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     const res = await fetch("/api/provider/profile/avatar", { method: "POST", body: form });
     if (res.ok) {
       const json = await res.json();
-      if (json.url) setAvatarUrl(json.url);
-      if (update && session) {
-        const newUser = { ...session.user, avatarUrl: json.url };
-        update(newUser);
+      if (json.url) {
+        setAvatarUrl(json.url);
+        // Not updating baseline here until user saves base profile
+        if (update && session) {
+          const newUser = { ...session.user, avatarUrl: json.url };
+          update(newUser);
+        }
       }
     } else {
       const j = await res.json().catch(() => ({}));
@@ -245,26 +380,53 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
         inline ? "md:grid-cols-2 gap-10" : "max-w-2xl gap-10"
       )}>
         <div className="flex items-center gap-2 text-sm flex-wrap">
-          <button onClick={activeLocale === defaultLocale ? saveBase : saveTranslation} disabled={saving} className="btn btn-primary">Save</button>
-          <button type="button" onClick={cancel} className="btn btn-ghost">Cancel</button>
+          <button
+            onClick={activeLocale === defaultLocale ? saveBase : saveTranslation}
+            disabled={saving || !dirty}
+            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={cancel}
+            disabled={!dirty || saving}
+            className="btn btn-ghost disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
+          {message && <span className="text-xs text-neutral-500">{message}</span>}
+          {dirty && <span className="text-[10px] text-amber-600">Unsaved changes</span>}
           <div className="flex items-center gap-2 ml-auto">
             {[defaultLocale, "en"].map(loc => (
-              <button key={loc} onClick={() => setActiveLocale(loc)} className={clsx(
-                "btn btn-sm",
-                activeLocale === loc ? "btn-secondary" : "btn-ghost"
-              )}>{loc.toUpperCase()}</button>
+              <button
+                key={loc}
+                onClick={() => setActiveLocale(loc)}
+                className={clsx(
+                  "btn btn-sm",
+                  activeLocale === loc ? "btn-secondary" : "btn-ghost"
+                )}
+              >{loc.toUpperCase()}</button>
             ))}
           </div>
-          {message && <span className="text-xs text-neutral-500">{message}</span>}
         </div>
         {!!errors.length && (
           <ul className="text-xs text-danger space-y-1">
             {errors.map(e => <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>)}
           </ul>
         )}
-        <form onSubmit={e => { e.preventDefault(); activeLocale === defaultLocale ? saveBase() : saveTranslation(); }} className="space-y-6">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (!dirty) return;
+            activeLocale === defaultLocale ? saveBase() : saveTranslation();
+          }}
+          className="space-y-6"
+        >
           {activeLocale !== defaultLocale && (
-            <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">Editing translation for locale <strong>{activeLocale}</strong></div>
+            <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+              Editing translation for locale <strong>{activeLocale}</strong>
+            </div>
           )}
           <div className="space-y-6">
             <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
@@ -305,11 +467,19 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Display Name{activeLocale !== defaultLocale && " (EN)"}</label>
-                  <input value={activeLocale === defaultLocale ? displayName : trDisplayName} onChange={e => activeLocale === defaultLocale ? setDisplayName(e.target.value) : setTrDisplayName(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white" />
+                  <input
+                    value={activeLocale === defaultLocale ? displayName : trDisplayName}
+                    onChange={e => activeLocale === defaultLocale ? setDisplayName(e.target.value) : setTrDisplayName(e.target.value)}
+                    className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Bio{activeLocale !== defaultLocale && " (EN)"}</label>
-                  <textarea value={activeLocale === defaultLocale ? bio : trBio} onChange={e => activeLocale === defaultLocale ? setBio(e.target.value) : setTrBio(e.target.value)} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm h-32 resize-y focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white" />
+                  <textarea
+                    value={activeLocale === defaultLocale ? bio : trBio}
+                    onChange={e => activeLocale === defaultLocale ? setBio(e.target.value) : setTrBio(e.target.value)}
+                    className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm h-32 resize-y focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white"
+                  />
                 </div>
               </div>
             </section>
@@ -383,10 +553,10 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                           {ctaConfig.icon && (() => { const I = (Lucide as any)[ctaConfig.icon]; return I ? <I size={16} /> : null; })()}
                           <span>{ctaConfig.icon || "Pick"}</span>
                         </button>
-                        {ctaConfig.icon && 
-                          <button 
-                            type="button" 
-                            onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))} 
+                        {ctaConfig.icon &&
+                          <button
+                            type="button"
+                            onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))}
                             className="btn btn-ghost btn-xs h-8 w-8"
                           >
                             ✕
@@ -464,8 +634,28 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             </section>
           </div>
           <div className="flex items-center gap-3 pt-2">
-            <button type="submit" disabled={saving} className="btn btn-primary btn-md">{loadingTranslation && activeLocale !== defaultLocale ? "..." : "Save"}</button>
-            {activeLocale !== defaultLocale && <button type="button" onClick={() => { setTrDisplayName(""); setTrBio(""); setCtaLabelTr(""); }} className="text-xs underline text-neutral-500">Reset EN</button>}
+            <button
+              type="submit"
+              disabled={saving || !dirty}
+              className="btn btn-primary btn-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingTranslation && activeLocale !== defaultLocale ? "..." : "Save"}
+            </button>
+            {activeLocale !== defaultLocale && (
+              <button
+                type="button"
+                onClick={() => {
+                  const baseTr = baselineTranslations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
+                  setTrDisplayName(baseTr.displayName);
+                  setTrBio(baseTr.bio);
+                  setCtaLabelTr(baseTr.ctaLabel);
+                }}
+                disabled={!dirty}
+                className="text-xs underline text-neutral-500 disabled:opacity-40 disabled:no-underline disabled:cursor-not-allowed"
+              >
+                Reset EN
+              </button>
+            )}
           </div>
         </form>
       </div>
