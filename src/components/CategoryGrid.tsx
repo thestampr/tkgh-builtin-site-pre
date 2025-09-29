@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { SwiperSlide } from "swiper/react";
 import ProviderButton from "./ProviderButton";
 
-type TypeKind = "search" | "provider";
+type TypeKind = "search" | "provider" | `provider-${string}`;
 
 /**
  * Props for CategoryGrid and CategorySwiper components
@@ -57,9 +57,16 @@ function Placeholder({ type }: { type?: TypeKind }) {
         return t("emptyDesc");
     }
   }
+
+  const providerName = type?.startsWith("provider-") ? type.replace("provider-", "") : undefined;
+  if (providerName) {
+    return <div className="rounded-xl border border-divider bg-white p-8 text-center text-slate-600">
+      <strong>{providerName}</strong> — {t("providerNoCategories")}
+    </div>
+  }
   
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center bg-white/60">
+    <div className="rounded-xl border border-divider p-10 text-center bg-white/60">
       <h3 className="text-base font-semibold text-slate-700">{t("empty")}</h3>
       <p className="mt-2 text-sm text-slate-500">{message()}</p>
     </div>

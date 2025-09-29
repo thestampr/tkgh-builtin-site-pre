@@ -14,7 +14,7 @@ import { CategoryButton } from "./CategoryButton";
 import { FavoriteButton } from "./FavoriteButton";
 import ProviderButton from "./ProviderButton";
 
-type TypeKind = "category" | "provider";
+type TypeKind = "category" | "provider" | `category-${string}` | `provider-${string}`;
 
 /**
  * Props for BuiltInGrid and BuiltInSwiper components
@@ -75,8 +75,22 @@ function Placeholder({ type }: { type?: TypeKind }) {
     }
   }
 
+  const categoryName = type?.startsWith("category-") ? type.replace("category-", "") : undefined;
+  if (categoryName) {
+    return <div className="rounded-xl border border-divider bg-white p-8 text-center text-slate-600">
+      <strong>{categoryName}</strong> — {tCat("noItems")}
+    </div>
+  }
+
+  const providerName = type?.startsWith("provider-") ? type.replace("provider-", "") : undefined;
+  if (providerName) {
+    return <div className="rounded-xl border border-divider bg-white p-8 text-center text-slate-600">
+      <strong>{providerName}</strong> — {t("providerNoItems")}
+    </div>
+  }
+
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center bg-white/60">
+    <div className="rounded-xl border border-divider p-10 text-center bg-white/60">
       <h3 className="text-base font-semibold text-slate-700">{t("empty")}</h3>
       <p className="mt-2 text-sm text-slate-500">{message()}</p>
     </div>
