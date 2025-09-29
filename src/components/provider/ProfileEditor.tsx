@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { IconPicker } from "../IconPicker";
 import { defaultCta, ProviderCTA, type CTAConfig } from "../ProviderCTA";
+import { useToast } from "@/src/hooks/useToast";
 
 interface ProfileEditorProps {
   initialProfile: Profile | null;
@@ -98,6 +99,9 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
   // Local controlled hex inputs for colors
   const [textColorHex, setTextColorHex] = useState<string>(ctaConfig.textColor || "#ffffff");
   const [bgColorHex, setBgColorHex] = useState<string>(ctaConfig.color || "#8a6a40");
+
+  // Toasts
+  const { showSuccessToast, showErrorToast } = useToast();
 
   useEffect(() => {
     setTextColorHex(ctaConfig.textColor || "#ffffff");
@@ -189,40 +193,94 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     if (!validate()) return;
     setSaving(true);
     setMessage(null);
-    const res = await fetch("/api/provider/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        displayName,
-        bio,
-        contactJson: JSON.stringify(contacts),
-        avatarUrl,
-        coverImage,
-        ctaJson: JSON.stringify(ctaConfig)
-      })
-    });
-    setSaving(false);
-    if (res.ok) {
-      setMessage("Saved");
-      // Update baseline to reflect last saved state (optimistic)
-      setBaselineBase({
-        displayName,
-        bio,
-        contacts: JSON.parse(JSON.stringify(contacts)),
-        avatarUrl,
-        coverImage,
-        ctaConfig: { ...ctaConfig }
+    try {
+      const res = await fetch("/api/provider/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName,
+          bio,
+          contactJson: JSON.stringify(contacts),
+          avatarUrl,
+          coverImage,
+          ctaJson: JSON.stringify(ctaConfig)
+        })
       });
-      if (update) {
-        try {
-          const newUser = await res.json();
-          update(newUser);
-        } catch {
-          // Ignore JSON parse error if server not returning user object
+      setSaving(false);
+      if (res.ok) {
+        setMessage("Saved");
+        // Update baseline to reflect last saved state (optimistic)
+        setBaselineBase({
+          displayName,
+          bio,
+          contacts: JSON.parse(JSON.stringify(contacts)),
+          avatarUrl,
+          coverImage,
+          ctaConfig: { ...ctaConfig }
+        });
+        if (update) {
+          try {
+            const newUser = await res.json();
+            update(newUser);
+          } catch {
+            // Ignore JSON parse error if server not returning user object
+          }
         }
+        showSuccessToast({ title: t("saved") });
+      } else {
+        setMessage(t("saveFailed"));
+        showErrorToast({ title: t("saveFailed") });
       }
-    } else {
-      setMessage("Save failed");
+    } catch (e: unknown) {
+      setMessage(t("saveError"));
+      showErrorToast({ title: t("saveError") });
+      const message = e instanceof Error ? e.message : typeof e === 'string' ? e : t("saveError");
+      console.error("Save base profile error:", message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveTranslation() {
+    if (activeLocale === defaultLocale) return;
+    if (!validate()) return;
+    setSaving(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/provider/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          translationLocale: activeLocale,
+          translation: {
+            displayName: trDisplayName || null,
+            bio: trBio || null,
+            ctaLabel: ctaLabelTr === "" ? "" : ctaLabelTr
+          }
+        })
+      });
+      setSaving(false);
+      if (res.ok) {
+        setMessage("Saved");
+        setBaselineTranslations(prev => ({
+          ...prev,
+          [activeLocale]: {
+            displayName: trDisplayName,
+            bio: trBio,
+            ctaLabel: ctaLabelTr
+          }
+        }));
+      } else {
+        setMessage(t("saveFailed"));
+        showErrorToast({ title: t("saveFailed") });
+      }
+    } catch (e: unknown) {
+      setMessage(t("saveError"));
+      showErrorToast({ title: t("saveError") });
+      const message = e instanceof Error ? e.message : typeof e === 'string' ? e : t("saveError");
+      console.error("Save base profile error:", message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -279,38 +337,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       })
       .finally(() => setLoadingTranslation(false));
   }, [activeLocale, defaultLocale]);
-
-  function saveTranslation() {
-    if (activeLocale === defaultLocale) return;
-    setSaving(true);
-    setMessage(null);
-    fetch("/api/provider/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        translationLocale: activeLocale,
-        translation: {
-          displayName: trDisplayName || null,
-          bio: trBio || null,
-          ctaLabel: ctaLabelTr === "" ? "" : ctaLabelTr
-        }
-      })
-    })
-      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(() => {
-        setMessage("Saved");
-        setBaselineTranslations(prev => ({
-          ...prev,
-          [activeLocale]: {
-            displayName: trDisplayName,
-            bio: trBio,
-            ctaLabel: ctaLabelTr
-          }
-        }));
-      })
-      .catch(() => setMessage("Save failed"))
-      .finally(() => setSaving(false));
-  }
 
   async function onAvatarSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
