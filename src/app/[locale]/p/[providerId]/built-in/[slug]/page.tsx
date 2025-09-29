@@ -31,6 +31,8 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
   const hero = item.images?.[0] || null;
   const hasGallery = item.images;
 
+  const backHref = `/${locale}/p/${providerId}`;
+
   return (
     <main className="bg-white">
       <TrackBuiltInView slug={slug} />
@@ -38,7 +40,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
       <section className="relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20 py-6 md:py-10">
           <div className="flex items-center justify-between gap-3">
-            <BackButton />
+            <BackButton href={backHref} />
             <div className="text-sm text-slate-500">
               {item.category?.title ? item.category.title : ""}
             </div>
