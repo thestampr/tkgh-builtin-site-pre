@@ -82,13 +82,15 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
         )}
       </div>
       <div className="p-4">
-        <h3 className="line-clamp-1 text-base md:text-lg font-semibold text-slate-900 group-hover:text-[#8a6a40] transition-colors">
-          {title}
-        </h3>
-        <div className="mt-3 flex items-center justify-between text-sm">
-          <span className="text-slate-600 font-medium">
+        <div className="flex items-center justify-between">
+          <h3 className="line-clamp-1 text-base md:text-lg font-semibold text-slate-900 group-hover:text-[#8a6a40] transition-colors">
+            {title}
+          </h3>
+          <span className="text-slate-600 text-sm">
             {formatPrice(price ?? null, locale, currency)}
           </span>
+        </div>
+        <div className="mt-3 text-sm">
           {showProvider && item.provider &&
             <span className="max-w-24 truncate">
               <ProviderButton provider={item.provider} size="sm" ghost />
