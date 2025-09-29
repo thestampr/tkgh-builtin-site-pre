@@ -1,5 +1,8 @@
 "use client";
 
+import { IconPicker } from "@/components/IconPicker";
+import { defaultCta, ProviderCTA, type CTAConfig } from "@/components/ProviderCTA";
+import { useToast } from "@/hooks/useToast";
 import { defaultLocale } from "@/i18n/navigation";
 import { Profile, ProfileTranslation } from "@prisma/client";
 import clsx from "clsx";
@@ -7,9 +10,6 @@ import * as Lucide from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
-import { IconPicker } from "../IconPicker";
-import { defaultCta, ProviderCTA, type CTAConfig } from "../ProviderCTA";
-import { useToast } from "@/src/hooks/useToast";
 
 interface ProfileEditorProps {
   initialProfile: Profile | null;
