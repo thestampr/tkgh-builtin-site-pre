@@ -209,6 +209,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       setSaving(false);
       if (res.ok) {
         setMessage("Saved");
+        showSuccessToast({ title: t("saved") });
         // Update baseline to reflect last saved state (optimistic)
         setBaselineBase({
           displayName,
@@ -226,7 +227,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             // Ignore JSON parse error if server not returning user object
           }
         }
-        showSuccessToast({ title: t("saved") });
       } else {
         setMessage(t("saveFailed"));
         showErrorToast({ title: t("saveFailed") });
@@ -262,6 +262,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       setSaving(false);
       if (res.ok) {
         setMessage("Saved");
+        showSuccessToast({ title: t("saved") });
         setBaselineTranslations(prev => ({
           ...prev,
           [activeLocale]: {
