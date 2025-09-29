@@ -2,6 +2,7 @@ import ConfirmHost from "@/components/modal/confirm-host";
 import { SessionClientProvider } from "@/components/providers/SessionClientProvider";
 import { DeviceProvider } from "@/hooks/useDevice";
 import { defaultMetadata } from "@/lib/seo";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionClientProvider>
           <DeviceProvider>
             {children}
+            <SpeedInsights />
             <ConfirmHost />
           </DeviceProvider>
         </SessionClientProvider>
