@@ -5,6 +5,8 @@ import { TrackBuiltInView } from "@/components/TrackBuiltInView";
 import { getBuiltInItem } from "@/lib/api";
 import { authOptions } from "@/lib/auth/options";
 import { formatPrice } from "@/lib/formatting";
+import { CategoryButton } from "@/src/components/CategoryButton";
+import ProviderButton from "@/src/components/ProviderButton";
 import DOMPurify from "isomorphic-dompurify";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
@@ -23,7 +25,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
   const tCommon = await getTranslations({ locale, namespace: "Common" });
   const tBuiltIn = await getTranslations({ locale, namespace: "BuiltIn" });
 
-  const item = await getBuiltInItem(providerId, slug, { userId: session?.user?.id, locale});
+  const item = await getBuiltInItem(providerId, slug, { userId: session?.user?.id, locale });
   if (!item) return notFound();
 
   const hero = item.images?.[0] || null;
@@ -68,16 +70,9 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
                   {formatPrice(item.price ?? null, locale, item.currency) || "-"}
                 </div>
                 {item.provider && (
-                  <Link href={`/${locale}/p/${item.provider.id}`} className="mt-3 inline-flex items-center gap-2 text-white/90 hover:text-white text-sm group">
-                    <span className="relative inline-block size-7 rounded-full bg-white/20 ring-2 ring-white/40 overflow-hidden">
-                      {item.provider.avatarUrl ? (
-                        <Image src={item.provider.avatarUrl} alt={item.provider.displayName || "avatar"} fill className="object-cover" />
-                      ) : (
-                        <span className="flex items-center justify-center w-full h-full text-[10px] font-medium">PR</span>
-                      )}
-                    </span>
-                    <span className="font-medium drop-shadow-sm group-hover:underline">{item.provider.displayName || "Provider"}</span>
-                  </Link>
+                  <div className="mt-3 **:text-white/90 w-fit">
+                    <ProviderButton provider={item.provider} size="md" padding={2} />
+                  </div>
                 )}
               </div>
             </div>
@@ -117,16 +112,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
                 <div className="flex items-center justify-between">
                   <dt className="text-slate-600">{tCommon("category")}</dt>
                   <dd className="text-slate-900">
-                    {item.category?.slug ? (
-                      <Link
-                        href={`/${locale}/categories/${item.category.slug}`}
-                        className="text-primary hover:underline"
-                      >
-                        {item.category?.title ?? item.category.slug}
-                      </Link>
-                    ) : (
-                      "-"
-                    )}
+                    <CategoryButton category={{ ...item.category!, provider: item.provider }} />
                   </dd>
                 </div>
               </dl>
@@ -134,7 +120,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
               <div className="mt-6">
                 <Link
                   href={`/${locale}/estimate`}
-                  className="inline-flex items-center justify-center rounded-lg bg-primary text-white px-5 py-3 hover:opacity-95 transition"
+                  className="btn btn-primary btn-md"
                 >
                   {tCommon("freeEstimate")}
                 </Link>
