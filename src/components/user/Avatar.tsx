@@ -63,8 +63,8 @@ export default function UserAvatar({
   return (
     <div className={
       clsx(
-        "flex items-center justify-center rounded-full overflow-hidden bg-gray-100 select-none",
-        "*:!text-gray-500",
+        "flex items-center justify-center rounded-full overflow-hidden bg-gray-100 select-none relative",
+        "**:!text-gray-500",
         props.className
       )
     }
@@ -73,7 +73,6 @@ export default function UserAvatar({
         maxHeight: size,
         minWidth: size, 
         minHeight: size,
-        padding: `${padding}px`,
         aspectRatio: 1
       }}
       data-ripple={!disableRipple && displayImage}
@@ -83,15 +82,16 @@ export default function UserAvatar({
         <Image
           src={imgSrc || "/unknown.png"}
           alt="Avatar"
-          width={size - padding * 2}
-          height={size - padding * 2}
+          width={size}
+          height={size}
           onError={handleImageError}
           className="rounded-full object-cover w-full h-full"
+          style={{ padding }}
           draggable={false}
           priority
         />
       ) : letterIcon && imgAlt ?
-        <span style={{ fontSize: size / 2, fontWeight: 600 }} >
+        <span className="!no-underline" style={{ fontSize: size / 2, fontWeight: 600 }} >
           {imgAlt?.slice(0, 2).toUpperCase()}
         </span>
         : <User size={size * 2/3} opacity={.6} />
