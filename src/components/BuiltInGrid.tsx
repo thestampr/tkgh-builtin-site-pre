@@ -6,31 +6,81 @@ import { formatPrice } from "@/lib/formatting";
 import clsx from "clsx";
 import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SwiperSlide } from "swiper/react";
 import { FavoriteButton } from "./FavoriteButton";
 import ProviderButton from "./ProviderButton";
 
+type TypeKind = "category" | "provider";
+
+/**
+ * Props for BuiltInGrid and BuiltInSwiper components
+ *
+ * @param items - The list of built-in items to display
+ */
 interface Props {
   items: BuiltInItem[];
 }
 
+/**
+ * Props for Swiper component
+ *
+ * @param items - The list of built-in items to display
+ * @param className - Additional CSS classes for the swiper container
+ */
 interface SwiperProps {
   items: BuiltInItem[];
   className?: string;
 }
 
+/**
+ * Props for BuiltInGrid component
+ * 
+ * @param showCategory - Whether to show the category information
+ * @param showProvider - Whether to show the provider information
+ * @param type - The type of the component (category or provider) for placeholder messages
+ */
 interface BuiltInGridProps {
   showCategory?: boolean;
   showProvider?: boolean;
+  type?: TypeKind;
 };
 
+/**
+ * Props for individual BuiltInCard component
+ * 
+ * @param session - The current user session
+ * @param item - The built-in item data to display
+ */
 interface BuiltInItemProps {
   session?: Session | null;
   item: BuiltInItem;
 };
+
+function Placeholder({ type }: { type?: TypeKind }) {
+  const t = useTranslations("BuiltIn");
+  const tCat = useTranslations("Categories");
+  
+  const message = () => {
+    switch (type) {
+      case "category":
+        return tCat("noItems");
+      case "provider":
+        return t("providerNoItems");
+      default:
+        return t("emptyDesc");
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center bg-white/60">
+      <h3 className="text-base font-semibold text-slate-700">{t("empty")}</h3>
+      <p className="mt-2 text-sm text-slate-500">{message()}</p>
+    </div>
+  )
+}
 
 export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
   const { session, item, showCategory, showProvider } = props;
@@ -53,7 +103,7 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
   }
 
   return (
-    <div 
+    <div
       className={clsx(
         "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden transition-all duration-500 cursor-pointer",
         "hover:shadow-lg hover:border-primary/40"
@@ -102,16 +152,11 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
   );
 }
 
-export function BuiltInGrid(props?: Props & BuiltInGridProps) {
-  const { items, showCategory = false, showProvider = true } = props || {};
+export function BuiltInGrid(props: Props & BuiltInGridProps) {
+  const { items, showCategory = false, showProvider = true, type } = props;
 
   if (!items?.length) {
-    return (
-      <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center bg-gradient-to-br from-white/80 to-slate-50/60">
-        <h3 className="text-base font-semibold text-slate-700">ยังไม่มีรายการ Built-in</h3>
-        <p className="mt-2 text-sm text-slate-500">ระบบยังไม่มีข้อมูล Built-in ให้แสดง</p>
-      </div>
-    );
+    return <Placeholder type={type} />;
   }
 
   const { data: session } = useSession();
@@ -132,9 +177,15 @@ export function BuiltInGrid(props?: Props & BuiltInGridProps) {
 }
 
 export function BuiltInSwiper(props: SwiperProps & BuiltInGridProps) {
-  const { items, className, showCategory = false, showProvider = true } = props || {};
+  const { items, className, showCategory = false, showProvider = true, type } = props;
 
-  if (!items?.length) return null;
+  if (!items?.length) {
+    return (
+      <div className={className}>
+        <Placeholder type={type} />
+      </div>
+    );
+  }
 
   const { data: session } = useSession();
 

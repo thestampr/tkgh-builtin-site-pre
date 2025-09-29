@@ -3,29 +3,72 @@
 import ResponsiveSwiper from "@/components/responsive-swiper";
 import type { Category } from "@/lib/api";
 import clsx from "clsx";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SwiperSlide } from "swiper/react";
 import ProviderButton from "./ProviderButton";
 
+type TypeKind = "search" | "provider";
+
+/**
+ * Props for CategoryGrid and CategorySwiper components
+ *
+ * @param categories - The list of categories to display
+ * @param showProvider - Whether to show the provider information
+ * @param type - The type of the component (search or provider) for placeholder messages
+ */
 interface Props {
   categories: Category[];
   showProvider?: boolean;
+  type?: TypeKind;
 }
 
+/**
+ * Props for Swiper component
+ *
+ * @param className - Additional CSS classes for the swiper container
+ */
 interface SwiperProps {
   className?: string;
 }
 
+/**
+ * Props for individual CategoryCard component
+ *
+ * @param category - The category data to display
+ * @param showProvider - Whether to show the provider information
+ */
 type CategoryItemProps = {
-  item: Category;
+  category: Category;
   showProvider?: boolean;
 };
 
+function Placeholder({ type }: { type?: TypeKind }) {
+  const t = useTranslations("Categories");
+
+  const message = () => {
+    switch (type) {
+      case "search":
+        return t("emptySearch");
+      case "provider":
+        return t("providerNoCategories");
+      default:
+        return t("emptyDesc");
+    }
+  }
+  
+  return (
+    <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center bg-white/60">
+      <h3 className="text-base font-semibold text-slate-700">{t("empty")}</h3>
+      <p className="mt-2 text-sm text-slate-500">{message()}</p>
+    </div>
+  )
+}
+
 export function CategoryCard(props: CategoryItemProps) {
-  const { item, showProvider = true } = props;
-  const { title, slug, description, excerpt, image, provider } = item;
+  const { category, showProvider = true } = props;
+  const { title, slug, description, excerpt, image, provider } = category;
   const locale = useLocale();
   const router = useRouter();
 
@@ -85,15 +128,10 @@ export function CategoryCard(props: CategoryItemProps) {
 }
 
 export function CategoryGrid(props: Props) {
-  const { categories, showProvider } = props;
+  const { categories, showProvider, type } = props;
 
   if (!categories?.length) {
-    return (
-      <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center bg-white/60">
-        <h3 className="text-base font-semibold text-slate-700">ยังไม่มีหมวดหมู่</h3>
-        <p className="mt-2 text-sm text-slate-500">ระบบยังไม่มีข้อมูล Category ในตอนนี้</p>
-      </div>
-    );
+    return <Placeholder type={type} />;
   }
 
   return (
@@ -101,7 +139,7 @@ export function CategoryGrid(props: Props) {
       {categories.map((cat) =>
         <CategoryCard
           key={cat.id}
-          item={cat}
+          category={cat}
           showProvider={showProvider}
         />
       )}
@@ -110,8 +148,15 @@ export function CategoryGrid(props: Props) {
 }
 
 export function CategorySwiper(props: SwiperProps & Props) {
-  const { categories, className, showProvider } = props;
-  if (!categories?.length) return null;
+  const { categories, className, showProvider, type } = props;
+
+  if (!categories?.length) {
+    return (
+      <div className={className}>
+        <Placeholder type={type} />
+      </div>
+    );
+  }
 
   return (
     <ResponsiveSwiper maxSlidePerView={3} className={className}>
@@ -119,7 +164,7 @@ export function CategorySwiper(props: SwiperProps & Props) {
         <SwiperSlide key={cat.id}>
           <CategoryCard
             key={cat.id}
-            item={cat}
+            category={cat}
             showProvider={showProvider}
           />
         </SwiperSlide>
