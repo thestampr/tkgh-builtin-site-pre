@@ -1,7 +1,8 @@
 "use client";
 
-import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import clsx from "clsx";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 interface FavoriteButtonProps {
   builtInId: string;
@@ -10,9 +11,10 @@ interface FavoriteButtonProps {
   className?: string;
 }
 
-export function FavoriteButton({ builtInId, initial = null, className = '', iconButton = false }: FavoriteButtonProps) {
+export function FavoriteButton({ builtInId, initial = null, className = "", iconButton = false }: FavoriteButtonProps) {
   const [favorited, setFavorited] = useState<boolean | null>(initial);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("Common");
 
   useEffect(() => {
     if (favorited !== null) return; // already have state
@@ -29,12 +31,14 @@ export function FavoriteButton({ builtInId, initial = null, className = '', icon
     setLoading(true);
     setFavorited(prev => prev === null ? true : !prev);
     try {
-      const res = await fetch(`/api/favorites/${builtInId}`, { method: 'POST' });
-      if (!res.ok) throw new Error('fail');
+      const res = await fetch(`/api/favorites/${builtInId}`, { method: "POST" });
+      if (!res.ok) throw new Error("fail");
       const data = await res.json();
       setFavorited(!!data.favorited);
     } catch (e) {
       setFavorited(prev => prev === null ? null : !prev); // rollback
+      const msg = e instanceof Error ? e.message : "Error";
+      console.error(`Failed to update favorite: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -47,18 +51,17 @@ export function FavoriteButton({ builtInId, initial = null, className = '', icon
       favorited
         ? "bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100"
         : "bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-50",
-      "disabled:opacity-50",
       className
     );
 
-  const HeartIcon = ({className}: {className?: string}) =>
+  const HeartIcon = ({ className }: { className?: string }) =>
     // Some svg better than lucide-react's for this purpose?
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill={favorited ? '#e11d48' : 'none'}
+      fill={favorited ? "#e11d48" : "none"}
       strokeWidth={1.5}
-      stroke={favorited ? '#e11d48' : '#1f2937'}
+      stroke={favorited ? "#e11d48" : "#1f2937"}
       className={className}
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -67,13 +70,12 @@ export function FavoriteButton({ builtInId, initial = null, className = '', icon
   return (
     <button
       type="button"
-      aria-label={favorited ? 'Unfavorite' : 'Favorite'}
+      aria-label={favorited ? "Unfavorite" : "Favorite"}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         toggle();
       }}
-      disabled={loading}
       className={clsx(
         "cursor-pointer",
         buttonClassName,
@@ -83,7 +85,7 @@ export function FavoriteButton({ builtInId, initial = null, className = '', icon
         ? <HeartIcon className="w-5 h-5" />
         : <>
           <HeartIcon className="w-4 h-4" />
-          <span className="ml-2 text-xs font-medium">{favorited ? 'Saved' : 'Save'}</span>
+          <span className="ml-2 text-xs font-medium">{favorited ? t("saved") : t("save")}</span>
         </>
       }
     </button>
