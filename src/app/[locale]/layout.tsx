@@ -27,7 +27,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <main className="shrink-0 min-h-screen h-fit">
-        <NavBar locale={locale} />
+        <NavBar />
         {children}
       </main>
     </NextIntlClientProvider>
