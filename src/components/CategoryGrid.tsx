@@ -117,7 +117,11 @@ export function CategorySwiper(props: SwiperProps & Props) {
     <ResponsiveSwiper maxSlidePerView={3} className={className}>
       {categories.map((cat) => (
         <SwiperSlide key={cat.id}>
-          <CategoryCard key={cat.id} item={cat} showProvider={showProvider} />
+          <CategoryCard
+            key={cat.id}
+            item={cat}
+            showProvider={showProvider}
+          />
         </SwiperSlide>
       ))}
     </ResponsiveSwiper>
