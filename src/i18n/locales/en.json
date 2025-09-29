@@ -117,7 +117,8 @@
     "empty": "No items available.",
     "emptyDesc": "No built-in items available yet.",
     "emptySearch": "No built-in items match your search or filters.",
-    "providerNoItems": "This provider has no built-in items."
+    "providerNoItems": "This provider has no built-in items.",
+    "noContent": "No content provided."
   },
   "Estimate": {
     "title": "Get Your Estimate",
