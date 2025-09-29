@@ -102,19 +102,19 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
           <aside className="md:col-span-1">
             <div className="rounded-2xl border bg-white shadow-sm p-6">
               <div className="flex items-start justify-between gap-4">
-                <h2 className="text-lg font-semibold text-slate-900">Summary</h2>
+                <h2 className="text-lg font-semibold text-slate-900">{tCommon("summary")}</h2>
                 {/* Favorite button */}
                 <FavoriteButton builtInId={item.id} initial={(item.favorites || []).length > 0} />
               </div>
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <dt className="text-slate-600">Price</dt>
+                  <dt className="text-slate-600">{tCommon("price")}</dt>
                   <dd className="text-slate-900 font-medium">
                     {formatPrice(item.price ?? null, locale, item.currency) || "-"}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-slate-600">Category</dt>
+                  <dt className="text-slate-600">{tCommon("category")}</dt>
                   <dd className="text-slate-900">
                     {item.category?.slug ? (
                       <Link
@@ -147,7 +147,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
       {hasGallery && (
         <section className="pb-16">
           <div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Gallery</h2>
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">{tCommon("gallery")}</h2>
           </div>
           <GallerySwiper images={item.images?.map((img) => ({ url: img.url })) || []} className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20" />
         </section>
