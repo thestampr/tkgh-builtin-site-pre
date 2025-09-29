@@ -1,5 +1,6 @@
 "use client";
 
+import { defaultLocale } from "@/src/i18n/navigation";
 import { Profile, ProfileTranslation } from "@prisma/client";
 import clsx from "clsx";
 import * as Lucide from "lucide-react";
@@ -7,22 +8,12 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { IconPicker } from "../IconPicker";
-import { ProviderCTA } from "../ProviderCTA";
+import { defaultCta, ProviderCTA, type CTAConfig } from "../ProviderCTA";
 
 interface ProfileEditorProps {
   initialProfile: Profile | null;
-  inline?: boolean; // compact mode for user account page
+  inline?: boolean;
 }
-
-type CTAConfig = {
-  label: string;
-  color: string;
-  size: string;
-  icon: string;
-  href: string;
-  style: string;
-  radius: string;
-};
 
 type Channel = { type: string; value: string };
 interface ContactData { channels: Channel[] }
@@ -32,22 +23,24 @@ function parseJSON<T>(raw: string | null | undefined, fallback: T): T {
   try { return JSON.parse(raw) as T; } catch { return fallback; }
 }
 
-const defaultCta: CTAConfig = {
-  label: "Example",
-  color: "#8a6a40",
-  size: "md",
-  icon: "MessageCircle",
-  href: "#",
-  style: "solid",
-  radius: "full"
-};
+function normalizeHex(v: string) {
+  let val = v.trim();
+  if (!val) return "";
+  if (!val.startsWith("#")) val = "#" + val;
+  val = val.replace(/[^#0-9a-fA-F]/g, "");
+  if (val.length > 7) val = val.slice(0, 7);
+  return val;
+}
+
+function isValidFullHex(v: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(v);
+}
 
 export default function ProfileEditor({ initialProfile, inline = false }: ProfileEditorProps) {
   const { data: session, update } = useSession();
   const t = useTranslations("Account.ui");
   const tErrors = useTranslations("Errors");
   const tProfile = useTranslations("Profile");
-  const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th";
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
   const [displayName, setDisplayName] = useState(initialProfile?.displayName || "");
   const [bio, setBio] = useState(initialProfile?.bio || "");
@@ -61,12 +54,39 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     if (!parsed.radius) parsed.radius = "full";
     return parsed;
   });
-  const [coverImage, setCoverImage] = useState<string | null>(initialProfile ? (initialProfile as any).coverImage || null : null);
+  const [coverImage, setCoverImage] = useState<string | null>(initialProfile ? initialProfile.coverImage || null : null);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
   const [ctaLabelTr, setCtaLabelTr] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+
+  // Local controlled hex inputs for colors
+  const [textColorHex, setTextColorHex] = useState<string>(ctaConfig.textColor || "#ffffff");
+  const [bgColorHex, setBgColorHex] = useState<string>(ctaConfig.color || "#8a6a40");
+
+  useEffect(() => {
+    setTextColorHex(ctaConfig.textColor || "#ffffff");
+  }, [ctaConfig.textColor]);
+
+  useEffect(() => {
+    setBgColorHex(ctaConfig.color || "#8a6a40");
+  }, [ctaConfig.color]);
+
+  function handleHexChange(kind: "textColor" | "color", raw: string) {
+    const normalized = normalizeHex(raw);
+    if (kind === "textColor") {
+      setTextColorHex(normalized);
+      if (isValidFullHex(normalized)) {
+        setCtaConfig(c => ({ ...c, textColor: normalized }));
+      }
+    } else {
+      setBgColorHex(normalized);
+      if (isValidFullHex(normalized)) {
+        setCtaConfig(c => ({ ...c, color: normalized }));
+      }
+    }
+  }
 
   function addChannel() {
     setContacts(c => ({ channels: [...c.channels, { type: "link", value: "" }] }));
@@ -114,7 +134,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     setBio(initialProfile?.bio || "");
     setContacts(parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }));
     setAvatarUrl(initialProfile?.avatarUrl || null);
-    setCoverImage((initialProfile as any)?.coverImage || null);
+    setCoverImage(initialProfile?.coverImage || null);
     setCtaConfig(parseJSON<CTAConfig>(initialProfile?.ctaJson as string, defaultCta));
     setTrDisplayName("");
     setTrBio("");
@@ -122,7 +142,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     setMessage("Canceled");
   }
 
-  // Load translation when switching to non-default locale
   useEffect(() => {
     if (activeLocale === defaultLocale) return;
     setLoadingTranslation(true);
@@ -138,7 +157,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
         setCtaLabelTr("");
       }
     }).finally(() => setLoadingTranslation(false));
-  }, [activeLocale]);
+  }, [activeLocale, defaultLocale]);
 
   function saveTranslation() {
     if (activeLocale === defaultLocale) return;
@@ -180,7 +199,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       const json = await res.json();
       if (json.url) setAvatarUrl(json.url);
       if (update && session) {
-        // Update the user session with the new avatar URL
         const newUser = { ...session.user, avatarUrl: json.url };
         update(newUser);
       }
@@ -309,8 +327,46 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                       <input value={ctaConfig.href || ""} onChange={e => setCtaConfig((c) => ({ ...c, href: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                     </div>
                     <div className="space-y-1">
+                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Label Color</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={isValidFullHex(textColorHex) ? textColorHex : (ctaConfig.textColor || "#ffffff")}
+                          onChange={(e) => {
+                            setTextColorHex(e.target.value);
+                            setCtaConfig(c => ({ ...c, textColor: e.target.value }));
+                          }}
+                          className={clsx("h-9 w-9 rounded cursor-pointer", !isValidFullHex(textColorHex) && "ring-1 ring-warning")}
+                        />
+                        <input
+                          value={textColorHex}
+                          onChange={(e) => handleHexChange("textColor", e.target.value)}
+                          placeholder="#FFFFFF"
+                          className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
+                            isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-amber-50")}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
                       <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Color</label>
-                      <input type="color" value={ctaConfig.color || "#8a6a40"} onChange={e => setCtaConfig((c) => ({ ...c, color: e.target.value }))} className="h-9 w-14 border rounded cursor-pointer" />
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={isValidFullHex(bgColorHex) ? bgColorHex : (ctaConfig.color || "#8a6a40")}
+                          onChange={(e) => {
+                            setBgColorHex(e.target.value);
+                            setCtaConfig(c => ({ ...c, color: e.target.value }));
+                          }}
+                          className={clsx("h-9 w-9 rounded cursor-pointer", !isValidFullHex(bgColorHex) && "ring-1 ring-warning")}
+                        />
+                        <input
+                          value={bgColorHex}
+                          onChange={(e) => handleHexChange("color", e.target.value)}
+                          placeholder="#8A6A40"
+                          className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
+                            isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-amber-50")}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Size</label>
@@ -323,11 +379,19 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                     <div className="space-y-1">
                       <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Icon</label>
                       <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => setIconPickerOpen(true)} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2">
+                        <button type="button" onClick={() => setIconPickerOpen(true)} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2 flex-1 cursor-pointer">
                           {ctaConfig.icon && (() => { const I = (Lucide as any)[ctaConfig.icon]; return I ? <I size={16} /> : null; })()}
                           <span>{ctaConfig.icon || "Pick"}</span>
                         </button>
-                        {ctaConfig.icon && <button type="button" onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))} className="text-[10px] px-2 py-1 rounded border border-neutral-300 hover:bg-neutral-100">✕</button>}
+                        {ctaConfig.icon && 
+                          <button 
+                            type="button" 
+                            onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))} 
+                            className="btn btn-ghost btn-xs h-8 w-8"
+                          >
+                            ✕
+                          </button>
+                        }
                       </div>
                     </div>
                     <div className="space-y-1">
@@ -352,6 +416,16 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                     <div className="text-[11px] text-neutral-500">Preview:</div>
                     <div className="py-12 flex items-center justify-center bg-neutral-100 rounded">
                       <ProviderCTA config={ctaConfig} preview />
+                    </div>
+                  </div>
+                  <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
+                    <div className="flex items-center gap-1">
+                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-emerald-500" : "bg-amber-500")} />
+                      <span>Label HEX</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-emerald-500" : "bg-amber-500")} />
+                      <span>Color HEX</span>
                     </div>
                   </div>
                 </fieldset>
