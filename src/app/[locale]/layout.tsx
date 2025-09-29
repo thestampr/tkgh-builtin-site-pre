@@ -1,7 +1,7 @@
 import { NavBar } from "@/components/NavBar";
+import { ToastProvider } from "@/hooks/useToast";
 import { locales } from "@/i18n/navigation";
 import { defaultMetadata } from "@/lib/seo";
-import { ToastProvider } from "@/src/hooks/useToast";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
