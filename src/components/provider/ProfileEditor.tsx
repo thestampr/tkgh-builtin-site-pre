@@ -532,14 +532,14 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                             setTextColorHex(e.target.value);
                             setCtaConfig(c => ({ ...c, textColor: e.target.value }));
                           }}
-                          className={clsx("h-9 w-9 rounded cursor-pointer", !isValidFullHex(textColorHex) && "ring-1 ring-warning")}
+                          className="h-9 w-9 rounded cursor-pointer"
                         />
                         <input
                           value={textColorHex}
                           onChange={(e) => handleHexChange("textColor", e.target.value)}
                           placeholder="#FFFFFF"
                           className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
-                            isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-amber-50")}
+                            isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
                         />
                       </div>
                     </div>
@@ -553,14 +553,14 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                             setBgColorHex(e.target.value);
                             setCtaConfig(c => ({ ...c, color: e.target.value }));
                           }}
-                          className={clsx("h-9 w-9 rounded cursor-pointer", !isValidFullHex(bgColorHex) && "ring-1 ring-warning")}
+                          className="h-9 w-9 rounded cursor-pointer"
                         />
                         <input
                           value={bgColorHex}
                           onChange={(e) => handleHexChange("color", e.target.value)}
                           placeholder="#8A6A40"
                           className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
-                            isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-amber-50")}
+                            isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
                         />
                       </div>
                     </div>
@@ -616,11 +616,11 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                   </div>
                   <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
                     <div className="flex items-center gap-1">
-                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-emerald-500" : "bg-amber-500")} />
+                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-success" : "bg-warning")} />
                       <span>Label HEX</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-emerald-500" : "bg-amber-500")} />
+                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-success" : "bg-warning")} />
                       <span>Color HEX</span>
                     </div>
                   </div>
