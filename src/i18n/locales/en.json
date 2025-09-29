@@ -388,6 +388,8 @@
       "ownedBy": "by {name}",
       "saving": "Saving...",
       "saved": "Saved",
+      "saveFailed": "Save failed",
+      "saveError": "An error occurred",
       "unsaved": "Unsaved changes",
       "fileTooLarge": "File too large (max 512KB)",
       "fileTypeInvalid": "Unsupported file type",
