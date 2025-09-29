@@ -15,7 +15,6 @@ interface Props {
 }
 
 interface SwiperProps {
-  categories: Category[];
   className?: string;
 }
 
@@ -43,7 +42,7 @@ export function CategoryCard(props: CategoryItemProps) {
   return (
     <div
       className={clsx(
-        "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm overflow-hidden",
+        "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm overflow-hidden cursor-pointer",
         "shadow-sm hover:shadow-lg transition-all duration-500 hover:border-[#d5c2ad]"
       )}
       onClick={handleClick}
@@ -110,15 +109,15 @@ export function CategoryGrid(props: Props) {
   );
 }
 
-export function CategorySwiper(props: SwiperProps) {
-  const { categories, className } = props;
+export function CategorySwiper(props: SwiperProps & Props) {
+  const { categories, className, showProvider } = props;
   if (!categories?.length) return null;
 
   return (
     <ResponsiveSwiper maxSlidePerView={3} className={className}>
       {categories.map((cat) => (
         <SwiperSlide key={cat.id}>
-          <CategoryCard key={cat.id} item={cat} />
+          <CategoryCard key={cat.id} item={cat} showProvider={showProvider} />
         </SwiperSlide>
       ))}
     </ResponsiveSwiper>

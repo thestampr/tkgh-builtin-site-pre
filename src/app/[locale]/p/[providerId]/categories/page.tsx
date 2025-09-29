@@ -45,7 +45,7 @@ export default async function CategoriesIndexPage({
 
         <SearchFilterBar variant="categories" inline />
         {categories?.length ? (
-          <CategoryGrid locale={locale} categories={categories} />
+          <CategoryGrid categories={categories} showProvider={false} />
         ) : (
           <div className="rounded-xl border bg-white p-8 text-center text-slate-600">
             {search ? (t("emptySearch") || "No categories match your search.") : t("empty")}

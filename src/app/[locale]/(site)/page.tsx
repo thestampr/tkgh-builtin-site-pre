@@ -70,7 +70,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             {tCommon("exploreMore")}
           </Link>
         </div>
-        <CategorySwiper locale={locale} categories={categories} className="px-8 lg:px-18 xl:px-26" />
+        <CategorySwiper categories={categories} className="px-8 lg:px-18 xl:px-26" />
 
         <br />
 
