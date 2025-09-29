@@ -5,17 +5,31 @@ import * as Lucide from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+export type CTAConfig = {
+  label: string;
+  color: string;
+  textColor: string;
+  size: string;
+  icon: string;
+  href: string;
+  style: string;
+  radius: string;
+};
+
+export const defaultCta: CTAConfig = {
+  label: "Example",
+  color: "#8a6a40",
+  textColor: "#ffffff",
+  size: "md",
+  icon: "MessageCircle",
+  href: "#",
+  style: "solid",
+  radius: "full"
+};
+
 interface ProviderCTAProps {
   preview?: boolean;
-  config: {
-    label?: string;
-    color?: string;
-    size?: string;
-    icon?: string;
-    style?: string;
-    href?: string;
-    radius?: string;
-  } | null;
+  config: CTAConfig | null;
 }
 
 export function ProviderCTA({ preview, config }: ProviderCTAProps) {
@@ -33,14 +47,24 @@ export function ProviderCTA({ preview, config }: ProviderCTAProps) {
   if (!mounted) return null;
   if (!config) return null;
 
-  const { label = "", color = "#8a6a40", size = "md", icon, style = "solid", href = "/estimate", radius = "full" } = config;
+  const { 
+    label = "Example", 
+    color = "#8a6a40", 
+    textColor = "#ffffff",
+    size = "md", 
+    icon = "MessageCircle", 
+    style = "solid", 
+    href = "#", 
+    radius = "full" 
+  } = config;
+
   const pad = size === "lg" ? "0.95rem 1.4rem" : size === "sm" ? "0.5rem 0.9rem" : "0.7rem 1.1rem";
   const iconDim = size === "lg" ? 56 : size === "sm" ? 40 : 48; // square when icon-only
   const base = style === "solid"
-    ? { background: color, color: "#fff", border: "none" }
+    ? { background: color, color: textColor, border: "none" }
     : style === "outline"
-      ? { background: "rgba(255,255,255,0.85)", color, border: `1px solid ${color}` }
-      : { background: "transparent", color, border: "none" };
+      ? { background: "rgba(255,255,255,0.85)", color: textColor, border: `1px solid ${color}` }
+      : { background: "transparent", color: textColor, border: "none" };
 
   const radiusCls = radius === "full"
     ? "rounded-full"
