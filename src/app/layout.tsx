@@ -1,8 +1,9 @@
+import ConfirmHost from "@/components/modal/confirm-host";
 import { SessionClientProvider } from "@/components/providers/SessionClientProvider";
+import { DeviceProvider } from "@/hooks/useDevice";
 import { defaultMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import "./globals.css";
-import ConfirmHost from "../components/modal/confirm-host";
 
 export const metadata: Metadata = defaultMetadata;
 
@@ -41,8 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <body className="min-h-screen relative flex flex-col">
         <SessionClientProvider>
-          {children}
-          <ConfirmHost />
+          <DeviceProvider>
+            {children}
+            <ConfirmHost />
+          </DeviceProvider>
         </SessionClientProvider>
       </body>
     </html>
