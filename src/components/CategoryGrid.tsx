@@ -85,8 +85,8 @@ export function CategoryCard(props: CategoryItemProps) {
   return (
     <div
       className={clsx(
-        "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm overflow-hidden cursor-pointer",
-        "shadow-sm hover:shadow-lg transition-all duration-500 hover:border-[#d5c2ad]"
+        "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden cursor-pointer",
+        "hover:shadow-lg hover:border-primary/40 transition-all duration-500"
       )}
       onClick={handleClick}
     >
@@ -97,8 +97,8 @@ export function CategoryCard(props: CategoryItemProps) {
             alt={image.alt || title || "Category"}
             fill
             className={clsx(
-              "object-cover group-hover:scale-105 brightness-95 group-hover:brightness-100",
-              "transition-transform duration-500 ease-in-out"
+              "object-cover group-hover:scale-105 brightness-85 group-hover:brightness-100",
+              "transition-all duration-500 ease-in-out"
             )}
           />
         ) : (
@@ -117,11 +117,13 @@ export function CategoryCard(props: CategoryItemProps) {
             {excerpt || description}
           </p>
         ) : null}
-        {showProvider && provider &&
-          <div className="mt-3 max-w-24 truncate">
-            <ProviderButton provider={provider} size="sm" ghost />
-          </div>
-        }
+        <div className="mt-3">
+          {showProvider && provider &&
+            <div className="mt-3 max-w-24 truncate">
+              <ProviderButton provider={provider} size="sm" ghost />
+            </div>
+          }
+        </div>
       </div>
     </div>
   );

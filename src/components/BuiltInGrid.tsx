@@ -10,6 +10,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SwiperSlide } from "swiper/react";
+import { CategoryButton } from "./CategoryButton";
 import { FavoriteButton } from "./FavoriteButton";
 import ProviderButton from "./ProviderButton";
 
@@ -84,7 +85,7 @@ function Placeholder({ type }: { type?: TypeKind }) {
 
 export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
   const { session, item, showCategory, showProvider } = props;
-  const { title, price, currency, image, provider } = item;
+  const { title, price, currency, image, provider, category } = item;
   const locale = useLocale();
   const router = useRouter();
 
@@ -105,8 +106,8 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
   return (
     <div
       className={clsx(
-        "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden transition-all duration-500 cursor-pointer",
-        "hover:shadow-lg hover:border-primary/40"
+        "group rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden cursor-pointer",
+        "hover:shadow-lg hover:border-primary/40 transition-all duration-500"
       )}
       onClick={handleClick}
     >
@@ -140,11 +141,14 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
             {formatPrice(price ?? null, locale, currency)}
           </span>
         </div>
-        <div className="mt-3 text-sm">
+        <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
           {showProvider && item.provider &&
             <span className="max-w-24 truncate">
               <ProviderButton provider={item.provider} size="sm" ghost />
             </span>
+          }
+          {showCategory && category &&
+            <CategoryButton category={{...category, provider}} /> // ensure provider is passed for correct link
           }
         </div>
       </div>
@@ -153,7 +157,7 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
 }
 
 export function BuiltInGrid(props: Props & BuiltInGridProps) {
-  const { items, showCategory = false, showProvider = true, type } = props;
+  const { items, showCategory = true, showProvider = true, type } = props;
 
   if (!items?.length) {
     return <Placeholder type={type} />;
@@ -177,7 +181,7 @@ export function BuiltInGrid(props: Props & BuiltInGridProps) {
 }
 
 export function BuiltInSwiper(props: SwiperProps & BuiltInGridProps) {
-  const { items, className, showCategory = false, showProvider = true, type } = props;
+  const { items, className, showCategory = true, showProvider = true, type } = props;
 
   if (!items?.length) {
     return (
