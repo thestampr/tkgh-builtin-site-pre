@@ -41,6 +41,8 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
     }
   }
 
+  const providerName = profile.displayName || "provider";
+
   return (
     <>
       <div className="sticky top-0 w-full h-0 overflow-visible z-5">
@@ -117,7 +119,12 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
               {tCommon("exploreMore")}
             </Link>
           </div>
-          <CategorySwiper categories={categories} className="px-8 lg:px-18 xl:px-26" showProvider={false} />
+          <CategorySwiper 
+            categories={categories} 
+            showProvider={false} 
+            type={`provider-${providerName}`}
+            className="px-8 lg:px-18 xl:px-26" 
+          />
 
           <br />
 
@@ -129,7 +136,12 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
               {tCommon("exploreMore")}
             </Link>
           </div>
-          <BuiltInSwiper items={items} showProvider={false} className="px-8 lg:px-18 xl:px-26" />
+          <BuiltInSwiper 
+            items={items} 
+            showProvider={false} 
+            type={`provider-${providerName}`}
+            className="px-8 lg:px-18 xl:px-26" 
+          />
         </section>
       </main>
     </>
