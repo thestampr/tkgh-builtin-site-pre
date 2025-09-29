@@ -1,7 +1,8 @@
 import { BuiltInGrid } from "@/components/BuiltInGrid";
+import ProviderButton from "@/components/ProviderButton";
 import SearchFilterBar from "@/components/SearchFilterBar";
 import { queryBuiltIns, queryCategories, type BuiltInQueryParams } from "@/lib/api";
-import ProviderButton from "@/components/ProviderButton";
+import clsx from "clsx";
 import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
@@ -47,9 +48,12 @@ export default async function BuiltInIndexPage({
     <main className="bg-white">
       <section className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20 py-10 md:py-16">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
+          <h1 className={clsx(
+            "text-2xl md:text-3xl font-bold flex items-center gap-2",
+            "*:!text-2xl md:*:!text-3xl"
+          )}>
             {categories.length > 0 && categories[0].provider && <>
-              <ProviderButton provider={categories[0].provider} />
+              <ProviderButton provider={categories[0].provider} size="md" />
               <span className="font-medium mx-2">/</span>
             </>}
             {t("listTitle")}

@@ -1,8 +1,9 @@
-import { getTranslations } from "next-intl/server";
-import { queryCategories } from "@/lib/api";
 import { CategoryGrid } from "@/components/CategoryGrid";
-import SearchFilterBar from "@/components/SearchFilterBar";
 import ProviderButton from "@/components/ProviderButton";
+import SearchFilterBar from "@/components/SearchFilterBar";
+import { queryCategories } from "@/lib/api";
+import clsx from "clsx";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +16,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function CategoriesIndexPage({ 
-  params, 
-  searchParams 
-}: { 
-  params: Promise<{ locale: string, providerId: string }>, 
-  searchParams?: Promise<{ [k: string]: string | string[] | undefined }> 
+export default async function CategoriesIndexPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string, providerId: string }>,
+  searchParams?: Promise<{ [k: string]: string | string[] | undefined }>
 }) {
   const [{ locale, providerId }, sp] = await Promise.all([params, searchParams]);
   const t = await getTranslations({ locale, namespace: "Categories" });
@@ -33,9 +34,12 @@ export default async function CategoriesIndexPage({
     <main className="bg-white">
       <section className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20 py-10 md:py-16">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
+          <h1 className={clsx(
+            "text-2xl md:text-3xl font-bold flex items-center gap-2",
+            "*:!text-2xl md:*:!text-3xl"
+          )}>
             {categories.length > 0 && categories[0].provider && <>
-              <ProviderButton provider={categories[0].provider} />
+              <ProviderButton provider={categories[0].provider} size="md" />
               <span className="font-medium mx-2">/</span>
             </>}
             {t("listTitle")}
