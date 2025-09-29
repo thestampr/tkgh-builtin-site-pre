@@ -2,6 +2,7 @@
 
 import AppBar from "@/components/appbar";
 import { LoginButton } from "@/components/auth/LoginButton";
+import UserAvatar from "@/components/UserAvatar";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
 import { ChevronUp, Menu, User } from "lucide-react";
@@ -12,7 +13,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LocaleSwitcher from "./LocaleSwitcher";
-import UserAvatar from "./user/Avatar";
 
 type UserMenuProps = {
   session: Session | null;
