@@ -301,7 +301,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       setTrBio(baseTr.bio);
       setCtaLabelTr(baseTr.ctaLabel);
     }
-    setMessage("Canceled");
+    setMessage(t("canceled"));
     setErrors([]);
   }
 

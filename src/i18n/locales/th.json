@@ -391,6 +391,7 @@
       "saveFailed": "บันทึกไม่สำเร็จ",
       "saveError": "เกิดข้อผิดพลาด",
       "unsaved": "มีการแก้ไขยังไม่บันทึก",
+      "canceled": "ยกเลิกแล้ว",
       "fileTooLarge": "ไฟล์ใหญ่เกิน (สูงสุด 512KB)",
       "fileTypeInvalid": "ประเภทไฟล์ไม่รองรับ",
       "userProfile": {

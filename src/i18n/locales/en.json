@@ -391,6 +391,7 @@
       "saveFailed": "Save failed",
       "saveError": "An error occurred",
       "unsaved": "Unsaved changes",
+      "canceled": "Canceled",
       "fileTooLarge": "File too large (max 512KB)",
       "fileTypeInvalid": "Unsupported file type",
       "userProfile": {
