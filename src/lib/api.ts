@@ -1,7 +1,7 @@
-import type { 
-  BuiltIn, 
-  Estimate, 
-  FavoriteBuiltIn, 
+import type {
+  BuiltIn,
+  Estimate,
+  FavoriteBuiltIn,
   Profile,
   User,
   Category as _C,
@@ -55,13 +55,13 @@ export interface ProviderPublicProfile {
   bio?: string | null;
   avatarUrl?: string | null;
   coverImage?: string | null;
-  contacts?: { 
-    type: string; 
-    value: string 
+  contacts?: {
+    type: string;
+    value: string
   }[] | null;
   cta?: CTAConfig | null;
 }
-export type OrderKind = "title_asc" | "title_desc" | "newest" | "price_low" | "price_high" | "popular"; 
+export type OrderKind = "title_asc" | "title_desc" | "newest" | "price_low" | "price_high" | "popular";
 
 // Helper types
 type KeyValue = Record<string, unknown>;
@@ -96,10 +96,10 @@ function mapCategory(c: CategoryBase, locale?: string): Category {
     excerpt,
     image: c.coverImage ? { url: c.coverImage } : null,
     providerId: c.providerId,
-    provider: c.provider ? { 
-      id: c.provider.id, 
-      displayName: c.provider.profile?.displayName || null, 
-      avatarUrl: c.provider.profile?.avatarUrl || null 
+    provider: c.provider ? {
+      id: c.provider.id,
+      displayName: c.provider.profile?.displayName || null,
+      avatarUrl: c.provider.profile?.avatarUrl || null
     } : null
   };
 }
@@ -134,11 +134,11 @@ function mapBuiltIn(item: any, category?: any, locale?: string): BuiltInItem {
     category: categoryObj
       ? { id: categoryObj.id, title: categoryTitle, slug: categoryObj.slug }
       : null,
-    provider: item.provider ? { 
-      id: item.provider.id, 
-      displayName: 
-      item.provider.profile?.displayName || null, 
-      avatarUrl: item.provider.profile?.avatarUrl || null 
+    provider: item.provider ? {
+      id: item.provider.id,
+      displayName:
+        item.provider.profile?.displayName || null,
+      avatarUrl: item.provider.profile?.avatarUrl || null
     } : null,
     favorites: item.favorites || [],
   };
@@ -228,8 +228,8 @@ export async function getBuiltInItems(
           }
         },
       },
-      orderBy: { 
-        title: "asc" 
+      orderBy: {
+        title: "asc"
       }
     });
     return items.map((b) => mapBuiltIn(b, b.category, locale));
@@ -374,7 +374,7 @@ export async function getBuiltInItem(
 export async function getBuiltInItemsByProvider(
   providerId: string,
   params?: {
-    categorySlug?: string, 
+    categorySlug?: string,
     includeUnpublished?: boolean
   } & CacheableParams & LocaleParams
 ): Promise<BuiltInItem[]> {
@@ -382,52 +382,52 @@ export async function getBuiltInItemsByProvider(
   const run = cacheable(async () => {
     let category = null;
     if (categorySlug) {
-      category = await prisma.category.findFirst({ 
-        where: { 
-          providerId, 
-          slug: categorySlug, 
-          published: includeUnpublished ? undefined : true 
-        }, 
-        include: { 
-          translations: true, 
-          provider: { 
-            include: { 
-              profile: true 
-            } 
-          } 
-        } 
+      category = await prisma.category.findFirst({
+        where: {
+          providerId,
+          slug: categorySlug,
+          published: includeUnpublished ? undefined : true
+        },
+        include: {
+          translations: true,
+          provider: {
+            include: {
+              profile: true
+            }
+          }
+        }
       });
       if (!category) return [];
     }
 
-    const items = await prisma.builtIn.findMany({ 
-      where: { 
+    const items = await prisma.builtIn.findMany({
+      where: {
         providerId,
-        categoryId: categorySlug ? category!.id : undefined, 
+        categoryId: categorySlug ? category!.id : undefined,
         status: includeUnpublished ? undefined : "PUBLISHED",
-      }, 
-      include: { 
-        category: { 
-          include: { 
-            translations: true, 
-            provider: { 
-              include: { 
-                profile: true 
-              } 
-            } 
-          } 
-        }, 
-        translations: true, 
-        provider: { 
-          include: { 
-            profile: true 
-          } 
+      },
+      include: {
+        category: {
+          include: {
+            translations: true,
+            provider: {
+              include: {
+                profile: true
+              }
+            }
+          }
+        },
+        translations: true,
+        provider: {
+          include: {
+            profile: true
+          }
         },
         favorites: true
-      }, 
-      orderBy: { 
-        title: "asc" 
-      } 
+      },
+      orderBy: {
+        title: "asc"
+      }
     });
     return items.map((b) => mapBuiltIn(b, category, locale));
   }, ["builtins:cat:provider", providerId, categorySlug || "", locale], revalidate, ["user"]);
@@ -473,29 +473,29 @@ export async function getCategoryByProvider(
  * @param params Aguments to filter categories
  */
 export async function getCategoriesByProvider(
-  providerId: string, 
-  params?: { 
-    includeUnpublished?: boolean 
+  providerId: string,
+  params?: {
+    includeUnpublished?: boolean
   } & CacheableParams & LocaleParams
 ): Promise<Category[]> {
   const { includeUnpublished, revalidate, locale = DEFAULT_LANG } = params || {};
   const run = cacheable(async () => {
-    const cats = await prisma.category.findMany({ 
+    const cats = await prisma.category.findMany({
       where: {
         providerId,
         published: includeUnpublished ? undefined : true
-      }, 
-      orderBy: { 
-        name: "asc" 
-      }, 
-      include: { 
-        translations: true, 
-        provider: { 
-          include: { 
-            profile: true 
-          } 
-        } 
-      } 
+      },
+      orderBy: {
+        name: "asc"
+      },
+      include: {
+        translations: true,
+        provider: {
+          include: {
+            profile: true
+          }
+        }
+      }
     });
     return cats.map(c => mapCategory(c, locale));
   }, ["categories:provider", providerId, locale, includeUnpublished ? "all" : "pub"], revalidate);
@@ -505,25 +505,25 @@ export async function getCategoriesByProvider(
 // Popular content (simple heuristics)
 export async function getPopularBuiltIns(limit = 12, locale: string = DEFAULT_LANG): Promise<BuiltInItem[]> {
   const items = await prisma.builtIn.findMany({
-    where: { 
-      status: "PUBLISHED" 
+    where: {
+      status: "PUBLISHED"
     },
-    include: { 
-      category: { 
-        include: { 
-          translations: true 
-        } 
-      }, 
-      translations: true, 
-      _count: { 
-        select: { 
-          favorites: true 
-        } 
-      }, 
-      provider: { 
-        include: { 
-          profile: true 
-        } 
+    include: {
+      category: {
+        include: {
+          translations: true
+        }
+      },
+      translations: true,
+      _count: {
+        select: {
+          favorites: true
+        }
+      },
+      provider: {
+        include: {
+          profile: true
+        }
       },
       favorites: true
     }
@@ -535,37 +535,37 @@ export async function getPopularBuiltIns(limit = 12, locale: string = DEFAULT_LA
   return scored.map(s => mapBuiltIn(s.raw, s.raw.category, locale));
 }
 export async function getPopularCategories(limit = 12, locale: string = DEFAULT_LANG): Promise<Category[]> {
-  const categories = await prisma.category.findMany({ 
-    where: { 
-      published: true 
-    }, 
-    include: { 
-      translations: true, 
-      provider: { 
-        include: { 
-          profile: true 
-        } 
-      }, 
-      builtIns: { 
-        where: { 
-          status: "PUBLISHED" 
-        }, 
-        include: { 
-          _count: { 
-            select: { 
-              favorites: true 
-            } 
-          } 
-        } 
-      } 
-    } 
+  const categories = await prisma.category.findMany({
+    where: {
+      published: true
+    },
+    include: {
+      translations: true,
+      provider: {
+        include: {
+          profile: true
+        }
+      },
+      builtIns: {
+        where: {
+          status: "PUBLISHED"
+        },
+        include: {
+          _count: {
+            select: {
+              favorites: true
+            }
+          }
+        }
+      }
+    }
   });
   const withScore = categories.map(c => {
-    let viewSum = 0; 
+    let viewSum = 0;
     let favSum = 0;
-    for (const b of c.builtIns) { 
-      viewSum += (b.viewCount || 0); 
-      favSum += (b._count?.favorites || 0); 
+    for (const b of c.builtIns) {
+      viewSum += (b.viewCount || 0);
+      favSum += (b._count?.favorites || 0);
     }
     const score = viewSum + favSum * 5;
     return { raw: c, score };
@@ -752,7 +752,7 @@ export async function getProviderPublicProfile(providerId: string, locale: strin
     displayName,
     bio,
     avatarUrl: profile.avatarUrl,
-  coverImage: profile.coverImage || null,
+    coverImage: profile.coverImage || null,
     contacts,
     cta: ctaBase || null
   };
@@ -788,40 +788,55 @@ export async function createFormSubmission(input: CreateFormSubmissionInput) {
   });
 }
 
-// export interface ProviderSubmissionItem {
-//   id: string;
-//   createdAt: Date;
-//   name: string;
-//   phone: string;
-//   email?: string | null;
-//   location?: string | null;
-//   category?: CategoryBase | null;
-//   budget?: string | null;
-//   detail: string;
-//   viewed: boolean;
-// }
-
-export async function getProviderFormSubmissions(providerId: string): Promise<Estimate[]> {
-  const rows = await prisma.estimate.findMany({
-    where: { 
-      providerId 
+export async function getProviderFormSubmissions(providerId: string, locale: string = DEFAULT_LANG): Promise<Estimate[]> {
+  const estimates = await prisma.estimate.findMany({
+    where: {
+      providerId
     },
     include: {
-      category: true
-     },
-    orderBy: { createdAt: "desc" }
+      category: {
+        include: {
+          translations: true
+        }
+      },
+      user: {
+        select: {
+          id: true,
+          email: true,
+          profile: {
+            select: {
+              displayName: true,
+              avatarUrl: true,
+              translations: {
+                select: {
+                  locale: true,
+                  displayName: true
+                }
+              }
+            }
+          },
+        },
+      }
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
   });
-  // return rows.map(r => ({
-  //   id: r.id,
-  //   createdAt: r.createdAt,
-  //   name: r.name,
-  //   phone: r.phone,
-  //   email: r.email || null,
-  //   location: r.location || null,
-  //   category: r.category || null,
-  //   budget: r.budget || null,
-  //   detail: r.detail,
-  //   viewed: r.viewed
-  // }));
-  return rows;
+  if (estimates.length === 0) return [];
+  if (locale === DEFAULT_LANG) return estimates;
+
+  return estimates.map(row => ({
+    ...row,
+    category: row.category ? {
+      ...row.category,
+      name: row.category.translations.find(t => t.locale === locale)?.name || row.category.name
+    } : null,
+    user: row.user ? {
+      ...row.user,
+      profile: {
+        ...row.user.profile,
+        displayName: row.user.profile?.translations.find(t => t.locale === locale)?.displayName || row.user.profile?.displayName
+      }
+    } : null
+  }));
 }
