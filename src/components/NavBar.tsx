@@ -42,8 +42,8 @@ function UserMenu({ session, locale, showName }: UserMenuProps) {
             <UserAvatar padding={1} />
             {showName && (
               <span className="flex flex-col text-left">
-                <span className="text-sm font-medium text-slate-900 line-clamp-1">{user?.name || user?.email}</span>
-                <span className="text-xs text-gray-500 line-clamp-1">{user?.email}</span>
+                <span className="text-sm font-medium text-slate-900 line-clamp-1">{user.profile?.displayName || user.email}</span>
+                <span className="text-xs text-gray-500 line-clamp-1">{user.email}</span>
               </span>
             )}
           </PopoverButton>
@@ -56,8 +56,8 @@ function UserMenu({ session, locale, showName }: UserMenuProps) {
             )}
           >
             <div className="px-3 pt-3 pb-2 border-b border-divider/40">
-              <p className="text-sm font-medium text-slate-900 line-clamp-1">{user?.name || user?.email}</p>
-              {user?.email && <p className="text-xs text-gray-500 line-clamp-1">{user.email}</p>}
+              <p className="text-sm font-medium text-slate-900 line-clamp-1">{user.profile?.displayName || user.email}</p>
+              {user.email && <p className="text-xs text-gray-500 line-clamp-1">{user.email}</p>}
             </div>
             <div className="py-1 flex flex-col">
               {role === "PROVIDER" ? (
