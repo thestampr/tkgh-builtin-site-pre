@@ -172,7 +172,7 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary"
           >
             {loading ? t("sending") : t("submit")}
           </button>
