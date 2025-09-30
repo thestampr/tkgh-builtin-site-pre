@@ -13,6 +13,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LocaleSwitcher from "./LocaleSwitcher";
+import Image from "next/image";
+
+const USE_IMAGE_ICON = true;
 
 type UserMenuProps = {
   session: Session | null;
@@ -269,16 +272,22 @@ export function NavBar() {
           )}>
           <div className="min-h-14 mx-auto pl-4 lg:px-6 py-1 md:py-0 flex justify-between items-center">
             <div className="flex items-center gap-2 md:gap-4">
-              <Link href={`/${locale}`} className={clsx(
-                "inline-flex items-baseline gap-2 md:gap-4 **:!font-legitima"
-              )}>
-                <span className="text-2xl md:text-3xl font-serif font-bold !text-primary">
-                  {process.env.NEXT_PUBLIC_BRAND_ALIAS}
-                </span>
-                <span className="text-sm md:text-md lg:text-lg font-semibold font-serif">
-                  {process.env.NEXT_PUBLIC_SITE_NAME}
-                </span>
-              </Link>
+              {USE_IMAGE_ICON ? (
+                <Link href={`/${locale}`}>
+                  <Image src="/images/icon-resized.png" alt="logo" width={52} height={52} className="object-cover -ml-1" />
+                </Link>
+              ) : (
+                <Link href={`/${locale}`} className={clsx(
+                  "inline-flex items-baseline gap-2 md:gap-4 **:!font-legitima"
+                )}>
+                  <span className="text-2xl md:text-3xl font-serif font-bold !text-primary">
+                    {process.env.NEXT_PUBLIC_BRAND_ALIAS}
+                  </span>
+                  <span className="text-sm md:text-md lg:text-lg font-semibold font-serif">
+                    {process.env.NEXT_PUBLIC_SITE_NAME}
+                  </span>
+                </Link>
+              )}
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
