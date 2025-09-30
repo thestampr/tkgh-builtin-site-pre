@@ -483,6 +483,7 @@
     "makeCover": "Make Cover",
     "remove": "Remove",
     "coverBadge": "Cover",
+    "empty": "No items yet",
     "fields": {
       "title": "Title",
       "slug": "Slug",
@@ -529,6 +530,7 @@
     "subtitle": "Organize your built-in items.",
     "new": "New Category",
     "editTitle": "Edit Category",
+    "empty": "No categories yet",
     "fields": {
       "name": "Name",
       "slug": "Slug",
