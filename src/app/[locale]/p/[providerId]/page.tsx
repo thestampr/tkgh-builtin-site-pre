@@ -28,7 +28,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
   ]);
 
   const ContactIcon = ({ size, type }: { size?: number; type: string }) => {
-    size ??= 14;
+    size ??= 16;
     switch (type.toLowerCase()) {
       case "link":
         return <Link2 size={size} />;
@@ -98,7 +98,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
               <div className="inline-flex overflow-x-auto gap-2">
                 {profile.contacts.map((c, i) =>
                   <div key={i} className="flex items-center gap-2 px-4 py-2 text-white font-semibold text-nowrap">
-                    <ContactIcon type={c.type} size={14} />
+                    <ContactIcon type={c.type} />
                     <span className="text-sm">{c.value}</span>
                   </div>
                 )}
