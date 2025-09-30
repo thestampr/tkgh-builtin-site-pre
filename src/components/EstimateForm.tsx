@@ -180,12 +180,12 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
       </fieldset>
 
       {ok && (
-        <div className="rounded-md bg-green-50 text-green-800 px-4 py-2 border border-green-200" role="status">
+        <div className="text-success px-4 py-2" role="status">
           {tc("success")}
         </div>
       )}
       {ok === false && (
-        <div className="rounded-md bg-red-50 text-red-800 px-4 py-2 border border-red-200" role="alert">
+        <div className="text-danger px-4 py-2" role="alert">
           {tc("failed")}
           {error ? `: ${error}` : ""}
         </div>
