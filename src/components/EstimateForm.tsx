@@ -62,9 +62,6 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
       providerId: providerId || providerOfCategory?.providerId || formData.providerId || undefined,
     };
 
-    console.log(payload);
-    console.log(formData);
-
     try {
       const res = await fetch("/api/estimate", {
         method: "POST",
