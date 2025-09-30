@@ -9,7 +9,6 @@ export default async function SiteLayout({
   children: ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
 
   return (
     <>
@@ -17,7 +16,7 @@ export default async function SiteLayout({
         {children}
       </main>
       <ContactUsButton />
-      <FooterHero locale={locale} />
+      <FooterHero />
     </>
   );
 }

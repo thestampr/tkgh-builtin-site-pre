@@ -1,12 +1,10 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import Image from "next/image";
 
-interface Props {
-  locale: string;
-}
-
-export function FooterHero({ locale }: Props) {
+export function FooterHero() {
+  const locale = useLocale();
   const year = new Date().getFullYear();
   
   return (
