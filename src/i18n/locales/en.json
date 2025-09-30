@@ -156,6 +156,32 @@
       "title": "Tell us about your project",
       "subtitle": "A few quick details help us estimate accurately and suggest the right options."
     },
+    "messages": {
+      "success": "Sent! Our team will contact you shortly.",
+      "failed": "There was an error submitting your request. Please try again.",
+      "estimateRequestSent": {
+        "title": "Sent!",
+        "description": "Our team will contact you shortly."
+      },
+      "submitFailed": {
+        "title": "Error",
+        "description": "There was an error submitting your request. Please try again."
+      },
+      "errors": {
+        "missingInfo": {
+          "title": "Incomplete",
+          "description": "Please complete all required fields."
+        },
+        "invalid": {
+          "title": "Invalid",
+          "description": "Invalid input, please check your entries."
+        },
+        "error": {
+          "title": "Error",
+          "description": "There was an error submitting your request. Please try again."
+        }
+      }
+    },
     "pageTitle": "Request an estimate",
     "pageSubtitle": "Tell us what you need and we will contact you back.",
     "name": "Full name",
