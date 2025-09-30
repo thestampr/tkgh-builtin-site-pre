@@ -1,7 +1,8 @@
 "use client";
 
+import { useToast } from "@/src/hooks/useToast";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition, useCallback } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 function validateEmail(email: string) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,7 +16,6 @@ export default function ProviderAccountSettings() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [emailUpdating, updateEmail] = useTransition();
@@ -24,6 +24,8 @@ export default function ProviderAccountSettings() {
   const t = useTranslations("Account.ui");
   const tCommon = useTranslations("Common");
   const tSettings = useTranslations("Account.ui.settings");
+  
+  const { showSuccessToast } = useToast();
 
   useEffect(() => {
     let active = true;
@@ -60,7 +62,6 @@ export default function ProviderAccountSettings() {
 
   const handleSaveEmail = useCallback(async () => {
     setEmailError(null);
-    setMessage(null);
     if (!validateEmail(newEmail)) return setEmailError(t("userProfile.invalidEmail"));
     updateEmail(async () => {
       try {
@@ -71,7 +72,7 @@ export default function ProviderAccountSettings() {
         });
         if (res.ok) {
           setEmail(newEmail);
-          setMessage(t("userProfile.emailUpdated"));
+          showSuccessToast({ title: t("userProfile.emailUpdated") });
         } else {
           const j = await res.json().catch(() => ({}));
           setEmailError(j.error === "EMAIL_IN_USE" ? t("userProfile.emailInUse") : t("userProfile.invalidEmail"));
@@ -84,7 +85,6 @@ export default function ProviderAccountSettings() {
 
   const handleUpdatePassword = useCallback(async () => {
     setPasswordError(null);
-    setMessage(null);
     if (newPassword.length < 8) { setPasswordError(t("userProfile.weakPassword")); return; }
     if (newPassword !== confirmPassword) { setPasswordError(t("userProfile.mismatch")); return; }
     updatePassword(async () => {
@@ -98,7 +98,7 @@ export default function ProviderAccountSettings() {
           setCurrentPassword("");
           setNewPassword("");
           setConfirmPassword("");
-          setMessage(t("userProfile.passwordUpdated"));
+          showSuccessToast({ title: t("userProfile.passwordUpdated") });
         } else {
           const j = await res.json().catch(() => ({}));
           setPasswordError(j.error === "INVALID_CURRENT" ? "Current password incorrect" : t("userProfile.weakPassword"));
@@ -113,8 +113,6 @@ export default function ProviderAccountSettings() {
 
   return (
     <div className="space-y-10">
-      {message && <div className="text-[11px] text-accent">{message}</div>}
-
       <section className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-6 space-y-4">
         <header>
           <h2 className="text-sm font-semibold tracking-wide text-neutral-700 uppercase">{tSettings("accountSectionTitle")}</h2>
