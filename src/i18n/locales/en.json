@@ -83,7 +83,23 @@
     "logout": "Logout",
     "signUp": "Sign Up",
     "signIn": "Sign In",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "bulk": {
+      "selectAll": "Select all",
+      "selectOne": "Select row",
+      "selectedPrefix": "Selected: ",
+      "markViewed": "Mark Viewed",
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "delete": "Delete",
+      "confirm": {
+        "delete": {
+          "message": "Delete selected requests? This cannot be undone."
+        },
+        "ok": "Confirm",
+        "cancel": "Cancel"
+      }
+    }
   },
   "ProviderCTA": {
     "label": "Contact",
@@ -570,10 +586,26 @@
     "title": "Estimates",
     "subtitle": "View and manage incoming estimate requests.",
     "view": "View Details",
+    "markViewed": "Mark as Viewed",
+    "close": "Close",
+    "empty": "No submissions yet",
+    "fields": {
+      "createdAt": "Date",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "category": "Category",
+      "budget": "Budget",
+      "detail": "Detail",
+      "status": "Status",
+      "locale": "Locale",
+      "location": "Location"
+    },
     "status": {
       "new": "New",
       "inProgress": "In Progress",
-      "completed": "Completed"
+      "completed": "Completed",
+      "viewed": "Viewed"
     },
     "filters": {
       "search": "Search",
@@ -591,7 +623,25 @@
       "fetchFailed": "Fetch failed"
     },
     "ui": {
-      "noData": "No estimates yet"
+      "noData": "No estimates yet",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing..."
+    },
+    "bulk": {
+      "selectAll": "Select all",
+      "selectOne": "Select row",
+      "selectedPrefix": "Selected: ",
+      "markViewed": "Mark Viewed",
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "delete": "Delete",
+      "confirm": {
+        "delete": {
+          "message": "Delete selected requests? This cannot be undone."
+        },
+        "ok": "Confirm",
+        "cancel": "Cancel"
+      }
     }
   },
   "Errors": {
