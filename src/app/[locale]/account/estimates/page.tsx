@@ -1,23 +1,19 @@
-import EstimateManager from "@/components/provider/EstimateManager";
-import { headers } from "next/headers";
+import { EstimateManager } from "@/components/provider/estimates/EstimateManager";
+import { getProviderFormSubmissions } from "@/src/lib/api";
+import { authOptions } from "@/src/lib/auth/options";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-async function fetchProviderEstimatesAbs() {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") || h.get("host");
-  const proto = h.get("x-forwarded-proto") || (process.env.NODE_ENV === "development" ? "http" : "https");
-  const base = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_SITE_URL || "");
-  if (!base) return [];
-  const url = `${base}/api/account/estimates`;
-  const cookieHeader = h.get('cookie') || '';
-  const res = await fetch(url, { cache: 'no-store', headers: { cookie: cookieHeader } });
-  if (!res.ok) return [];
-  const json = await res.json().catch(() => ({}));
-  return json.items || [];
-}
-
 export default async function ProviderEstimatesPage({ params }: { params: Promise<{ locale: string }> }) {
-  const items = await fetchProviderEstimatesAbs();
-  return <EstimateManager initialEstimates={items} />;
+  const { locale } = await params;
+
+  const session = await getServerSession(authOptions);
+  if (!session?.user) redirect(`/${locale}/login`);
+  if (session.user.role !== 'PROVIDER') redirect(`/${locale}/account`);
+  const userId = session.user.id;
+
+  const items = await getProviderFormSubmissions(userId, locale);
+  return <EstimateManager initial={items as any} />;
 }

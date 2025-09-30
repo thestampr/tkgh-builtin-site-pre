@@ -2,7 +2,7 @@
 
 import type { Category } from "@/lib/api";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { FormEventHandler, useRef, useState } from "react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -17,47 +17,66 @@ const schema = z.object({
   providerId: z.string().optional().or(z.literal("")),
 });
 
+interface FormData {
+  locale?: string;
+  name: string;
+  phone: string;
+  email?: string;
+  location?: string;
+  categoryId?: string;
+  budget?: string;
+  detail: string;
+  providerId?: string;
+}
+
 interface EstimateFormProps {
   locale: string;
   categories: Category[];
   providerId?: string;
 }
 
+const defaultFormData: FormData = {
+  locale: "",
+  name: "",
+  phone: "",
+  email: "",
+  location: "",
+  categoryId: "",
+  budget: "",
+  detail: "",
+  providerId: "",
+};
+
 export function EstimateForm({ locale, categories, providerId }: EstimateFormProps) {
-  const formRef = useRef<HTMLFormElement>(null);
+  const [formData, setFormData] = useState<FormData>(defaultFormData);
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const t = useTranslations("Estimate");
   const tc = useTranslations("Common");
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const resetForm = () => {
+    setFormData(defaultFormData);
+  };
+
+  const onFormSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setLoading(true);
     setOk(null);
     setError(null);
 
-    const formEl = formRef.current || (e.currentTarget as HTMLFormElement);
-    const fd = new FormData(formEl);
+    const categoryId = String(formData.categoryId || "");
+    const providerOfCategory = categoryId ? categories.find(c => c.id === categoryId) : null;
 
     const payload = {
+      ...formData,
       locale,
-      name: String(fd.get("name") || ""),
-      phone: String(fd.get("phone") || ""),
-      email: String(fd.get("email") || ""),
-      location: String(fd.get("location") || ""),
-      category: String(fd.get("category") || ""),
-      budget: String(fd.get("budget") || ""),
-      detail: String(fd.get("detail") || ""),
-      providerId: providerId || String(fd.get("providerId") || "") || undefined,
+      providerId: providerId || providerOfCategory?.providerId || formData.providerId || undefined,
     };
 
-    const parse = schema.safeParse(payload);
-    if (!parse.success) {
-      setLoading(false);
-      setError(t("validation"));
-      return;
-    }
+    console.log(payload);
+    console.log(formData);
 
     try {
       const res = await fetch("/api/estimate", {
@@ -80,7 +99,7 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
       }
 
       setOk(true);
-      formRef.current?.reset();
+      resetForm();
     } catch (e: unknown) {
       setOk(false);
       const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : tc("failed");
@@ -94,76 +113,59 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
   const inputCls =
     "w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 px-3 py-2 " +
     "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary";
-  const selectCls = inputCls;
   const textareaCls = inputCls + " min-h-[120px]";
 
   return (
     <form
-      ref={formRef}
-      onSubmit={handleSubmit}
+      onSubmit={onFormSubmit}
       className="grid gap-4 text-slate-800"
       aria-live="polite"
       noValidate
     >
-      {providerId && <input type="hidden" name="providerId" value={providerId} />}
       <fieldset disabled={loading} className="grid gap-4">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="name" className={labelCls}>
-              {t("name")}
-            </label>
-            <input id="name" name="name" required className={inputCls} />
+            <label htmlFor="name" className={labelCls}>{t("name")}</label>
+            <input id="name" name="name" required className={inputCls} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
           </div>
           <div>
-            <label htmlFor="phone" className={labelCls}>
-              {t("phone")}
-            </label>
-            <input id="phone" name="phone" required className={inputCls} />
+            <label htmlFor="phone" className={labelCls}>{t("phone")}</label>
+            <input id="phone" name="phone" required className={inputCls} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="email" className={labelCls}>
-              {t("email")}
-            </label>
-            <input id="email" name="email" type="email" className={inputCls} />
+            <label htmlFor="email" className={labelCls}>{t("email")}</label>
+            <input id="email" name="email" type="email" className={inputCls} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
           </div>
           <div>
-            <label htmlFor="location" className={labelCls}>
-              {t("location")}
-            </label>
-            <input id="location" name="location" className={inputCls} />
+            <label htmlFor="location" className={labelCls}>{t("location")}</label>
+            <input id="location" name="location" className={inputCls} onChange={(e) => setFormData({ ...formData, location: e.target.value })} />
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="category" className={labelCls}>
-              {t("category")}
-            </label>
-            <select id="category" name="category" className={selectCls} defaultValue="">
+            <label htmlFor="category" className={labelCls}>{t("category")}</label>
+            <select id="category" name="category" className={inputCls} defaultValue="" onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}>
               <option value="">{t("category")}</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.slug!}>
+                <option key={category.id} value={category.id}>
                   {category.title}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="budget" className={labelCls}>
-              {t("budget")}
-            </label>
-            <input id="budget" name="budget" className={inputCls} placeholder="300,000" />
+            <label htmlFor="budget" className={labelCls}>{t("budget")}</label>
+            <input id="budget" name="budget" className={inputCls} placeholder="300,000" onChange={(e) => setFormData({ ...formData, budget: e.target.value })} />
           </div>
         </div>
 
         <div>
-          <label htmlFor="detail" className={labelCls}>
-            {t("detail")}
-          </label>
-          <textarea id="detail" name="detail" required className={textareaCls} />
+          <label htmlFor="detail" className={labelCls}>{t("detail")}</label>
+          <textarea id="detail" name="detail" required className={textareaCls} onChange={(e) => setFormData({ ...formData, detail: e.target.value })} />
         </div>
 
         <div className="flex justify-end">

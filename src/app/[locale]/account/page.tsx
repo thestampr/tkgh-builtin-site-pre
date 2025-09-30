@@ -1,8 +1,8 @@
 import UserProfileEditor from '@/components/account/UserProfileEditor';
 import { ProviderChart } from '@/components/dashboard/ProviderChart';
+import { getUserFavorites } from '@/lib/api';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
-import { getUserFavorites } from '@/lib/api';
 import { getServerSession } from 'next-auth';
 import { getTranslations } from 'next-intl/server';
 import { unstable_noStore as noStore } from 'next/cache';
