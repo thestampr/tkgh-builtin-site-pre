@@ -45,19 +45,11 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {loading && !items.length && Array.from({ length: skeletonRows }).map((_, i) => (
-          <tr key={`sk-${i}`} className="bg-white/50 animate-pulse rounded shadow [&_td]:py-2">
-            <td className="px-2"><div className="flex -space-x-2"><div className="h-8 w-8 rounded-full bg-neutral-200" /><div className="h-8 w-8 rounded-full bg-neutral-200" /><div className="h-8 w-8 rounded-full bg-neutral-200" /></div></td>
-            <td className="px-2"><div className="h-3 w-40 bg-neutral-200 rounded" /></td>
-            <td className="px-2"><div className="h-3 w-10 bg-neutral-200 rounded" /></td>
-            <td className="px-2"><div className="h-5 w-16 bg-neutral-200 rounded" /></td>
-            <td className="px-2"><div className="h-4 w-10 bg-neutral-200 rounded" /></td>
-            <td className="px-2"><div className="h-4 w-10 bg-neutral-200 rounded" /></td>
-            <td className="px-2"><div className="h-3 w-20 bg-neutral-200 rounded" /></td>
-            <td className="px-2 text-right"><div className="inline-block h-3 w-12 bg-neutral-200 rounded" /></td>
+        {items.length === 0 ? (
+          <tr>
+            <td colSpan={8} className="py-6 text-center text-neutral-500">{t("empty")}</td>
           </tr>
-        ))}
-        {items.map(it => {
+        ) : items.map(it => {
           const gallery = (it.galleryJson ? JSON.parse(it.galleryJson as string) : it.gallery) || [];
           return (
             <tr key={it.id} className="bg-white/70 backdrop-blur hover:bg-white/90 transition rounded shadow [&_td]:py-2">
@@ -84,11 +76,6 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
             </tr>
           );
         })}
-        {!items.length && (
-          <tr>
-            <td colSpan={8} className="py-8 text-center text-neutral-400">No items yet</td>
-          </tr>
-        )}
       </tbody>
     </table>
   );

@@ -25,7 +25,11 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, onEdit, onDele
         </tr>
       </thead>
       <tbody>
-        {items.map(cat => (
+        {items.length === 0 ? (
+          <tr>
+            <td colSpan={8} className="py-6 text-center text-neutral-500">{t("empty")}</td>
+          </tr>
+        ) : items.map(cat => (
           <tr key={cat.id} className="bg-white/70 backdrop-blur hover:bg-white/90 transition rounded shadow [&_td]:py-2">
             <td className="px-2">
               {cat.coverImage ? (
@@ -44,11 +48,6 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, onEdit, onDele
             </td>
           </tr>
         ))}
-        {!items.length && (
-          <tr>
-            <td colSpan={6} className="py-8 text-center text-neutral-400 text-sm">No categories yet</td>
-          </tr>
-        )}
       </tbody>
     </table>
   );
