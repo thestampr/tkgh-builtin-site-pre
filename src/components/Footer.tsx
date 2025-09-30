@@ -1,9 +1,8 @@
 "use client";
-import { useTranslations } from "next-intl";
 
 export function Footer() {
   const year = new Date().getFullYear();
-  const t = useTranslations("Common");
+
   return (
     <footer className="border-t border-slate-200">
       <div className="container py-8">
