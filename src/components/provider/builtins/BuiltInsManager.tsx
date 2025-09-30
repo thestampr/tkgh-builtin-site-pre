@@ -2,7 +2,7 @@
 
 import { LocaleTabs } from "@/components/LocaleTabs";
 import { ModalShell } from "@/components/ModalShell";
-import { RefreshButton } from "@/components/provider/common/RefreshButton";
+import { RefreshButton } from "@/components/common/RefreshButton";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { confirmModal } from "@/lib/confirm";
 import { kebabcase } from "@/lib/formatting";

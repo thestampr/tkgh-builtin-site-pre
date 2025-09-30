@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { Loader2, RotateCw } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -50,14 +51,19 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
   }, [cooldown]);
 
   const disabled = running || cooldown > 0;
-  const text = running ? refreshingLabel : (cooldown > 0 ? `${label} (${cooldown})` : label);
+  const coolingdown = !running && disabled;
+  const text = running ? refreshingLabel : label;
+  const title = running ? refreshingLabel : (cooldown > 0 ? `Please wait ${cooldown}s` : label);
 
   return (
     <button
       onClick={handleClick}
-      className={`btn btn-ghost inline-flex items-center gap-2 ${disabled ? "opacity-60 cursor-not-allowed" : ""} ${className}`}
+      className={clsx(
+        "btn btn-ghost inline-flex items-center gap-2 relative overflow-hidden",
+        className
+      )}
       disabled={disabled}
-      title={text}
+      title={title}
       aria-busy={running}
     >
       { running 
@@ -65,6 +71,13 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
         : <RotateCw size={14} />
       }
       {text}
+      <span
+        className={clsx(
+          "bg-black/15 absolute inset-0 pointer-events-none",
+          coolingdown ? "opacity-100" : "opacity-0",
+        )}
+        style={{ transition: `transform ${cooldownMs}ms linear`, transform: coolingdown ? "translateX(100%)" : "translateX(0)" }}
+      />
     </button>
   );
 };
