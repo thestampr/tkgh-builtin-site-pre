@@ -26,19 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <title>{process.env.NEXT_PUBLIC_SITE_NAME || "Loading..."}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-        <style>
-          {`
-            @font-face {
-              font-family: "Legitima";
-              src: url('/fonts/Legitima-Italic.woff2') format('woff2'),
-                  url('/fonts/Legitima-Regular.woff2') format('woff2');
-              font-weight: 400;
-              font-style: normal;
-              font-display: swap;
-            }
-          `}
-        </style>
       </head>
 
       <body className="min-h-screen relative flex flex-col">
