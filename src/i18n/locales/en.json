@@ -418,7 +418,8 @@
         "weakPassword": "Password must be at least 8 characters",
         "invalidEmail": "Invalid email",
         "emailInUse": "Email already in use",
-        "invalidCurrent": "Current password incorrect"
+        "invalidCurrent": "Current password incorrect",
+        "clickToUpload": "Click to upload"
       },
       "settings": {
         "title": "Account Settings",
