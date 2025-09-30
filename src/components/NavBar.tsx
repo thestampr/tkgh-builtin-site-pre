@@ -26,7 +26,10 @@ type UserMenuProps = {
 function UserMenu({ session, locale, showName }: UserMenuProps) {
   const tAccount = useTranslations("Account");
   const user = session?.user;
-  const role = user?.role;
+
+  if (!user) return null;
+
+  const role = user.role;
 
   return (
     <Popover className="relative">
