@@ -6,8 +6,6 @@ import { useEffect, useState, useTransition } from "react";
 export default function UserProfileEditor() {
   const { data: session, update } = useSession();
 
-  const t = useTranslations("Account.ui.userProfile");
-  const tErrors = useTranslations("Errors");
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -18,6 +16,10 @@ export default function UserProfileEditor() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const t = useTranslations("Account.ui.userProfile");
+  const tCommon = useTranslations("Common");
+  const tErrors = useTranslations("Errors");
 
   useEffect(() => {
     fetch("/api/account/profile").then(r => r.json()).then(data => {
@@ -72,7 +74,7 @@ export default function UserProfileEditor() {
     });
   }
 
-  if (loading) return <div className="text-sm text-neutral-500">Loading...</div>;
+  if (loading) return <div className="text-sm text-neutral-500">{tCommon("loading")}</div>;
 
   return (
     <div className="space-y-10">
@@ -80,7 +82,7 @@ export default function UserProfileEditor() {
         <section className="md:col-span-1 space-y-4">
           <h2 className="text-sm font-semibold tracking-wide text-neutral-700 uppercase">{t("title")}</h2>
           <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">Manage your basic profile information. Only email, password and profile image are editable.</p>
-          {message && <div className="text-[11px] text-green-600">{message}</div>}
+          {message && <div className="text-[11px] text-success">{message}</div>}
           {error && <div className="text-[11px] text-danger">{error}</div>}
         </section>
         <div className="md:col-span-2 space-y-12">

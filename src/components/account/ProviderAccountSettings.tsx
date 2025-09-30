@@ -3,8 +3,6 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
 export default function ProviderAccountSettings() {
-  const t = useTranslations("Account.ui");
-  const tSettings = useTranslations("Account.ui.settings");
   const [email, setEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -14,6 +12,10 @@ export default function ProviderAccountSettings() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const t = useTranslations("Account.ui");
+  const tCommon = useTranslations("Common");
+  const tSettings = useTranslations("Account.ui.settings");
 
   useEffect(() => {
     fetch("/api/account/profile").then(r => r.json()).then(data => {
@@ -47,7 +49,7 @@ export default function ProviderAccountSettings() {
     });
   }
 
-  if (loading) return <div className="text-sm text-neutral-500">Loading...</div>;
+  if (loading) return <div className="text-sm text-neutral-500">{tCommon("loading")}</div>;
 
   return (
     <div className="space-y-10">
