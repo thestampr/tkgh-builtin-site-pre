@@ -57,7 +57,7 @@ export default function UserAvatar({
   }, [session?.user]);
 
   const imgSrc = src ?? (sessionUser ? session?.user.avatarUrl || session?.user.profile?.avatarUrl : undefined);
-  const imgAlt = name ?? (sessionUser ? session?.user.name || session?.user.profile?.displayName : undefined);
+  const imgAlt = name ?? (sessionUser ? session?.user.name || session?.user.profile?.displayName || session?.user.email : undefined);
   const displayImage = !imageError && ( imgSrc || status === "authenticated" );
 
   return (
