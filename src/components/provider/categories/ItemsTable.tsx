@@ -1,5 +1,6 @@
 "use client";
 
+import { defaultLocale } from "@/src/i18n/navigation";
 import React from "react";
 import type { CategoryDto } from "./types";
 
@@ -35,7 +36,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, onEdit, onDele
             </td>
             <td className="px-2 font-medium text-neutral-800 max-w-[280px] truncate">{cat.name}</td>
             <td className="px-2 text-[11px] text-neutral-500">{cat.slug}</td>
-            <td className="px-2 text-[11px] text-neutral-500">{cat.languages || (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th")}</td>
+            <td className="px-2 text-[11px] text-neutral-500">{cat.languages || defaultLocale}</td>
             <td className="px-2 text-xs">{cat.published ? t("publish.published") : t("publish.unpublished")}</td>
             <td className="px-2 text-right text-xs space-x-3">
               <button onClick={() => onEdit(cat)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>

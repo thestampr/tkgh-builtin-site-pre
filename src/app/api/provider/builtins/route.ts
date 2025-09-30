@@ -2,6 +2,7 @@ import { assertProvider } from '@/lib/auth/assertProvider';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { errorJson } from '@/lib/errors';
+import { defaultLocale } from '@/src/i18n/navigation';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
@@ -34,7 +35,7 @@ async function listBuiltIns(userId: string, params: { search?: string; status?: 
   let translations: any[] = [];
   if (ids.length) translations = await prisma.builtInTranslation.findMany({ where: { builtInId: { in: ids } }, select: { builtInId: true, locale: true } });
   const grouped = translations.reduce((acc: Record<string, string[]>, t: any) => { (acc[t.builtInId] ||= []).push(t.locale); return acc; }, {});
-  const base = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th';
+  const base = defaultLocale;
   const items = itemsRaw.map(i => ({ ...i, favoritesCount: (i as any)._count?.favorites || 0, languages: [base, ...(grouped[i.id] || [])].join(', ') }));
   return items;
 }

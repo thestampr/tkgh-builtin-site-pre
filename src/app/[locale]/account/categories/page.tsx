@@ -1,6 +1,7 @@
 import CategoriesManager from '@/components/provider/categories/CategoriesManager';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
+import { defaultLocale } from '@/src/i18n/navigation';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 
@@ -21,7 +22,7 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
     translations = await prisma.categoryTranslation.findMany({ where: { categoryId: { in: ids }, published: true }, select: { categoryId: true, locale: true } });
   }
   const grouped = translations.reduce((acc: Record<string, string[]>, t: any) => { (acc[t.categoryId] ||= []).push(t.locale); return acc; }, {});
-  const base = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th';
+  const base = defaultLocale;
   const categories = cats.map(c => ({ ...c, languages: [base, ...(grouped[c.id] || [])].join(', ') }));
   return <CategoriesManager initialCategories={categories} />;
 }

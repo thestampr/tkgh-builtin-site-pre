@@ -66,21 +66,21 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   };
   const [rawItems, setRawItems] = useState<BuiltInDto[]>(() => initialItems.map(i => ({
     ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
+    languages: i.languages ?? defaultLocale,
     favoritesCount: typeof i.favoritesCount === "number" ? i.favoritesCount : 0,
     gallery: parseGallery(i.galleryJson),
     galleryJson: null,
   })));
   const [items, setItems] = useState<BuiltInDto[]>(() => initialItems.map(i => ({
     ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
+    languages: i.languages ?? defaultLocale,
     favoritesCount: typeof i.favoritesCount === "number" ? i.favoritesCount : 0,
     gallery: parseGallery(i.galleryJson),
     galleryJson: null,
   })));
   const normalizeService = (i: BuiltIn & { languages?: string | null; favoritesCount?: number | null; gallery?: string[] | null }): BuiltInDto => ({
     ...(i as BuiltIn),
-    languages: i.languages ?? (process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th"),
+    languages: i.languages ?? defaultLocale,
     favoritesCount: typeof i.favoritesCount === "number" ? i.favoritesCount : 0,
     gallery: Array.isArray(i.gallery) ? i.gallery : [],
     galleryJson: null,

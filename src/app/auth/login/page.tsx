@@ -1,8 +1,9 @@
+import { defaultLocale } from '@/src/i18n/navigation';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default function AuthLoginRedirect() {
-  const locale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'en';
+  const locale = defaultLocale;
   redirect(`/${locale}/login`);
 }
