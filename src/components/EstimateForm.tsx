@@ -3,6 +3,7 @@
 import type { Category } from "@/lib/api";
 import { useTranslations } from "next-intl";
 import { FormEventHandler, useState } from "react";
+import { useToast } from "../hooks/useToast";
 
 interface FormData {
   locale?: string;
@@ -41,7 +42,8 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
   const [error, setError] = useState<string | null>(null);
 
   const t = useTranslations("Estimate");
-  const tc = useTranslations("Common");
+
+  const { showSuccessToast, showErrorToast } = useToast();
 
   const resetForm = () => {
     setFormData(defaultFormData);
@@ -68,26 +70,44 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      setOk(res.ok);
 
-      let data: unknown = null;
-      try {
-        data = await res.json();
-      } catch {
-        // Response is not JSON
+      if (res.ok) {
+        resetForm();
+        showSuccessToast({
+          title: t("messages.estimateRequestSent.title"),
+          description: t("messages.estimateRequestSent.description")
+        });
+      } else {
+        switch (res.status) {
+          case 400:
+            setError(t("messages.errors.missingInfo.description"));
+            return showErrorToast({
+              title: t("messages.errors.missingInfo.title"),
+              description: t("messages.errors.missingInfo.description")
+            });
+          case 404:
+            setError(t("messages.errors.invalid.description"));
+            return showErrorToast({
+              title: t("messages.errors.invalid.title"),
+              description: t("messages.errors.invalid.description")
+            });
+          case 500:
+          default:
+            setError(t("messages.failed"));
+            return showErrorToast({
+              title: t("messages.errors.error.title"),
+              description: t("messages.errors.error.description")
+            });
+        }
       }
-
-      const isOkFlag = typeof data === 'object' && data !== null && 'ok' in data ? (data as any).ok : undefined;
-      if (!res.ok || isOkFlag === false) {
-        const msg = typeof data === 'object' && data !== null && 'error' in data ? String((data as any).error) : `Request failed with status ${res.status}`;
-        throw new Error(msg);
-      }
-
-      setOk(true);
-      resetForm();
     } catch (e: unknown) {
       setOk(false);
-      const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : tc("failed");
-      setError(msg);
+      setError(t("messages.errors.error.title"));
+      return showErrorToast({
+        title: t("messages.errors.error.title"),
+        description: t("messages.errors.error.description")
+      });
     } finally {
       setLoading(false);
     }
@@ -150,6 +170,12 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
         <div>
           <label htmlFor="detail" className={labelCls}>{t("detail")}</label>
           <textarea id="detail" name="detail" required className={textareaCls} onChange={(e) => setFormData({ ...formData, detail: e.target.value })} />
+          <div className="text-sm h-6" role="status">
+            {ok 
+              ? <span className="text-success">{t("messages.success")}</span> 
+              : <span className="text-danger">{error}</span>
+            }
+          </div>
         </div>
 
         <div className="flex justify-end">
@@ -162,18 +188,6 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
           </button>
         </div>
       </fieldset>
-
-      {ok && (
-        <div className="text-success px-4 py-2" role="status">
-          {tc("success")}
-        </div>
-      )}
-      {ok === false && (
-        <div className="text-danger px-4 py-2" role="alert">
-          {tc("failed")}
-          {error ? `: ${error}` : ""}
-        </div>
-      )}
     </form>
   );
 }
