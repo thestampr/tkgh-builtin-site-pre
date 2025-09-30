@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@import "../css/fonts.css";
 @import "../css/scrollbar.css";
 @import "../css/utilities-directional-shadow-only.css";
 
@@ -83,23 +84,9 @@
   }
 } */
 
-/* fonts */
-@font-face {
-  font-family: "Legitima";
-  src:
-    local("Legitima"),
-    url('/fonts/legitima/Legitima-Regular.woff2') format('woff2'),
-    url('/fonts/legitima/Legitima-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}
-
 * {
   scrollbar-width: none;
   -webkit-scrollbar: hidden;
-}
-
-* {
   -webkit-user-drag: none;
   -khtml-user-drag: none;
   -moz-user-drag: none;
@@ -118,6 +105,8 @@ body {
 body {
   color: var(--fg);
   background: var(--bg);
+  
+  font-family: "Prompt", "Kanit", sans-serif;
 }
 
 /* body > main {

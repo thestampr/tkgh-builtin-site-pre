@@ -1,0 +1,323 @@
+/* Font definitions */
+
+/* --------------------------------------------------
+ * Legitima
+ * -------------------------------------------------- */
+@font-face {
+  font-family: "Legitima";
+  src:
+    local("Legitima"),
+    url("/fonts/legitima/Legitima-Regular.woff2") format("woff2"),
+    url("/fonts/legitima/Legitima-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-legitima {
+  font-family: "Legitima", serif;
+}
+
+/* --------------------------------------------------
+ * Kanit full family
+ * Weights: 100 Thin, 200 ExtraLight, 300 Light, 400 Regular, 500 Medium,
+ *          600 SemiBold, 700 Bold, 800 ExtraBold, 900 Black
+ * -------------------------------------------------- */
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Thin.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-ThinItalic.ttf") format("truetype");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-ExtraLightItalic.ttf") format("truetype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-MediumItalic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-SemiBoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-ExtraBoldItalic.ttf") format("truetype");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/fonts/kanit/Kanit-BlackItalic.ttf") format("truetype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+.font-kanit {
+  font-family: "kanit", sans-serif;
+}
+
+/* --------------------------------------------------
+ * Prompt full family
+ * Weights mirror Kanit mapping
+ * -------------------------------------------------- */
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Thin.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-ThinItalic.ttf") format("truetype");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-ExtraLightItalic.ttf") format("truetype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-MediumItalic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-SemiBoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-ExtraBoldItalic.ttf") format("truetype");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "prompt";
+  src: url("/fonts/prompt/Prompt-BlackItalic.ttf") format("truetype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+.font-prompt {
+  font-family: "prompt", sans-serif;
+}
