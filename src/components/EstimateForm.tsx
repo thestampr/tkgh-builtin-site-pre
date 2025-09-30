@@ -2,20 +2,7 @@
 
 import type { Category } from "@/lib/api";
 import { useTranslations } from "next-intl";
-import { FormEventHandler, useRef, useState } from "react";
-import { z } from "zod";
-
-const schema = z.object({
-  locale: z.string().optional(),
-  name: z.string().min(1),
-  phone: z.string().min(6),
-  email: z.string().email().optional().or(z.literal("")),
-  location: z.string().optional().or(z.literal("")),
-  category: z.string().optional().or(z.literal("")),
-  budget: z.string().optional().or(z.literal("")),
-  detail: z.string().min(1),
-  providerId: z.string().optional().or(z.literal("")),
-});
+import { FormEventHandler, useState } from "react";
 
 interface FormData {
   locale?: string;
