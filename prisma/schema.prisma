@@ -212,25 +212,25 @@ model AnalyticsEvent {
 }
 
 model Estimate {
-  id         String   @id @default(cuid())
-  locale     String?  @db.VarChar(16)
+  id         String    @id @default(cuid())
+  locale     String?   @db.VarChar(16)
   name       String
   phone      String
   email      String?
   location   String?
   budget     String?
   detail     String
-  createdAt  DateTime @default(now())
-  viewed     Boolean  @default(false)
-  archived   Boolean  @default(false)
+  createdAt  DateTime  @default(now())
+  viewed     Boolean   @default(false)
+  archived   Boolean   @default(false)
 
-  userId     String
+  userId     String?
   categoryId String
   providerId String
 
-  user       User     @relation("SubmittingUser", fields: [userId], references: [id], onDelete: Cascade)
-  category   Category @relation("Estimates", fields: [categoryId], references: [id], onDelete: Cascade)
-  provider   User     @relation("CategoryProvider", fields: [providerId], references: [id], onDelete: Cascade)
+  user       User?     @relation("SubmittingUser", fields: [userId], references: [id], onDelete: Cascade)
+  category   Category? @relation("Estimates", fields: [categoryId], references: [id], onDelete: Cascade)
+  provider   User?     @relation("CategoryProvider", fields: [providerId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([archived])
