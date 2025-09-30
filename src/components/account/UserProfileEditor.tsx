@@ -88,14 +88,13 @@ export default function UserProfileEditor() {
         <div className="md:col-span-2 space-y-12">
           <section className="space-y-4">
             <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t("avatar")}</h3>
-            <div className="flex items-center gap-4">
-              <div className="size-20 rounded-full bg-neutral-200 overflow-hidden border flex items-center justify-center">
+            <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer">
+              <div className="size-20 rounded-full bg-neutral-200 overflow-hidden border">
                 {avatarUrl ? <img src={avatarUrl} alt="avatar" className="object-cover w-full h-full" /> : <span className="text-[10px] text-neutral-500">IMG</span>}
               </div>
-              <div className="space-y-2 text-xs">
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarChange} />
-              </div>
-            </div>
+              <span className="text-xs text-neutral-500">{t("clickToUpload")}</span>
+              <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarChange} className="hidden" />
+            </label>
           </section>
           <section className="space-y-4">
             <h3 className="text-xs font-medium uppercase tracking-wide text-neutral-500">{t("changeEmail")}</h3>
