@@ -664,7 +664,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             <button
               type="submit"
               disabled={saving || !dirty}
-              className="btn btn-primary btn-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loadingTranslation && activeLocale !== defaultLocale ? "..." : "Save"}
             </button>

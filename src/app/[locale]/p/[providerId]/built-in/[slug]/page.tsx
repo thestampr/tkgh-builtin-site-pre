@@ -122,7 +122,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
               <div className="mt-6">
                 <Link
                   href={`/${locale}/estimate`}
-                  className="btn btn-primary btn-md"
+                  className="btn btn-primary"
                 >
                   {tCommon("freeEstimate")}
                 </Link>
