@@ -5,12 +5,12 @@ import { LoginButton } from "@/components/auth/LoginButton";
 import UserAvatar from "@/components/UserAvatar";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
-import { ChevronUp, Menu, User } from "lucide-react";
+import { ChevronUp, Menu } from "lucide-react";
 import type { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LocaleSwitcher from "./LocaleSwitcher";
 
@@ -259,14 +259,14 @@ export function NavBar() {
         pinned={false}
         backdropBlur
       >
-        <header 
+        <header
           ref={headerRef}
           className={clsx(
-          "min-h-14 items-center",
-          "px-4 lg:px-12 xl:px-20",
-          "transition-all duration-300 ease-in-out **:z-9999",
-          headerClass
-        )}>
+            "min-h-14 items-center",
+            "px-4 lg:px-12 xl:px-20",
+            "transition-all duration-300 ease-in-out **:z-9999",
+            headerClass
+          )}>
           <div className="min-h-14 mx-auto pl-4 lg:px-6 py-1 md:py-0 flex justify-between items-center">
             <div className="flex items-center gap-2 md:gap-4">
               <Link href={`/${locale}`} className={clsx(
@@ -330,15 +330,15 @@ export function NavBar() {
                     <div className="flex flex-col gap-1">
                       {session.user?.role === "PROVIDER" ? <Anchors links={providerLinks} /> : <Anchors links={userLinks} />}
 
-                      <button 
+                      <button
                         className="mt-1 px-4 py-2 rounded-lg hover:bg-black/5 text-left text-danger"
-                        onClick={() => signOut({ callbackUrl: `/${locale}` })} 
+                        onClick={() => signOut({ callbackUrl: `/${locale}` })}
                       >
                         {tAccount("menu.signOut")}
                       </button>
                     </div>
                   </div>
-                ): (
+                ) : (
                   <LoginButton className="inline-flex w-full justify-center" />
                 )}
               </div>
