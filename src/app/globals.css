@@ -128,11 +128,8 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
   background: var(--surface);
   color: var(--foreground);
-  font-size: 12px;
   cursor: pointer;
 }
 
@@ -203,9 +200,9 @@ body {
 
 /* btn size utilities */
 @layer utilities {
-  .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; border-radius: 0.25rem; } /* text-xs */
-  .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.875rem; border-radius: 0.375rem; } /* text-sm */
+  .btn.btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; } /* text-xs */
+  .btn.btn-sm { padding: 0.375rem 0.75rem; font-size: 0.875rem; } /* text-sm */
   .btn { padding: 0.5rem 1rem; font-size: 1rem; border-radius: 0.5rem; } /* text-base */
-  .btn-lg { padding: 0.75rem 1.5rem; font-size: 1.125rem; border-radius: 0.75rem; } /* text-lg */
-  .btn-xl { padding: 1rem 1.75rem; font-size: 1.25rem; border-radius: 1rem; } /* text-xl */
+  .btn.btn-lg { padding: 0.75rem 1.5rem; font-size: 1.125rem; } /* text-lg */
+  .btn.btn-xl { padding: 1rem 1.75rem; font-size: 1.25rem; } /* text-xl */
 }
