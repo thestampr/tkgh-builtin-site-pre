@@ -52,6 +52,8 @@
   /* popover background */
   --hover-tint: rgba(0, 0, 0, 0.4);
   /* theme-aware overlay for hover */
+  --hover-tint-overlay: rgba(255, 255, 255, 0.2);
+  /* lighter overlay for dark mode */
 }
 
 @theme {
@@ -132,7 +134,14 @@ body {
   color: var(--foreground);
   font-size: 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+/* define transition for button states */
+.btn {
+  --webkit-transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  --moz-transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  --o-transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
 .btn:hover {
@@ -160,6 +169,10 @@ body {
   color: var(--primary-foreground);
   border-color: transparent;
 }
+.btn-primary:hover {
+  background-image: linear-gradient(var(--hover-tint-overlay), var(--hover-tint-overlay));
+  background-blend-mode: overlay;
+}
 
 .btn-secondary {
   background: var(--secondary);
@@ -184,8 +197,9 @@ body {
 
 /* btn size utilities */
 @layer utilities {
-  .btn-xs { padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; border-radius: 0.25rem !important; } /* text-xs */
-  .btn-sm { padding: 0.375rem 0.75rem !important; font-size: 0.875rem !important; border-radius: 0.375rem !important; } /* text-sm */
-  .btn-md { padding: 0.5rem 1rem !important; font-size: 1rem !important; border-radius: 0.5rem !important; } /* text-base */
-  .btn-lg { padding: 0.75rem 1.5rem !important; font-size: 1.125rem !important; border-radius: 0.75rem !important; } /* text-lg */
+  .btn-xs { padding: 0.25rem 0.5rem !important; font-size: 0.75rem; border-radius: 0.25rem; } /* text-xs */
+  .btn-sm { padding: 0.375rem 0.75rem !important; font-size: 0.875rem; border-radius: 0.375rem; } /* text-sm */
+  .btn { padding: 0.5rem 1rem !important; font-size: 1rem; border-radius: 0.5rem; } /* text-base */
+  .btn-lg { padding: 0.75rem 1.5rem !important; font-size: 1.125rem; border-radius: 0.75rem; } /* text-lg */
+  .btn-xl { padding: 1rem 1.75rem !important; font-size: 1.25rem; border-radius: 1rem; } /* text-xl */
 }
