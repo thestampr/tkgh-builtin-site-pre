@@ -19,7 +19,7 @@ export function CategoryButton({ category }: Props) {
     : `/${locale}/categories/${slug}`;
 
   return (
-    <Link href={categoryHref}>
+    <Link href={categoryHref} onClick={(e) => e.stopPropagation()}>
       <div className="max-w-24 truncate">
         <span 
           className={clsx(
