@@ -1,9 +1,9 @@
 "use client";
 
+import type { Category } from "@/lib/api";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { z } from "zod";
-import { useTranslations } from "next-intl";
-import type { Category } from "@/lib/api";
 
 const schema = z.object({
   locale: z.string().optional(),
@@ -170,7 +170,7 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-primary text-white px-6 py-3 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+            className="btn btn-primary btn-lg"
           >
             {loading ? t("sending") : t("submit")}
           </button>
