@@ -57,7 +57,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
               )}
             </div>
             <div className="space-y-2 w-full">
-              <h1 className="text-3xl font-bold text-neutral-900 line-clamp-1">{profile.displayName || "Provider"}</h1>
+              <h1 className="text-base lg:text-3xl font-bold text-neutral-900 line-clamp-1 mb-0">{profile.displayName || "Provider"}</h1>
               {profile.bio && <p className="text-neutral-600 max-w-2xl text-sm leading-relaxed">{profile.bio}</p>}
             </div>
           </div>
@@ -66,7 +66,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
 
       <Hero extendBackground
         title={
-          <div className="flex items-center gap-6 py-10 md:py-16 sticky top-0">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-10 md:gap-6 py-10 md:py-16 sticky top-0">
             <div className="relative size-24 rounded-full bg-gradient-to-br from-neutral-200 to-neutral-100 overflow-hidden border border-neutral-300 shrink-0">
               {profile.avatarUrl && (
                 <Image src={profile.avatarUrl} alt={profile.displayName || "avatar"} fill className="object-cover" />
@@ -76,7 +76,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
               )}
             </div>
             <div className="space-y-2 w-full">
-              <h1 className="text-3xl font-bold text-white line-clamp-1">{profile.displayName || "Provider"}</h1>
+              <h1 className="text-xl lg:text-3xl font-bold text-white line-clamp-1 mb-0">{profile.displayName || "Provider"}</h1>
               {profile.bio && <p className="text-neutral-400 max-w-2xl text-sm leading-relaxed">{profile.bio}</p>}
             </div>
           </div>
@@ -94,8 +94,8 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
             <div className="h-full w-full bg-gradient-to-br from-slate-200 to-slate-100" aria-hidden="true" />
           )}
           {profile.contacts && profile.contacts.length > 0 && (
-            <div className="absolute bottom-4 left-0 right-0 md:px-8 lg:px-18 xl:px-26 z-10 text-center md:text-left opacity-80">
-              <div className="inline-flex overflow-x-auto gap-2">
+            <div className="absolute bottom-4 left-0 right-0 px-4 md:px-8 lg:px-18 xl:px-26 z-10 text-center md:text-left opacity-80 overflow-scroll">
+              <div className="inline-flex gap-2">
                 {profile.contacts.map((c, i) =>
                   <div key={i} className="flex items-center gap-2 px-4 py-2 text-white font-semibold text-nowrap">
                     <ContactIcon type={c.type} />
