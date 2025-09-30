@@ -1,5 +1,5 @@
 import { ContactUsButton } from "@/components/ContactUsButton";
-import { FooterHero } from "@/components/FooterHero";
+import { Footer } from "@/src/components/Footer";
 import { ReactNode } from "react";
 
 export default async function SiteLayout({
@@ -16,7 +16,7 @@ export default async function SiteLayout({
         {children}
       </main>
       <ContactUsButton />
-      <FooterHero />
+      <Footer />
     </>
   );
 }
