@@ -126,7 +126,7 @@ export function CategoryCard(props: CategoryItemProps) {
         ) : null}
         <div className="mt-3">
           {showProvider && provider &&
-            <div className="mt-3 max-w-24 truncate">
+            <div className="max-w-[60%] truncate">
               <ProviderButton provider={provider} size="sm" ghost />
             </div>
           }

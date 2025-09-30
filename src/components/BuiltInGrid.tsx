@@ -157,7 +157,7 @@ export function BuiltInCard(props: BuiltInItemProps & BuiltInGridProps) {
         </div>
         <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
           {showProvider && item.provider &&
-            <span className="max-w-24 truncate">
+            <span className="max-w-[60%] truncate">
               <ProviderButton provider={item.provider} size="sm" ghost />
             </span>
           }
