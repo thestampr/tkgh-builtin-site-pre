@@ -270,7 +270,7 @@ export function NavBar() {
           <div className="min-h-14 mx-auto pl-4 lg:px-6 py-1 md:py-0 flex justify-between items-center">
             <div className="flex items-center gap-2 md:gap-4">
               <Link href={`/${locale}`} className={clsx(
-                "inline-flex items-baseline gap-2 md:gap-4"
+                "inline-flex items-baseline gap-2 md:gap-4 **:!font-legitima"
               )}>
                 <span className="text-2xl md:text-3xl font-serif font-bold !text-primary">
                   {process.env.NEXT_PUBLIC_BRAND_ALIAS}
