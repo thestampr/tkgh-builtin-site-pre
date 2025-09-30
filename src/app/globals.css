@@ -189,6 +189,12 @@ body {
   background: var(--muted-hover);
 }
 
+.btn-success {
+  background: var(--success);
+  color: white;
+  border-color: transparent;
+}
+
 .btn-danger {
   background: var(--danger);;
   color: white;
