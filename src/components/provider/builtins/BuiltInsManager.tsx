@@ -304,7 +304,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
         onDelete={remove}
         onTogglePublish={togglePublish}
         publishingId={publishingId}
-        loading={serviceState.loading}
       />
 
       <ModalShell

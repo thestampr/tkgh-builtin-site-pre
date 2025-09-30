@@ -13,8 +13,6 @@ interface ItemsTableProps {
   onDelete: (item: BuiltInDto) => void;
   onTogglePublish: (item: BuiltInDto) => void;
   publishingId: string | null;
-  loading?: boolean;
-  skeletonRows?: number;
   className?: string;
 }
 
@@ -26,8 +24,6 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
   onDelete,
   onTogglePublish,
   publishingId,
-  loading = false,
-  skeletonRows = 5,
   className = ""
 }) => {
   return (
