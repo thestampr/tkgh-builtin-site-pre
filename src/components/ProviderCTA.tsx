@@ -18,8 +18,8 @@ export type CTAConfig = {
 
 export const defaultCta: CTAConfig = {
   label: "Example",
-  color: "#8a6a40",
-  textColor: "#ffffff",
+  color: "#292F36",
+  textColor: "#FFFFFF",
   size: "md",
   icon: "MessageCircle",
   href: "#",
