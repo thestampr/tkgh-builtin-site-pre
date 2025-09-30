@@ -52,7 +52,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         title={tHome("heroTitle")}
         subtitle={tHome("heroSubtitle")}
         cta={
-          <Link href={`/${locale}/estimate`} className="inline-flex items-center gap-2 mt-6 rounded bg-primary text-white px-6 py-3">
+          <Link href={`/${locale}/estimate`} className="btn btn-primary btn-lg mt-6 !text-base">
             {tCommon("freeEstimate")} <ChevronRight size={18} />
           </Link>
         }
