@@ -3,7 +3,7 @@
 import { IconPicker } from "@/components/IconPicker";
 import { defaultCta, ProviderCTA, type CTAConfig } from "@/components/ProviderCTA";
 import { useToast } from "@/hooks/useToast";
-import { defaultLocale } from "@/i18n/navigation";
+import { defaultLocale, locales } from "@/i18n/navigation";
 import { Profile, ProfileTranslation } from "@prisma/client";
 import clsx from "clsx";
 import * as Lucide from "lucide-react";
@@ -55,9 +55,6 @@ interface TranslationState {
 
 export default function ProfileEditor({ initialProfile, inline = false }: ProfileEditorProps) {
   const { data: session, update } = useSession();
-  const t = useTranslations("Account.ui");
-  const tErrors = useTranslations("Errors");
-  const tProfile = useTranslations("Profile");
 
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
 
@@ -99,6 +96,10 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
   // Local controlled hex inputs for colors
   const [textColorHex, setTextColorHex] = useState<string>(ctaConfig.textColor || "#ffffff");
   const [bgColorHex, setBgColorHex] = useState<string>(ctaConfig.color || "#8a6a40");
+  
+  const t = useTranslations("Account.ui");
+  const tErrors = useTranslations("Errors");
+  const tProfile = useTranslations("Profile");
 
   // Toasts
   const { showSuccessToast, showErrorToast } = useToast();
@@ -208,7 +209,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       });
       setSaving(false);
       if (res.ok) {
-        setMessage("Saved");
+        setMessage(t("saved"));
         showSuccessToast({ title: t("saved") });
         // Update baseline to reflect last saved state (optimistic)
         setBaselineBase({
@@ -261,7 +262,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       });
       setSaving(false);
       if (res.ok) {
-        setMessage("Saved");
+        setMessage(t("saved"));
         showSuccessToast({ title: t("saved") });
         setBaselineTranslations(prev => ({
           ...prev,
@@ -410,22 +411,22 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
           <button
             onClick={activeLocale === defaultLocale ? saveBase : saveTranslation}
             disabled={saving || !dirty}
-            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary"
           >
-            Save
+            {saving ? t("saving") : t("save")}
           </button>
           <button
             type="button"
             onClick={cancel}
             disabled={!dirty || saving}
-            className="btn btn-ghost disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-ghost"
           >
-            Cancel
+            {t("cancel")}
           </button>
           {message && <span className="text-xs text-neutral-500">{message}</span>}
-          {dirty && <span className="text-[10px] text-amber-600">Unsaved changes</span>}
+          {dirty && <span className="text-xs text-warning">{t("unsaved")}</span>}
           <div className="flex items-center gap-2 ml-auto">
-            {[defaultLocale, "en"].map(loc => (
+            {locales.map(loc => (
               <button
                 key={loc}
                 onClick={() => setActiveLocale(loc)}
@@ -528,16 +529,17 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                       <div className="flex items-center gap-2">
                         <input
                           type="color"
-                          value={isValidFullHex(textColorHex) ? textColorHex : (ctaConfig.textColor || "#ffffff")}
+                          value={isValidFullHex(textColorHex) ? textColorHex : (ctaConfig.textColor || "#FFFFFF")}
                           onChange={(e) => {
-                            setTextColorHex(e.target.value);
-                            setCtaConfig(c => ({ ...c, textColor: e.target.value }));
+                            const v = e.target.value.toUpperCase();
+                            setTextColorHex(v);
+                            setCtaConfig(c => ({ ...c, textColor: v }));
                           }}
                           className="h-9 w-9 rounded cursor-pointer"
                         />
                         <input
                           value={textColorHex}
-                          onChange={(e) => handleHexChange("textColor", e.target.value)}
+                          onChange={(e) => handleHexChange("textColor", e.target.value.toUpperCase())}
                           placeholder="#FFFFFF"
                           className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
                             isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
@@ -549,16 +551,17 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                       <div className="flex items-center gap-2">
                         <input
                           type="color"
-                          value={isValidFullHex(bgColorHex) ? bgColorHex : (ctaConfig.color || "#8a6a40")}
+                          value={isValidFullHex(bgColorHex) ? bgColorHex : (ctaConfig.color || "#8A6A40")}
                           onChange={(e) => {
-                            setBgColorHex(e.target.value);
-                            setCtaConfig(c => ({ ...c, color: e.target.value }));
+                            const v = e.target.value.toUpperCase();
+                            setBgColorHex(v);
+                            setCtaConfig(c => ({ ...c, color: v }));
                           }}
                           className="h-9 w-9 rounded cursor-pointer"
                         />
                         <input
                           value={bgColorHex}
-                          onChange={(e) => handleHexChange("color", e.target.value)}
+                          onChange={(e) => handleHexChange("color", e.target.value.toUpperCase())}
                           placeholder="#8A6A40"
                           className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
                             isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
@@ -611,7 +614,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                   </div>
                   <div className="pt-2">
                     <div className="text-[11px] text-neutral-500">Preview:</div>
-                    <div className="py-12 flex items-center justify-center bg-neutral-100 rounded">
+                    <div className="py-16 flex items-center justify-center bg-neutral-100 rounded">
                       <ProviderCTA config={ctaConfig} preview />
                     </div>
                   </div>
@@ -638,9 +641,15 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
               </section>
             )}
             <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex items-center justify-between">{t("contactChannels")}
-                <button type="button" onClick={addChannel} className="btn btn-secondary btn-xs">{t("addChannel")}</button>
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">
+                  {t("contactChannels")}
+                </h3>
+                <button type="button" onClick={addChannel} className="btn btn-secondary btn-xs">
+                  <Lucide.Plus size={14} />
+                  {t("addChannel")}
+                </button>
+              </div>
               <fieldset className="space-y-3">
                 <div className="space-y-3">
                   {contacts.channels.map((ch, i) => (
@@ -664,9 +673,9 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             <button
               type="submit"
               disabled={saving || !dirty}
-              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary"
             >
-              {loadingTranslation && activeLocale !== defaultLocale ? "..." : "Save"}
+              {loadingTranslation && activeLocale !== defaultLocale ? "..." : saving ? t("saving") : t("save")}
             </button>
             {activeLocale !== defaultLocale && (
               <button
@@ -678,9 +687,9 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                   setCtaLabelTr(baseTr.ctaLabel);
                 }}
                 disabled={!dirty}
-                className="text-xs underline text-neutral-500 disabled:opacity-40 disabled:no-underline disabled:cursor-not-allowed"
+                className="btn btn-ghost"
               >
-                Reset EN
+                Reset {activeLocale.toUpperCase()}
               </button>
             )}
           </div>
