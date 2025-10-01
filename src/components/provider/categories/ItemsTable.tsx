@@ -1,6 +1,6 @@
 "use client";
 
-import { defaultLocale } from "@/src/i18n/navigation";
+import { defaultLocale } from "@/i18n/navigation";
 import React from "react";
 import type { CategoryDto } from "./types";
 

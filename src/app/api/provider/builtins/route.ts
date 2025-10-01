@@ -2,7 +2,7 @@ import { assertProvider } from '@/lib/auth/assertProvider';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { errorJson } from '@/lib/errors';
-import { defaultLocale } from '@/src/i18n/navigation';
+import { defaultLocale } from '@/i18n/navigation';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 

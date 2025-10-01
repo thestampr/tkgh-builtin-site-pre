@@ -1,4 +1,4 @@
-import { defaultLocale } from '@/src/i18n/navigation';
+import { defaultLocale } from '@/i18n/navigation';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';

@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/src/hooks/useToast";
+import { useToast } from "@/hooks/useToast";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState, useTransition } from "react";
 

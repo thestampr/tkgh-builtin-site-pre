@@ -1,6 +1,6 @@
 import { EstimateManager } from "@/components/provider/estimates/EstimateManager";
-import { getProviderFormSubmissions } from "@/src/lib/api";
-import { authOptions } from "@/src/lib/auth/options";
+import { getProviderFormSubmissions } from "@/lib/api";
+import { authOptions } from "@/lib/auth/options";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
