@@ -15,5 +15,5 @@ export default async function ProviderEstimatesPage({ params }: { params: Promis
   const userId = session.user.id;
 
   const items = await getProviderFormSubmissions(userId, locale);
-  return <EstimateManager initial={items as any} />;
+  return <EstimateManager initial={items} />;
 }
