@@ -10,7 +10,9 @@ import { FilterBar } from "./FilterBar";
 import { ItemsTable } from "./ItemsTable";
 import type { EstimateDto, EstimateSort, ViewedFilter } from "./types";
 
-interface Props { initial: EstimateDto[] }
+interface Props { 
+  initial: EstimateDto[] 
+}
 
 export const EstimateManager: React.FC<Props> = ({ initial }) => {
   const [raw, setRaw] = useState<EstimateDto[]>(initial);
