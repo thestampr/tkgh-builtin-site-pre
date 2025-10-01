@@ -9,11 +9,11 @@ import { ChevronUp, Menu } from "lucide-react";
 import type { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LocaleSwitcher from "./LocaleSwitcher";
-import Image from "next/image";
 
 const USE_IMAGE_ICON = true;
 
@@ -77,18 +77,18 @@ function UserMenu({ session, locale, showName }: UserMenuProps) {
                     <span className="flex-1">{tAccount("menu.profile")}</span>
                   </Link>
                   <Link
-                    href={`/${locale}/account/builtins`}
-                    onClick={close}
-                    className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
-                  >
-                    <span className="flex-1">{tAccount("menu.builtIns")}</span>
-                  </Link>
-                  <Link
                     href={`/${locale}/account/categories`}
                     onClick={close}
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
                   >
                     <span className="flex-1">{tAccount("menu.categories")}</span>
+                  </Link>
+                  <Link
+                    href={`/${locale}/account/builtins`}
+                    onClick={close}
+                    className="flex w-full items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 text-left"
+                  >
+                    <span className="flex-1">{tAccount("menu.builtIns")}</span>
                   </Link>
                 </>
               ) : (
