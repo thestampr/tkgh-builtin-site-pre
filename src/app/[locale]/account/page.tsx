@@ -137,7 +137,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
                 <section className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-6">
                   <h2 className="font-medium mb-4 text-neutral-700">{t('tables.recent')}</h2>
                   <ul className="space-y-2 text-sm">
-                    {data.recent.map((r: any) => (
+                    {data.recent.map((r) => (
                       <li key={r.id} className="flex items-center justify-between">
                         <span className="truncate mr-2">{r.title}</span>
                         <span className="text-xs px-2 py-0.5 rounded bg-neutral-100 text-neutral-600 border border-neutral-200">{r.status}</span>
@@ -151,7 +151,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
                   <div>
                     <h2 className="font-medium mb-2 text-neutral-700">{t('tables.topViews')}</h2>
                     <ul className="space-y-3 text-sm">
-                      {data.topViews.map((b: any) => (
+                      {data.topViews.map((b) => (
                         <li key={b.id} className="flex items-center justify-between">
                           <span className="truncate mr-2">{b.title}</span>
                           <span className="text-xs font-medium text-neutral-600">{b.viewCount}</span>
@@ -162,7 +162,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
                   <div>
                     <h2 className="font-medium mb-2 text-neutral-700">{t('ui.topCategories')}</h2>
                     <ul className="space-y-2 text-xs">
-                      {data.analytics?.topCategories?.map((c: any) => (
+                      {data.analytics?.topCategories?.map((c) => (
                         <li key={c.id} className="flex items-center justify-between">
                           <span className="truncate mr-2">{c.name}</span>
                           <span className="text-neutral-600 font-medium">{c.views}</span>
