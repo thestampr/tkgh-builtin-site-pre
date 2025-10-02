@@ -115,8 +115,13 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     setCoverPreviewUrl(null);
     try {
       const d = await detail(cat.id);
-      const en = d.category?.translations?.find(tr => tr.locale === "en");
-      if (en) setTranslationDraft({ name: en.name || "", excerpt: en.excerpt || "", description: en.description || "", published: !!en.published });
+      const tr = d.category?.translations?.find(tr => tr.locale === activeLocale);
+      if (tr) setTranslationDraft({ 
+        name: tr.name || "", 
+        excerpt: tr.excerpt || "", 
+        description: tr.description || "", 
+        published: !!tr.published 
+      });
     } catch {/* ignore */ }
   }
 
