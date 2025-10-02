@@ -213,7 +213,10 @@ export async function getBuiltInItems(
   const run = cacheable(async () => {
     const items = await prisma.builtIn.findMany({
       where: {
-        status: "PUBLISHED"
+        status: "PUBLISHED",
+        category: {
+          published: true
+        }
       },
       include: {
         category: {
@@ -405,6 +408,9 @@ export async function getBuiltInItemsByProvider(
         providerId,
         categoryId: categorySlug ? category!.id : undefined,
         status: includeUnpublished ? undefined : "PUBLISHED",
+        category: {
+          published: includeUnpublished ? undefined : true
+        }
       },
       include: {
         category: {
@@ -506,7 +512,10 @@ export async function getCategoriesByProvider(
 export async function getPopularBuiltIns(limit = 12, locale: string = DEFAULT_LANG): Promise<BuiltInItem[]> {
   const items = await prisma.builtIn.findMany({
     where: {
-      status: "PUBLISHED"
+      status: "PUBLISHED",
+      category: {
+        published: true
+      }
     },
     include: {
       category: {
@@ -636,7 +645,10 @@ export interface BuiltInQueryParams {
 }
 export async function queryBuiltIns(params: BuiltInQueryParams & LocaleParams): Promise<BuiltInItem[]> {
   const { search, order, providerId, category, minPrice, maxPrice, locale = DEFAULT_LANG } = params;
-  const where: KeyValue = { status: "PUBLISHED" };
+  const where: KeyValue = { 
+    status: "PUBLISHED" ,
+    category: { published: true }
+  };
   if (search) {
     where.OR = [
       { title: { contains: search, mode: "insensitive" } },
@@ -701,6 +713,8 @@ export async function fetchBuiltIns(providerId: string): Promise<BuiltIn[]> {
     return await prisma.builtIn.findMany({ 
       where: { 
         providerId,
+        status: "PUBLISHED",
+        category: { published: true }
       }, 
       include: { 
         translations: true, 
