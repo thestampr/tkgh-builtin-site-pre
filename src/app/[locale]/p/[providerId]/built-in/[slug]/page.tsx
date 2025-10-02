@@ -1,7 +1,7 @@
-import BackButton from "@/components/BackButton";
+import BackButton from "@/components/common/BackButton";
 import { CategoryButton } from "@/components/CategoryButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import GallerySwiper from "@/components/GallerySwiper";
+import GallerySwiper from "@/components/common/GallerySwiper";
 import ProviderButton from "@/components/ProviderButton";
 import { TrackBuiltInView } from "@/components/TrackBuiltInView";
 import { getBuiltInItem } from "@/lib/api";

@@ -2,7 +2,7 @@
 
 import AppBar from "@/components/appbar";
 import { LoginButton } from "@/components/auth/LoginButton";
-import UserAvatar from "@/components/UserAvatar";
+import UserAvatar from "@/components/common/UserAvatar";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
 import { ChevronUp, Menu } from "lucide-react";

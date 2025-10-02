@@ -1,6 +1,6 @@
 "use client";
 
-import { PublishToggleButton } from "@/components/provider/common/PublishToggleButton";
+import { PublishToggleButton } from "@/components/common/PublishToggleButton";
 import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 import { ImageAvatars } from "./ImageAvatars";

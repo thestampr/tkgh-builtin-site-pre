@@ -1,6 +1,6 @@
 "use client";
 
-import { ModalShell } from "@/components/ModalShell";
+import { ModalShell } from "@/components/common/ModalShell";
 import { useTranslations } from "next-intl";
 import React from "react";
 import type { EstimateDto } from "./types";

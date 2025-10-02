@@ -1,7 +1,7 @@
 "use client";
 
 import { LocaleTabs } from "@/components/LocaleTabs";
-import { ModalShell } from "@/components/ModalShell";
+import { ModalShell } from "@/components/common/ModalShell";
 import { RefreshButton } from "@/components/common/RefreshButton";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { confirmModal } from "@/lib/confirm";

@@ -1,6 +1,6 @@
 "use client";
 
-import UserAvatar from "@/components/UserAvatar";
+import UserAvatar from "@/components/common/UserAvatar";
 import type { ProviderInfo } from "@/lib/api";
 import clsx from "clsx";
 import { useLocale } from "next-intl";

@@ -1,5 +1,5 @@
 import ConfirmHost from "@/components/modal/confirm-host";
-import { SessionClientProvider } from "@/components/providers/SessionClientProvider";
+import { SessionClientProvider } from "@/components/session/SessionClientProvider";
 import { DeviceProvider } from "@/hooks/useDevice";
 import { defaultMetadata } from "@/lib/seo";
 import { SpeedInsights } from "@vercel/speed-insights/next";

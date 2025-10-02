@@ -2,7 +2,7 @@ import { assertProvider } from '@/lib/auth/assertProvider';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { errorJson } from '@/lib/errors';
-import { defaultLocale } from '@/src/i18n/navigation';
+import { defaultLocale } from '@/i18n/navigation';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
@@ -34,7 +34,7 @@ async function listCategories(userId: string, params: {
     case 'created_desc': orderBy = { createdAt: 'desc' }; break;
     default: orderBy = { updatedAt: 'desc' };
   }
-  
+
   const cats = await prisma.category.findMany({ 
     where, 
     include: {
