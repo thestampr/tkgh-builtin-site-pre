@@ -82,12 +82,9 @@ export default async function AccountDashboardPage({ params }: { params: Promise
   ]);
   // Build analytics structure mirroring /api/provider/analytics
   const [events, builtInsAll, categoriesAll] = analyticsSource;
-  const dayMap: Record<string, number> = {};
-  for (const ev of events) {
-    const key = ev.createdAt.toISOString().slice(0, 10);
-    dayMap[key] = (dayMap[key] || 0) + 1;
-  }
-  const daily = Object.entries(dayMap).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
+  // Provide raw event timestamps (each value=1) so the chart can derive
+  // daily hourly breakdown and weekly/day aggregations correctly.
+  const daily = events.map(ev => ({ date: ev.createdAt.toISOString(), value: 1 }));
   const builtInEventCounts: Record<string, number> = {};
   for (const ev of events) builtInEventCounts[ev.builtInId!] = (builtInEventCounts[ev.builtInId!] || 0) + 1;
   const topCategories = (() => {
