@@ -37,7 +37,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const [editing, setEditing] = useState<CategoryDto | null>(null);
   const [draft, setDraft] = useState<DraftShape>(emptyDraft);
   const [translationDraft, setTranslationDraft] = useState<TranslationDraft>({});
-  const [activeLocale, setActiveLocale] = useState<string>(process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th");
+  const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
   const [search, setSearch] = useState("");
   const [publishedFilter, setPublishedFilter] = useState<"ALL" | "true" | "false">("ALL");
   const [sort, setSort] = useState<SortKind>("updated_desc");
@@ -89,7 +89,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
     setEditing(null);
     setDraft({ ...emptyDraft, published: true });
     setTranslationDraft({});
-    setActiveLocale(process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th");
+    setActiveLocale(defaultLocale);
     setModalOpen(true);
     setDraft(emptyDraft);
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
