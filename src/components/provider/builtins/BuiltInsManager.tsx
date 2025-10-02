@@ -333,7 +333,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           <TranslationForm
             value={translationDraft}
             onChange={d => setTranslationDraft(d)}
-            localeLabel="EN"
+            localeLabel={activeLocale.toUpperCase()}
           />
         )}
       </ModalShell>

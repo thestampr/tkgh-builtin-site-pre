@@ -1,43 +1,43 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
-import React from 'react';
-import type { TranslationDraft } from './types';
+import { useTranslations } from "next-intl";
+import React from "react";
+import type { TranslationDraft } from "./types";
 
 interface TranslationFormProps {
   value: TranslationDraft;
   onChange: (patch: Partial<TranslationDraft>) => void;
-  localeLabel?: string; // e.g. EN
+  localeLabel: string;
   className?: string;
 }
 
-export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChange, localeLabel = 'EN', className = '' }) => {
+export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChange, localeLabel, className = "" }) => {
   const t = useTranslations("ProviderBuiltIns");
 
   return (
     <div className={`space-y-5 ${className}`}>
       <div className="space-y-1">
-        <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.title')} ({localeLabel})</label>
+        <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.title")} ({localeLabel})</label>
         <input
-          value={value.title || ''}
+          value={value.title || ""}
           onChange={e => onChange({ ...value, title: e.target.value })}
           className="w-full border border-neutral-300 rounded px-2 py-1"
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.price')} ({localeLabel})</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.price")} ({localeLabel})</label>
           <input
             type="number"
-            value={value.price ?? ''}
+            value={value.price ?? ""}
             onChange={e => onChange({ ...value, price: e.target.value ? parseInt(e.target.value, 10) : null })}
             className="w-full border border-neutral-300 rounded px-2 py-1"
           />
         </div>
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.currency') || 'Currency'} ({localeLabel})</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.currency") || "Currency"} ({localeLabel})</label>
             <select
-              value={value.currency || ''}
+              value={value.currency || ""}
               onChange={e => onChange({ ...value, currency: e.target.value || null })}
               className="w-full border border-neutral-300 rounded px-2 py-1 bg-white"
             >
@@ -52,7 +52,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Content ({localeLabel})</label>
         <textarea
-          value={value.content || ''}
+          value={value.content || ""}
           onChange={e => onChange({ ...value, content: e.target.value })}
           rows={6}
           className="w-full border border-neutral-300 rounded px-2 py-2 text-xs"
