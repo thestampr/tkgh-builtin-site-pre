@@ -674,6 +674,14 @@
       }
     }
   },
+  "PublishState": {
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "publishing": "Publishing...",
+    "unpublishing": "Unpublishing...",
+    "published": "Published",
+    "draft": "Draft"
+  },
   "Errors": {
     "403": {
       "title": "Access Denied",

@@ -674,6 +674,14 @@
       }
     }
   },
+  "PublishState": {
+    "publish": "เผยแพร่",
+    "unpublish": "ถอนเผยแพร่",
+    "publishing": "กำลังเผยแพร่...",
+    "unpublishing": "กำลังถอน...",
+    "published": "เผยแพร่แล้ว",
+    "draft": "ฉบับร่าง"
+  },
   "Errors": {
     "403": {
       "title": "ไม่มีสิทธิ์เข้าใช้งาน",
