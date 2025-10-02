@@ -1,7 +1,7 @@
 "use client";
 
 import { defaultLocale } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 import type { CategoryDto } from "./types";
 
@@ -13,6 +13,7 @@ interface ItemsTableProps {
 
 export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onEdit, onDelete }) => {
   const t = useTranslations("ProviderCategories");
+  const locale = useLocale();
 
   return (
     <table className="w-full text-sm border-separate border-spacing-y-2">
@@ -31,25 +32,29 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onEdit, onDelete 
           <tr>
             <td colSpan={8} className="py-6 text-center text-neutral-500">{t("empty")}</td>
           </tr>
-        ) : items.map(cat => (
-          <tr key={cat.id} className="bg-white/70 backdrop-blur hover:bg-white/90 transition rounded shadow [&_td]:py-2">
-            <td className="px-2">
-              {cat.coverImage ? (
-                <img src={cat.coverImage} alt="thumb" className="h-8 w-8 rounded-full object-cover border border-neutral-300" />
-              ) : (
-                <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center text-[10px] text-neutral-500 border border-neutral-300">—</div>
-              )}
-            </td>
-            <td className="px-2 font-medium text-neutral-800 max-w-[280px] truncate">{cat.name}</td>
-            <td className="px-2 text-[11px] text-neutral-500">{cat.slug}</td>
-            <td className="px-2 text-[11px] text-neutral-500">{cat.languages || defaultLocale}</td>
-            <td className="px-2 text-xs">{cat.published ? t("publish.published") : t("publish.unpublished")}</td>
-            <td className="px-2 text-right text-xs space-x-3">
-              <button onClick={() => onEdit(cat)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>
-              <button onClick={() => onDelete(cat)} className="text-danger hover:underline cursor-pointer">Delete</button>
-            </td>
-          </tr>
-        ))}
+        ) : items.map(cat => {
+          const tr = cat.translations?.find(tr => tr.locale === locale);
+
+          return (
+            <tr key={cat.id} className="bg-white/70 backdrop-blur hover:bg-white/90 transition rounded shadow [&_td]:py-2">
+              <td className="px-2">
+                {cat.coverImage ? (
+                  <img src={cat.coverImage} alt="thumb" className="h-8 w-8 rounded-full object-cover border border-neutral-300" />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center text-[10px] text-neutral-500 border border-neutral-300">—</div>
+                )}
+              </td>
+              <td className="px-2 font-medium text-neutral-800 max-w-[280px] truncate">{tr?.name || cat.name}</td>
+              <td className="px-2 text-[11px] text-neutral-500">{cat.slug}</td>
+              <td className="px-2 text-[11px] text-neutral-500">{cat.languages || defaultLocale}</td>
+              <td className="px-2 text-xs">{cat.published ? t("publish.published") : t("publish.unpublished")}</td>
+              <td className="px-2 text-right text-xs space-x-3">
+                <button onClick={() => onEdit(cat)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>
+                <button onClick={() => onDelete(cat)} className="text-danger hover:underline cursor-pointer">Delete</button>
+              </td>
+            </tr>
+          )
+        })}
       </tbody>
     </table>
   );
