@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import React from "react";
+import { useState } from "react";
 
 interface PublishToggleButtonProps {
   status: boolean;
@@ -11,7 +11,7 @@ interface PublishToggleButtonProps {
 }
 
 export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status, onClick, className = "" }) => {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const t = useTranslations("ProviderBuiltIns");
 
   const handleClick = async () => {
