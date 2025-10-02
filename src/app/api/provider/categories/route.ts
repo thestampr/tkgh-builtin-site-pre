@@ -1,9 +1,10 @@
 import { assertProvider } from '@/lib/auth/assertProvider';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
+import { errorJson } from '@/lib/errors';
+import { defaultLocale } from '@/src/i18n/navigation';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { errorJson } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,7 +12,12 @@ export const runtime = 'nodejs';
 type SortKind = 'updated_desc' | 'name_asc' | 'name_desc' | 'created_desc' | 'created_asc';
 type PublishedFilter = 'ALL' | 'true' | 'false';
 
-async function listCategories(userId: string, params: { search?: string; published?: PublishedFilter | null | undefined; sort?: SortKind | null | undefined; }) {
+async function listCategories(userId: string, params: { 
+  search?: string; 
+  published?: PublishedFilter | null;
+  sort?: SortKind | null; 
+  locale?: string | null; 
+}) {
   const search = (params.search || '').trim();
   const published = params.published || null; // 'true' | 'false' | 'ALL' | null
   const sort = (params.sort || 'updated_desc') as SortKind;
@@ -23,14 +29,22 @@ async function listCategories(userId: string, params: { search?: string; publish
   else if (sort === 'name_desc') orderBy = { name: 'desc' };
   else if (sort === 'created_desc') orderBy = { createdAt: 'desc' };
   else if (sort === 'created_asc') orderBy = { createdAt: 'asc' };
-  const cats = await prisma.category.findMany({ where, orderBy });
-  const ids = cats.map(c => c.id);
-  let translations: { categoryId: string; locale: string }[] = [];
-  if (ids.length) {
-    translations = await prisma.categoryTranslation.findMany({ where: { categoryId: { in: ids } }, select: { categoryId: true, locale: true } });
-  }
-  const grouped = translations.reduce((acc: Record<string, string[]>, t) => { (acc[t.categoryId] ||= []).push(t.locale); return acc; }, {});
-  const categories = cats.map(c => ({ ...c, languages: [process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'th', ...(grouped[c.id] || [])].join(', ') }));
+  const cats = await prisma.category.findMany({ 
+    where, 
+    include: {
+      translations: true
+    },
+    orderBy 
+  });
+  let languages: string[] = [defaultLocale];
+  cats.forEach(c => {
+    c.translations?.forEach(t => {
+      if (!languages.includes(t.locale)) languages.push(t.locale);
+    });
+  });
+  languages = Array.from(new Set(languages)); // ensure uniqueness
+  const categories = cats.map(c => ({ ...c, languages: languages.join(", ") }));
+
   return categories;
 }
 
