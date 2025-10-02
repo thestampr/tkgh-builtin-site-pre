@@ -696,7 +696,7 @@ export async function queryBuiltIns(params: BuiltInQueryParams & LocaleParams): 
 }
 
 // legacy fetcher
-export async function fetchBuiltInsDirect(providerId: string): Promise<BuiltIn[]> {
+export async function fetchBuiltIns(providerId: string): Promise<BuiltIn[]> {
   try {
     return await prisma.builtIn.findMany({ 
       where: { 
