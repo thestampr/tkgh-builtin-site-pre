@@ -758,6 +758,32 @@ export async function getProviderPublicProfile(providerId: string, locale: strin
   };
 }
 
+export async function getProviderCategories(providerId: string, locale: string = DEFAULT_LANG): Promise<_C[]> {
+  const categories = await prisma.category.findMany({
+    where: {
+      providerId,
+    },
+    include: {
+      translations: true
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+  if (categories.length === 0) return [];
+  if (locale === DEFAULT_LANG) return categories;
+
+  return categories.map(c => {
+    const tr = c.translations.find(t => t.locale === locale && t.published);
+    return {
+      ...c,
+      name: tr?.name || c.name,
+      excerpt: tr?.excerpt || c.excerpt,
+      description: tr?.description || c.description
+    };
+  });
+}
+
 export interface CreateFormSubmissionInput {
   locale?: string;
   name: string;
