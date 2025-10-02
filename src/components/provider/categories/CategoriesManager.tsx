@@ -108,22 +108,26 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
       description: cat.description || null,
     });
     setTranslationDraft({});
-    setActiveLocale(defaultLocale);
-    setModalOpen(true);
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
     setCoverFile(null);
     setCoverPreviewUrl(null);
-    try {
-      const d = await detail(cat.id);
-      const tr = d.category?.translations?.find(tr => tr.locale === activeLocale);
-      if (tr) setTranslationDraft({ 
-        name: tr.name || "", 
-        excerpt: tr.excerpt || "", 
-        description: tr.description || "", 
-        published: !!tr.published 
-      });
-    } catch {/* ignore */ }
+    setActiveLocale(defaultLocale);
+    setModalOpen(true);
   }
+
+  useEffect(() => {
+    if (!editing) return;
+    if (activeLocale === defaultLocale) return;
+
+    // load translation draft
+    const tr = editing.translations?.find(t => t.locale === activeLocale);
+    setTranslationDraft(tr ? {
+      name: tr.name || "",
+      excerpt: tr.excerpt || "",
+      description: tr.description || "",
+      published: !!tr.published
+    } : {});
+   }, [activeLocale]);
 
   function onSelectCoverFile(file: File | null) {
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
@@ -300,7 +304,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           ) : (
             <TranslationForm
               value={translationDraft}
-              onChange={d => setTranslationDraft(d)}
+              onChange={d => setTranslationDraft({...translationDraft, ...d})}
               localeLabel={activeLocale.toUpperCase()}
             />
           )

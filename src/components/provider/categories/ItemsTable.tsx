@@ -9,8 +9,8 @@ import { PublishToggleButton } from "@/components/common/PublishToggleButton";
 interface ItemsTableProps {
   items: CategoryDto[];
   onEdit: (cat: CategoryDto) => void;
-  onTogglePublish: (item: CategoryDto) => void;
   onDelete: (cat: CategoryDto) => void;
+  onTogglePublish: (item: CategoryDto) => void;
 }
 
 export const ItemsTable: React.FC<ItemsTableProps> = ({ 
