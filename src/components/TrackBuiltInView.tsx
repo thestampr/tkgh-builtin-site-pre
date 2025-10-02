@@ -1,6 +1,8 @@
 "use client";
+
 import { useEffect } from 'react';
 
+// Used for analytics to track views of built-in items
 export function TrackBuiltInView({ slug }: { slug: string }) {
   useEffect(() => {
     if (!slug) return;
