@@ -18,13 +18,12 @@ import { TranslationForm } from "./TranslationForm";
 import type {
   BuiltInDto,
   DraftShape,
-  InitialItem,
   TranslationDraft,
   sortKind
 } from "./types";
 
 interface BuiltInsManagerProps {
-  initialItems: InitialItem[];
+  initialItems: BuiltInDto[];
   categories: Category[];
 }
 

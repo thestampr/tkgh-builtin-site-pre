@@ -1,17 +1,11 @@
 import type { BuiltIn, BuiltInTranslation } from "@prisma/client";
 import type { JsonValue } from "@prisma/client/runtime/library";
 
-export type BuiltInDto = BuiltIn & {
+export interface BuiltInDto extends BuiltIn {
   languages?: string | null;
   favoritesCount?: number | null;
   gallery?: string[] | null;
-  galleryJson?: JsonValue;
-};
-
-export type InitialItem = BuiltIn & {
-  languages?: string | null;
-  favoritesCount?: number | null;
-  galleryJson?: JsonValue;
+  galleryJson: JsonValue;
   translations?: BuiltInTranslation[];
 };
 
