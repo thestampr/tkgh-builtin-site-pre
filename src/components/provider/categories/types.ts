@@ -1,6 +1,6 @@
 import type { Category, CategoryTranslation } from "@prisma/client";
 
-export type CategoryDto = Category & {
+export interface CategoryDto extends Category {
   languages?: string;
   translations?: CategoryTranslation[];
 };
