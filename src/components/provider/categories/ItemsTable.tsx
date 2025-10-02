@@ -4,14 +4,21 @@ import { defaultLocale } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 import type { CategoryDto } from "./types";
+import { PublishToggleButton } from "@/components/common/PublishToggleButton";
 
 interface ItemsTableProps {
   items: CategoryDto[];
   onEdit: (cat: CategoryDto) => void;
+  onTogglePublish: (item: CategoryDto) => void;
   onDelete: (cat: CategoryDto) => void;
 }
 
-export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onEdit, onDelete }) => {
+export const ItemsTable: React.FC<ItemsTableProps> = ({ 
+  items, 
+  onEdit, 
+  onDelete, 
+  onTogglePublish 
+}) => {
   const t = useTranslations("ProviderCategories");
   const locale = useLocale();
 
@@ -47,7 +54,12 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onEdit, onDelete 
               <td className="px-2 font-medium text-neutral-800 max-w-[280px] truncate">{tr?.name || cat.name}</td>
               <td className="px-2 text-[11px] text-neutral-500">{cat.slug}</td>
               <td className="px-2 text-[11px] text-neutral-500">{cat.languages || defaultLocale}</td>
-              <td className="px-2 text-xs">{cat.published ? t("publish.published") : t("publish.unpublished")}</td>
+              <td className="px-2 text-xs">
+                <PublishToggleButton
+                  status={cat.published}
+                  onClick={() => onTogglePublish(cat)}
+                />
+              </td>
               <td className="px-2 text-right text-xs space-x-3">
                 <button onClick={() => onEdit(cat)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>
                 <button onClick={() => onDelete(cat)} className="text-danger hover:underline cursor-pointer">Delete</button>

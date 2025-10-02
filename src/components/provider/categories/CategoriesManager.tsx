@@ -45,7 +45,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
 
-  const { list, detail, create, update: updateService, upsertTranslation, remove: removeService, uploadCover } = useCategoriesService();
+  const { list, detail, create, update: updateService, upsertTranslation, publishToggle, remove: removeService, uploadCover } = useCategoriesService();
 
   const t = useTranslations("ProviderCategories");
 
@@ -196,6 +196,14 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
       } catch { /* ignore */ }
     });
   }
+  
+  async function togglePublish(cat: CategoryDto) {
+    const nextPublished = !cat.published;
+    try {
+      await publishToggle(cat.id, nextPublished);
+      await runFetch();
+    } catch {/* ignore */ }
+  }
 
   async function runFetch() {
     if (fetchAbort.current) fetchAbort.current.abort();
@@ -253,6 +261,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
         items={categories} 
         onEdit={openEdit} 
         onDelete={remove} 
+        onTogglePublish={togglePublish}
       />
 
       <ModalShell
