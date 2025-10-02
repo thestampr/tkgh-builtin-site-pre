@@ -274,20 +274,23 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
       >
         <LocaleTabs className="justify-end" locales={locales} active={activeLocale} onChange={setActiveLocale} />
 
-        {activeLocale === defaultLocale ? (
-          <BaseLocaleForm
-            draft={draft}
-            onChange={(patch) => update(patch)}
-            coverPreviewUrl={coverPreviewUrl}
-            onSelectCoverFile={onSelectCoverFile}
-            onRemoveCoverImage={onRemoveCoverImage}
-          />
-        ) : (
-          <TranslationForm
-            value={translationDraft}
-            onChange={d => setTranslationDraft(d)}
-          />
-        )}
+        { activeLocale === defaultLocale
+          ? (
+            <BaseLocaleForm
+              draft={draft}
+              onChange={(patch) => update(patch)}
+              coverPreviewUrl={coverPreviewUrl}
+              onSelectCoverFile={onSelectCoverFile}
+              onRemoveCoverImage={onRemoveCoverImage}
+            />
+          ) : (
+            <TranslationForm
+              value={translationDraft}
+              onChange={d => setTranslationDraft(d)}
+              localeLabel={activeLocale.toUpperCase()}
+            />
+          )
+        }
       </ModalShell>
     </div>
   );
