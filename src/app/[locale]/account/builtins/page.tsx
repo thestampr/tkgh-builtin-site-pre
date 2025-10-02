@@ -55,7 +55,6 @@ export default async function BuiltInsManagerPage({ params }: { params: Promise<
     fetchBuiltIns(providerId),
     fetchCategories(providerId)
   ]);
-  const ids = itemsRaw.map(i => i.id);
   let languages: string[] = [defaultLocale];
   itemsRaw.forEach(i => {
     i.translations?.forEach(t => {
