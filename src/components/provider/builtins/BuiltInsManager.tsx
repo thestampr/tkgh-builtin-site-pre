@@ -140,12 +140,23 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     setTranslationDraft({});
     setActiveLocale(defaultLocale);
     setModalOpen(true);
-    try {
-      const d = await detail(item.id);
-      const en = d.item?.translations?.find(tr => tr.locale === "en");
-      if (en) setTranslationDraft({ title: en.title || "", content: en.content || "", price: en.price ?? null, currency: en.currency || "", published: !!en.published });
-    } catch {/* ignore */ }
   }
+
+  useEffect(() => {
+    if (!editing) return;
+    if (activeLocale === defaultLocale) return;
+
+    // load translation draft
+    const tr = editing.translations?.find(t => t.locale === activeLocale);
+    setTranslationDraft(tr ? {
+      title: tr.title || "",
+      content: tr.content || "",
+      price: tr.price ?? null,
+      currency: tr.currency || null,
+      published: !!tr.published
+    } : {});
+  }, [activeLocale]);
+
   function update(patch: Partial<DraftShape>) {
     setDraft((d) => ({ ...d, ...patch }));
   }
