@@ -87,14 +87,13 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
 
   function openNew() {
     setEditing(null);
-    setDraft({ ...emptyDraft, published: true });
-    setTranslationDraft({});
-    setActiveLocale(defaultLocale);
-    setModalOpen(true);
     setDraft(emptyDraft);
+    setTranslationDraft({});
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
     setCoverFile(null);
     setCoverPreviewUrl(null);
+    setActiveLocale(defaultLocale);
+    setModalOpen(true);
   }
 
   async function openEdit(cat: CategoryDto) {
