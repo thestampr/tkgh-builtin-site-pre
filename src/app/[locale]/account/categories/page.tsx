@@ -14,9 +14,9 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect(`/${locale}/login`);
   if (session.user.role !== "PROVIDER") redirect(`/${locale}/account`);
-  const userId = session.user.id;
 
-  const cats = await getProviderCategories(userId, defaultLocale) as CategoryDto[];
+  const providerId = session.user.id;
+  const cats = await getProviderCategories(providerId) as CategoryDto[];
   let languages: string[] = [defaultLocale];
   cats.forEach(c => {
     c.translations?.forEach(t => {
@@ -24,7 +24,10 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
     });
   });
   languages = Array.from(new Set(languages)); // ensure uniqueness
-  const categories = cats.map(c => ({ ...c, languages: languages.join(", ") }));
-  
+  const categories = cats.map(c => ({ 
+    ...c, 
+    languages: languages.join(", ") 
+  }));
+
   return <CategoriesManager initialCategories={categories} />;
 }
