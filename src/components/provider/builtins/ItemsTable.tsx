@@ -12,7 +12,6 @@ interface ItemsTableProps {
   onEdit: (item: BuiltInDto) => void;
   onDelete: (item: BuiltInDto) => void;
   onTogglePublish: (item: BuiltInDto) => void;
-  publishingId: string | null;
   className?: string;
 }
 
@@ -22,7 +21,6 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
   onEdit,
   onDelete,
   onTogglePublish,
-  publishingId,
   className = ""
 }) => {
   const t = useTranslations("ProviderBuiltIns");
@@ -60,8 +58,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
               <td className="px-2 text-[11px] text-neutral-500">{it.languages || defaultLocale}</td>
               <td className="px-2 text-xs">
                 <PublishToggleButton
-                  status={it.status}
-                  loading={publishingId === it.id}
+                  status={it.status === "PUBLISHED"}
                   onClick={() => onTogglePublish(it)}
                 />
               </td>

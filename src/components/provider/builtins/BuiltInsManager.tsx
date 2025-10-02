@@ -45,7 +45,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const [publishingId, setPublishingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | BuiltInStatus>("ALL");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -240,16 +239,11 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   }
 
   async function togglePublish(it: BuiltInDto) {
-    if (publishingId) return;
-    setPublishingId(it.id);
     const nextPublished = it.status !== "PUBLISHED";
     try {
       await publishToggle(it.id, nextPublished);
       await runFetch();
     } catch {/* ignore */ }
-    finally { 
-      setPublishingId(null); 
-    }
   }
 
   const runFetch = useCallback(async () => {
@@ -315,7 +309,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
         onEdit={openEdit}
         onDelete={remove}
         onTogglePublish={togglePublish}
-        publishingId={publishingId}
       />
 
       <ModalShell
