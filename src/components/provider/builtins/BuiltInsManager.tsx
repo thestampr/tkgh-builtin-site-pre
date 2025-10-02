@@ -350,7 +350,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
         ) : (
           <TranslationForm
             value={translationDraft}
-            onChange={d => setTranslationDraft(d)}
+            onChange={d => setTranslationDraft({ ...translationDraft, ...d })}
             localeLabel={activeLocale.toUpperCase()}
           />
         )}
