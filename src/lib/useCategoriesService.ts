@@ -73,6 +73,18 @@ export function useCategoriesService() {
       return (await res.json()) as { category: CategoryDto };
     })
   , [wrap]);
+  
+  const publishToggle = useCallback((id: string, published: boolean): Promise<{ category: CategoryDto }> =>
+    wrap(async () => {
+      const res = await fetch(`/api/provider/categories/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ published }),
+      });
+      if (!res.ok) throw new Error('Publish toggle failed');
+      return (await res.json()) as { category: CategoryDto };
+    })
+  , [wrap]);
 
   const remove = useCallback((id: string) => wrap(async () => {
     const res = await fetch(`/api/provider/categories/${id}`, { method: 'DELETE' });
@@ -89,5 +101,5 @@ export function useCategoriesService() {
     return (j.url as string) || null;
   }, []);
 
-  return { list, detail, create, update, upsertTranslation, remove, uploadCover, state };
+  return { list, detail, create, update, upsertTranslation, publishToggle, remove, uploadCover, state };
 }
