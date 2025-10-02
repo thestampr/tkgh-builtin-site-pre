@@ -242,9 +242,9 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   async function togglePublish(it: BuiltInDto) {
     if (publishingId) return;
     setPublishingId(it.id);
-    const action = it.status === "PUBLISHED" ? "unpublish" : "publish";
+    const nextPublished = it.status !== "PUBLISHED";
     try {
-      await publishToggle(it.id, action);
+      await publishToggle(it.id, nextPublished);
       await runFetch();
     } catch {/* ignore */ }
     finally { 

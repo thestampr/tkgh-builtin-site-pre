@@ -150,12 +150,12 @@ export function useBuiltInsService() {
   , [wrap]);
 
   const publishToggle = useCallback(
-    (id: string, action: 'publish' | 'unpublish'): Promise<UpdateResult> =>
+    (id: string, published: boolean): Promise<UpdateResult> =>
       wrap(async () => {
         const res = await fetch(`/api/provider/builtins/${id}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action }),
+          body: JSON.stringify({ published }),
         });
         if (!res.ok) throw new Error('Publish toggle failed');
         const data = (await res.json()) as { item: ApiBuiltIn };

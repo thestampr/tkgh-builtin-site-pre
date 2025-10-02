@@ -86,11 +86,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { id } = await params;
     const userId = session!.user.id as string;
     const item = await requireOwnedBuiltIn(id, userId);
-    const { action } = await request.json();
-    if (action === 'publish') {
+    const body = await request.json();
+    const { published } = body;
+    if (published) {
       const updated = await prisma.builtIn.update({ where: { id }, data: { status: 'PUBLISHED', publishedAt: item.publishedAt || new Date() }, include: { _count: { select: { favorites: true } } } });
       return NextResponse.json({ item: { ...updated, favoritesCount: updated._count?.favorites || 0 } });
-    } else if (action === 'unpublish') {
+    } else {
       const updated = await prisma.builtIn.update({ where: { id }, data: { status: 'DRAFT' }, include: { _count: { select: { favorites: true } } } });
       return NextResponse.json({ item: { ...updated, favoritesCount: updated._count?.favorites || 0 } });
     }
