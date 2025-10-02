@@ -1,11 +1,17 @@
 import CategoriesManager from '@/components/provider/categories/CategoriesManager';
-import { authOptions } from '@/lib/auth/options';
-import prisma from '@/lib/db/prisma';
 import { defaultLocale } from '@/i18n/navigation';
+import { getProviderCategories } from '@/lib/api';
+import { authOptions } from '@/lib/auth/options';
+import { Category, CategoryTranslation } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
+
+interface CategoryWithTranslations extends Category {
+  locale: string;
+  translations?: CategoryTranslation[];
+}
 
 export default async function CategoriesManagerPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -14,15 +20,14 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
   if (!session?.user) redirect(`/${locale}/login`);
   if (session.user.role !== 'PROVIDER') redirect(`/${locale}/account`);
   const userId = session.user.id;
-  // Direct DB query avoids losing auth cookies with an internal fetch and is faster.
-  const cats = await prisma.category.findMany({ where: { providerId: userId }, orderBy: { createdAt: 'desc' } });
-  const ids = cats.map(c => c.id);
-  let translations: any[] = [];
-  if (ids.length && prisma.categoryTranslation?.findMany) {
-    translations = await prisma.categoryTranslation.findMany({ where: { categoryId: { in: ids }, published: true }, select: { categoryId: true, locale: true } });
-  }
-  const grouped = translations.reduce((acc: Record<string, string[]>, t: any) => { (acc[t.categoryId] ||= []).push(t.locale); return acc; }, {});
-  const base = defaultLocale;
-  const categories = cats.map(c => ({ ...c, languages: [base, ...(grouped[c.id] || [])].join(', ') }));
+
+  const cats = await getProviderCategories(userId, defaultLocale) as CategoryWithTranslations[];
+  let languages: string[] = [defaultLocale];
+  cats.forEach(c => {
+    c.translations?.forEach(t => {
+      if (!languages.includes(t.locale)) languages.push(t.locale);
+    });
+  });
+  const categories = cats.map(c => ({ ...c, languages: languages.join(', ') }));
   return <CategoriesManager initialCategories={categories} />;
 }
