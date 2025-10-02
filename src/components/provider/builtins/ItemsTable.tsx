@@ -65,8 +65,16 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
                   onClick={() => onTogglePublish(it)}
                 />
               </td>
-              <td className="px-2 text-xs"><span className="inline-flex items-center rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700">{it.viewCount ?? 0}</span></td>
-              <td className="px-2 text-xs"><span className="inline-flex items-center rounded bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">{(it as any).favoritesCount ?? 0}</span></td>
+              <td className="px-2 text-xs">
+                <span className="inline-flex items-center rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700">
+                  {it.viewCount ?? 0}
+                </span>
+              </td>
+              <td className="px-2 text-xs">
+                <span className="inline-flex items-center rounded bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+                  {it._count?.favorites ?? 0}
+                </span>
+              </td>
               <td className="px-2 text-xs text-neutral-500">{new Date(it.updatedAt).toLocaleDateString()}</td>
               <td className="px-2 text-right text-xs space-x-3">
                 <button onClick={() => onEdit(it)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>

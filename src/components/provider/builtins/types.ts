@@ -7,6 +7,9 @@ export interface BuiltInDto extends BuiltIn {
   gallery?: string[] | null;
   galleryJson: JsonValue;
   translations?: BuiltInTranslation[];
+  _count?: { 
+    favorites: number;
+  };
 };
 
 export interface TranslationDraft { 
