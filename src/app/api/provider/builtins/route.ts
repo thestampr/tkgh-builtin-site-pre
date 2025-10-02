@@ -18,22 +18,25 @@ async function listBuiltIns(userId: string, params: {
   const status = params.status || null; // PUBLISHED | DRAFT | ALL | null
   const categoryId = params.categoryId || null;
   const sort = (params.sort || 'updated_desc') as BuiltInSort;
-
   const where: Record<string, unknown> = { providerId: userId };
+  
   if (status && status !== 'ALL') where.status = status;
   if (categoryId) where.categoryId = categoryId;
   if (search) {
-    (where as any).OR = [
+    where.OR = [
       { title: { contains: search, mode: 'insensitive' } },
       { summary: { contains: search, mode: 'insensitive' } }
     ];
   }
 
-  let orderBy: any = { updatedAt: 'desc' };
-  if (sort === 'title_asc') orderBy = { title: 'asc' };
-  else if (sort === 'title_desc') orderBy = { title: 'desc' };
-  else if (sort === 'views_desc') orderBy = { viewCount: 'desc' };
-  else if (sort === 'favorites_desc') orderBy = { favorites: { _count: 'desc' } };
+  let orderBy: Record<string, unknown> = { updatedAt: 'desc' };
+  switch (sort) {
+    case 'title_asc': orderBy = { title: 'asc' }; break;
+    case 'title_desc': orderBy = { title: 'desc' }; break;
+    case 'views_desc': orderBy = { viewCount: 'desc' }; break;
+    case 'favorites_desc': orderBy = { favorites: { _count: 'desc' } }; break;
+    default: orderBy = { updatedAt: 'desc' };
+  }
 
   const itemsRaw = await prisma.builtIn.findMany({ where, orderBy, include: { _count: { select: { favorites: true } } } });
   const ids = itemsRaw.map(i => i.id);

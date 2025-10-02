@@ -19,16 +19,22 @@ async function listCategories(userId: string, params: {
   locale?: string | null; 
 }) {
   const search = (params.search || '').trim();
-  const published = params.published || null; // 'true' | 'false' | 'ALL' | null
+  const published = params.published || null;
   const sort = (params.sort || 'updated_desc') as SortKind;
   const where: Record<string, unknown> = { providerId: userId };
+
   if (published && published !== 'ALL') where.published = published === 'true';
   if (search) where.name = { contains: search, mode: 'insensitive' };
+
   let orderBy: Record<string, 'asc' | 'desc'> = { updatedAt: 'desc' };
-  if (sort === 'name_asc') orderBy = { name: 'asc' };
-  else if (sort === 'name_desc') orderBy = { name: 'desc' };
-  else if (sort === 'created_desc') orderBy = { createdAt: 'desc' };
-  else if (sort === 'created_asc') orderBy = { createdAt: 'asc' };
+  switch (sort) {
+    case 'name_asc': orderBy = { name: 'asc' }; break;
+    case 'name_desc': orderBy = { name: 'desc' }; break;
+    case 'created_asc': orderBy = { createdAt: 'asc' }; break;
+    case 'created_desc': orderBy = { createdAt: 'desc' }; break;
+    default: orderBy = { updatedAt: 'desc' };
+  }
+  
   const cats = await prisma.category.findMany({ 
     where, 
     include: {
