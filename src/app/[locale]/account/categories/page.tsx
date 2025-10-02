@@ -25,6 +25,6 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
   });
   languages = Array.from(new Set(languages)); // ensure uniqueness
   const categories = cats.map(c => ({ ...c, languages: languages.join(", ") }));
-  console.log(categories);
+  
   return <CategoriesManager initialCategories={categories} />;
 }
