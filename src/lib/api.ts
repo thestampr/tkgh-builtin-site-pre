@@ -698,7 +698,18 @@ export async function queryBuiltIns(params: BuiltInQueryParams & LocaleParams): 
 // legacy fetcher
 export async function fetchBuiltInsDirect(providerId: string): Promise<BuiltIn[]> {
   try {
-    return await prisma.builtIn.findMany({ where: { providerId }, include: { translations: true, favorites: true }, orderBy: { updatedAt: "desc" } });
+    return await prisma.builtIn.findMany({ 
+      where: { 
+        providerId,
+      }, 
+      include: { 
+        translations: true, 
+        favorites: true }, 
+        orderBy: { 
+          updatedAt: "desc" 
+        } 
+      }
+    );
   } catch (e) {
     console.error("Failed to load built-ins", e);
     return [];
@@ -706,7 +717,15 @@ export async function fetchBuiltInsDirect(providerId: string): Promise<BuiltIn[]
 }
 export async function fetchCategories(providerId: string): Promise<_C[]> {
   try {
-    return await prisma.category.findMany({ where: { providerId, published: true }, orderBy: { name: "asc" } });
+    return await prisma.category.findMany({ 
+      where: { 
+        providerId, 
+        published: true 
+      }, 
+      orderBy: { 
+        name: "asc" 
+      } 
+    });
   } catch (e) {
     console.error("Failed to load categories", e);
     return [];
