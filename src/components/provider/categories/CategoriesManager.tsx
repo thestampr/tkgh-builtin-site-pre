@@ -41,9 +41,9 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const [search, setSearch] = useState("");
   const [publishedFilter, setPublishedFilter] = useState<"ALL" | "true" | "false">("ALL");
   const [sort, setSort] = useState<SortKind>("updated_desc");
-  const fetchAbort = useRef<AbortController | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
+  const fetchAbort = useRef<AbortController | null>(null);
 
   const { list, create, update: updateService, upsertTranslation, publishToggle, remove: removeService, uploadCover } = useCategoriesService();
 
