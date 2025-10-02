@@ -12,7 +12,7 @@ interface PublishToggleButtonProps {
 
 export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status, onClick, className = "" }) => {
   const [loading, setLoading] = useState(false);
-  const t = useTranslations("ProviderBuiltIns");
+  const t = useTranslations("PublishState");
 
   const handleClick = async () => {
     if (loading) return;
@@ -32,9 +32,9 @@ export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status
           : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-200",
         className
       )}
-      title={status ? t("publish.unpublish") : t("publish.publish")}
+      title={status ? t("unpublish") : t("publish")}
     >
-      {loading ? (status ? t("publish.unpublishing") : t("publish.publishing")) : (status ? t("publish.published") : t("publish.draft"))}
+      {loading ? (status ? t("unpublishing") : t("publishing")) : (status ? t("published") : t("draft"))}
     </button>
   );
 };
