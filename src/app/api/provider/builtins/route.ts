@@ -37,14 +37,33 @@ async function listBuiltIns(userId: string, params: {
     case 'favorites_desc': orderBy = { favorites: { _count: 'desc' } }; break;
     default: orderBy = { updatedAt: 'desc' };
   }
+  
+  const itemsRaw = await prisma.builtIn.findMany({
+    where: where,
+    include: {
+      translations: true,
+      _count: { 
+        select: { 
+          favorites: true 
+        } 
+      }
+    },
+    orderBy: {
+      updatedAt: "desc"
+    }
+  });
+  let languages: string[] = [defaultLocale];
+  itemsRaw.forEach(i => {
+    i.translations?.forEach(t => {
+      if (!languages.includes(t.locale)) languages.push(t.locale);
+    });
+  });
+  languages = Array.from(new Set(languages)); // ensure uniqueness
+  const items = itemsRaw.map(i => ({
+    ...i,
+    languages: languages.join(", ")
+  }));
 
-  const itemsRaw = await prisma.builtIn.findMany({ where, orderBy, include: { _count: { select: { favorites: true } } } });
-  const ids = itemsRaw.map(i => i.id);
-  let translations: any[] = [];
-  if (ids.length) translations = await prisma.builtInTranslation.findMany({ where: { builtInId: { in: ids } }, select: { builtInId: true, locale: true } });
-  const grouped = translations.reduce((acc: Record<string, string[]>, t: any) => { (acc[t.builtInId] ||= []).push(t.locale); return acc; }, {});
-  const base = defaultLocale;
-  const items = itemsRaw.map(i => ({ ...i, favoritesCount: (i as any)._count?.favorites || 0, languages: [base, ...(grouped[i.id] || [])].join(', ') }));
   return items;
 }
 
