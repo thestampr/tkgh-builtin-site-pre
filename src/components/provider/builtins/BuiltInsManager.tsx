@@ -60,7 +60,14 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     if (!val) return [];
     if (Array.isArray(val)) return val.filter((x): x is string => typeof x === "string");
     if (typeof val === "string") {
-      try { const arr = JSON.parse(val); return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === "string") : []; } catch { return []; }
+      try { 
+        const arr = JSON.parse(val); 
+        return Array.isArray(arr) 
+        ? arr.filter((x): x is string => typeof x === "string") 
+        : []; 
+      } catch { 
+        return []; 
+      }
     }
     return [];
   };
@@ -116,7 +123,12 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
 
   async function openEdit(item: BuiltInDto) {
     setEditing(item);
-    const gallery = (item.gallery && Array.isArray(item.gallery)) ? item.gallery : (item.galleryJson ? JSON.parse(item.galleryJson as string) : []);
+    const gallery = (item.gallery && Array.isArray(item.gallery)) 
+    ? item.gallery 
+    : ( item.galleryJson 
+      ? JSON.parse(item.galleryJson as string) 
+      : []
+    );
     setDraft({
       title: item.title || "",
       slug: item.slug || "",
@@ -235,7 +247,9 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
       await publishToggle(it.id, action);
       await runFetch();
     } catch {/* ignore */ }
-    finally { setPublishingId(null); }
+    finally { 
+      setPublishingId(null); 
+    }
   }
 
   const runFetch = useCallback(async () => {
