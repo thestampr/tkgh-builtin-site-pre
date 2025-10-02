@@ -66,6 +66,27 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
+// POST: action publish | unpublish
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getServerSession(authOptions);
+    assertProvider(session);
+    const { id } = await params;
+    const userId = session!.user.id as string;
+    await ownedCategory(id, userId);
+    const body = await request.json();
+    const { published } = body;
+    const updated = await prisma.category.update({
+      where: { id },
+      data: { published: typeof published === 'boolean' ? published : undefined }
+    });
+    return NextResponse.json({ category: updated });
+  } catch (e: unknown) {
+    const { body, status } = errorJson(e, 'Error');
+    return NextResponse.json(body, { status });
+  }
+}
+
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions); 
