@@ -59,16 +59,12 @@ export default async function BuiltInsManagerPage({ params }: { params: Promise<
     fetchBuiltIns(providerId),
     fetchCategories(providerId)
   ]);
-  let languages: string[] = [defaultLocale];
-  itemsRaw.forEach(i => {
-    i.translations?.forEach(t => {
-      if (!languages.includes(t.locale)) languages.push(t.locale);
-    });
-  });
-  languages = Array.from(new Set(languages)); // ensure uniqueness
   const items = itemsRaw.map(i => ({ 
     ...i, 
-    languages: languages.join(", ") 
+    languages: Array.from(new Set([defaultLocale, ...(i.translations?.map(t => {
+      if (t.published) return t.locale;
+      else return `${t.locale}*`;
+    }) || [])])).join(", ") || defaultLocale
   }));
   
   return <BuiltInsManager initialItems={items} categories={categories} />;

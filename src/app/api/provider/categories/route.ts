@@ -42,16 +42,12 @@ async function listCategories(userId: string, params: {
     },
     orderBy 
   });
-  let languages: string[] = [defaultLocale];
-  cats.forEach(c => {
-    c.translations?.forEach(t => {
-      if (!languages.includes(t.locale)) languages.push(t.locale);
-    });
-  });
-  languages = Array.from(new Set(languages)); // ensure uniqueness
-  const categories = cats.map(c => ({ 
-    ...c, 
-    languages: languages.join(", ") 
+  const categories = cats.map(c => ({
+    ...c,
+    languages: Array.from(new Set([defaultLocale, ...(c.translations?.map(t => {
+      if (t.published) return t.locale;
+      else return `${t.locale}*`;
+    }) || [])])).join(", ") || defaultLocale
   }));
 
   return categories;

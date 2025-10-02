@@ -17,16 +17,12 @@ export default async function CategoriesManagerPage({ params }: { params: Promis
 
   const providerId = session.user.id;
   const cats = await getProviderCategories(providerId) as CategoryDto[];
-  let languages: string[] = [defaultLocale];
-  cats.forEach(c => {
-    c.translations?.forEach(t => {
-      if (!languages.includes(t.locale)) languages.push(t.locale);
-    });
-  });
-  languages = Array.from(new Set(languages)); // ensure uniqueness
   const categories = cats.map(c => ({ 
-    ...c, 
-    languages: languages.join(", ") 
+    ...c,
+    languages: Array.from(new Set([defaultLocale, ...(c.translations?.map(t => {
+      if (t.published) return t.locale;
+      else return `${t.locale}*`;
+    }) || [])])).join(", ") || defaultLocale
   }));
 
   return <CategoriesManager initialCategories={categories} />;
