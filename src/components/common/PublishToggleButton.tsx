@@ -1,8 +1,8 @@
 "use client";
 
-import clsx from 'clsx';
-import { useTranslations } from 'next-intl';
-import React from 'react';
+import clsx from "clsx";
+import { useTranslations } from "next-intl";
+import React from "react";
 
 interface PublishToggleButtonProps {
   status: boolean;
@@ -10,7 +10,7 @@ interface PublishToggleButtonProps {
   className?: string;
 }
 
-export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status, onClick, className = '' }) => {
+export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status, onClick, className = "" }) => {
   const [loading, setLoading] = React.useState(false);
   const t = useTranslations("ProviderBuiltIns");
 
@@ -32,9 +32,9 @@ export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status
           : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-200",
         className
       )}
-      title={status ? t('publish.unpublish') : t('publish.publish')}
+      title={status ? t("publish.unpublish") : t("publish.publish")}
     >
-      {loading ? (status ? t('publish.unpublishing') : t('publish.publishing')) : (status ? t('publish.published') : t('publish.draft'))}
+      {loading ? (status ? t("publish.unpublishing") : t("publish.publishing")) : (status ? t("publish.published") : t("publish.draft"))}
     </button>
   );
 };
