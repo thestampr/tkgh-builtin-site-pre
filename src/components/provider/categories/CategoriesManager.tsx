@@ -29,7 +29,6 @@ const emptyDraft: DraftShape = {
 };
 
 export default function CategoriesManager({ initialCategories }: CategoriesManagerProps) {
-  const t = useTranslations("ProviderCategories");
   const [rawCategories, setRawCategories] = useState<CategoryDto[]>(initialCategories);
   const [categories, setCategories] = useState<CategoryDto[]>(initialCategories);
   const [message, setMessage] = useState<string | null>(null);
@@ -45,7 +44,10 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const fetchAbort = useRef<AbortController | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
-  const { list, detail, create, update: updateService, upsertTranslation, remove: removeService, uploadCover, state: serviceState } = useCategoriesService();
+
+  const { list, detail, create, update: updateService, upsertTranslation, remove: removeService, uploadCover } = useCategoriesService();
+
+  const t = useTranslations("ProviderCategories");
 
   function applyLocal(
     source: CategoryDto[],
@@ -231,6 +233,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
             {message && <span className="text-xs text-neutral-500">{message}</span>}
           </div>
         </div>
+
         <FilterBar
           search={search}
           onSearchChange={(v) => { setSearch(v); setCategories(applyLocal(rawCategories, { search: v, published: publishedFilter, sort })); }}
@@ -238,11 +241,14 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           onPublishedChange={(v) => { setPublishedFilter(v); setCategories(applyLocal(rawCategories, { search, published: v, sort })); }}
           sort={sort}
           onSortChange={(v) => { setSort(v); setCategories(applyLocal(rawCategories, { search, published: publishedFilter, sort: v })); }}
-          t={(k) => t(k)}
         />
       </div>
 
-      <ItemsTable items={categories} t={(k) => t(k)} onEdit={openEdit} onDelete={remove} />
+      <ItemsTable 
+        items={categories} 
+        onEdit={openEdit} 
+        onDelete={remove} 
+      />
 
       <ModalShell
         open={modalOpen}
@@ -272,7 +278,6 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           <BaseLocaleForm
             draft={draft}
             onChange={(patch) => update(patch)}
-            t={t}
             coverPreviewUrl={coverPreviewUrl}
             onSelectCoverFile={onSelectCoverFile}
             onRemoveCoverImage={onRemoveCoverImage}
@@ -281,7 +286,6 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           <TranslationForm
             value={translationDraft}
             onChange={d => setTranslationDraft(d)}
-            t={t}
           />
         )}
       </ModalShell>

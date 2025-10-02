@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import type { EstimateSort, ViewedFilter } from "./types";
 
@@ -10,11 +11,12 @@ interface Props {
   onViewedChange: (v: ViewedFilter) => void;
   sort: EstimateSort;
   onSortChange: (v: EstimateSort) => void;
-  t: (k: string) => string;
   className?: string;
 }
 
-export const FilterBar: React.FC<Props> = ({ search, onSearchChange, viewed, onViewedChange, sort, onSortChange, t, className = "" }) => {
+export const FilterBar: React.FC<Props> = ({ search, onSearchChange, viewed, onViewedChange, sort, onSortChange, className = "" }) => {
+  const t = useTranslations("ProviderEstimates");
+
   return (
     <div className={`rounded-lg border border-neutral-200 bg-white/60 backdrop-blur-sm px-4 py-3 flex flex-col gap-3 md:flex-row md:items-end md:gap-4 text-[11px] ${className}`}>
       <div className="flex-1 min-w-[200px]">

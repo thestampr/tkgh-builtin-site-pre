@@ -1,16 +1,19 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import React from "react";
 
 interface GalleryEditorProps {
   images: string[];
   onChange: (imgs: string[]) => void;
   onUpload: (files: FileList | null) => void;
-  t: (k: string) => string;
   max?: number;
   className?: string;
 }
 
-export const GalleryEditor: React.FC<GalleryEditorProps> = ({ images, onChange, onUpload, t, max = 12, className = "" }) => {
+export const GalleryEditor: React.FC<GalleryEditorProps> = ({ images, onChange, onUpload, max = 12, className = "" }) => {
+  const t = useTranslations("ProviderBuiltIns");
+
   return (
     <div className={`space-y-1 ${className}`}>
       <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("imagesLabel")}</label>

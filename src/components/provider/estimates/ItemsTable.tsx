@@ -1,19 +1,21 @@
 "use client";
 
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React from "react";
 import type { EstimateDto } from "./types";
 
 interface ItemsTableProps {
   items: EstimateDto[];
-  t: (k: string) => string;
   onRowClick: (item: EstimateDto) => void;
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
   onToggleAll: () => void;
 }
 
-export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, onRowClick, selectedIds, onToggle, onToggleAll }) => {
+export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onRowClick, selectedIds, onToggle, onToggleAll }) => {
+  const t = useTranslations("ProviderEstimates");
+
   const allSelected = items.length > 0 && items.every(i => selectedIds.has(i.id));
 
   const ViewedBadge = ({ viewed }: { viewed: boolean }) => {

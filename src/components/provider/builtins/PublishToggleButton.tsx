@@ -1,17 +1,19 @@
 "use client";
 
 import clsx from 'clsx';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 interface PublishToggleButtonProps {
   status: string;
   loading: boolean;
   onClick: () => void;
-  t: (k: string) => string;
   className?: string;
 }
 
-export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status, loading, onClick, t, className = '' }) => {
+export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status, loading, onClick, className = '' }) => {
+  const t = useTranslations("ProviderBuiltIns");
+
   const isPub = status === 'PUBLISHED';
   return (
     <button

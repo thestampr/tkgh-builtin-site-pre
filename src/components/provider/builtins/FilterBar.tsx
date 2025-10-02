@@ -1,6 +1,7 @@
 "use client";
+import type { BuiltInStatus, Category } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import React from "react";
-import type { Category, BuiltInStatus } from "@prisma/client";
 import type { sortKind } from "./types";
 
 interface FilterBarProps {
@@ -13,7 +14,6 @@ interface FilterBarProps {
   sort: sortKind;
   onSortChange: (v: sortKind) => void;
   categories: Category[];
-  t: (k: string) => string;
   className?: string;
 }
 
@@ -27,9 +27,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   sort,
   onSortChange,
   categories,
-  t,
   className = ""
 }) => {
+  const t = useTranslations("ProviderBuiltIns");
+
   return (
     <div className={`rounded-lg border border-neutral-200 bg-white/60 backdrop-blur-sm px-4 py-3 flex flex-col gap-3 md:flex-row md:items-end md:gap-4 text-[11px] ${className}`}>
       <div className="flex-1 min-w-[180px]">

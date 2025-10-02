@@ -1,15 +1,17 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import type { TranslationDraft } from "./types";
 
 interface TranslationFormProps {
   value: TranslationDraft;
   onChange: (patch: Partial<TranslationDraft>) => void;
-  t: (k: string) => string;
 }
 
-export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChange, t }) => {
+export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChange }) => {
+  const t = useTranslations("ProviderCategories");
+
   return (
     <div className="space-y-4">
       <div className="space-y-1">

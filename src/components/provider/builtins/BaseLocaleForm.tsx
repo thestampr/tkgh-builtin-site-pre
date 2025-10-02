@@ -1,6 +1,7 @@
 "use client";
 
 import type { Category } from '@prisma/client';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { GalleryEditor } from './GalleryEditor';
 import type { DraftShape } from './types';
@@ -10,13 +11,14 @@ interface BaseLocaleFormProps {
   onChange: (patch: Partial<DraftShape>) => void;
   categories: Category[];
   editing: { id: string } | null;
-  t: (k: string) => string;
   uploadImages: (files: FileList | null) => void;
   slugify: (s: string) => string;
   className?: string;
 }
 
-export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, categories, editing, t, uploadImages, slugify, className = '' }) => {
+export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, categories, editing, uploadImages, slugify, className = '' }) => {
+  const t = useTranslations("ProviderBuiltIns");
+
   return (
     <div className={`space-y-6 ${className}`}>
       <div className="grid md:grid-cols-2 gap-4">
@@ -92,7 +94,6 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
         images={draft.gallery || []}
         onChange={imgs => onChange({ gallery: imgs })}
         onUpload={uploadImages}
-        t={t}
       />
     </div>
   );

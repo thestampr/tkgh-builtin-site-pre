@@ -39,7 +39,6 @@ const emptyDraft: DraftShape = {
 };
 
 export default function BuiltInsManager({ initialItems, categories }: BuiltInsManagerProps) {
-  const t = useTranslations("ProviderBuiltIns");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<BuiltInDto | null>(null);
   const [draft, setDraft] = useState<DraftShape>(emptyDraft);
@@ -54,7 +53,9 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const [sort, setSort] = useState<sortKind>("updated_desc");
   const fetchAbort = useRef<AbortController | null>(null);
 
-  const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService, state: serviceState } = useBuiltInsService();
+  const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService } = useBuiltInsService();
+
+  const t = useTranslations("ProviderBuiltIns");
 
   const parseGallery = (val: unknown): string[] => {
     if (!val) return [];
@@ -292,13 +293,11 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           sort={sort}
           onSortChange={v => { const ns = v as typeof sort; setSort(ns); setItems(applyLocal(rawItems, { query, status: statusFilter, categoryId: categoryFilter, sort: ns })); }}
           categories={categories}
-          t={t}
         />
       </div>
 
       <ItemsTable
         items={items}
-        t={t}
         defaultLocale={defaultLocale}
         onEdit={openEdit}
         onDelete={remove}
@@ -328,7 +327,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             onChange={patch => update(patch)}
             categories={categories}
             editing={editing}
-            t={t}
             uploadImages={uploadImages}
             slugify={kebabcase}
           />
@@ -336,7 +334,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           <TranslationForm
             value={translationDraft}
             onChange={d => setTranslationDraft(d)}
-            t={t}
             localeLabel="EN"
           />
         )}

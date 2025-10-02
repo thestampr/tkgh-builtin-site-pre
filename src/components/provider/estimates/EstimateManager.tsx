@@ -126,12 +126,10 @@ export const EstimateManager: React.FC<Props> = ({ initial }) => {
           onViewedChange={v => setViewed(v)}
           sort={sort}
           onSortChange={v => setSort(v)}
-          t={t}
         />
       </div>
       <ItemsTable
         items={derived}
-        t={t}
         onRowClick={(it) => { setActive(it); setModalOpen(true); }}
         selectedIds={selectedIds}
         onToggle={toggleOne}
@@ -141,13 +139,11 @@ export const EstimateManager: React.FC<Props> = ({ initial }) => {
         count={selectedIds.size}
         disabled={state.loading}
         onAction={performBulk}
-        t={t}
       />
       <EstimateDetailModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         estimate={active}
-        t={t}
         onMarkViewed={(id) => { void markViewedOptimistic(id); setModalOpen(false); }}
       />
     </div>

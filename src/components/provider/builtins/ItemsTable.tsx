@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import { ImageAvatars } from "./ImageAvatars";
 import { PublishToggleButton } from "./PublishToggleButton";
@@ -7,7 +8,6 @@ import type { BuiltInDto } from "./types";
 
 interface ItemsTableProps {
   items: BuiltInDto[];
-  t: (k: string) => string;
   defaultLocale: string;
   onEdit: (item: BuiltInDto) => void;
   onDelete: (item: BuiltInDto) => void;
@@ -18,7 +18,6 @@ interface ItemsTableProps {
 
 export const ItemsTable: React.FC<ItemsTableProps> = ({
   items,
-  t,
   defaultLocale,
   onEdit,
   onDelete,
@@ -26,6 +25,8 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
   publishingId,
   className = ""
 }) => {
+  const t = useTranslations("ProviderBuiltIns");
+
   return (
     <table className={`w-full text-sm border-separate border-spacing-y-2 ${className}`}>
       <thead>
@@ -59,7 +60,6 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
                   status={it.status}
                   loading={publishingId === it.id}
                   onClick={() => onTogglePublish(it)}
-                  t={t}
                 />
               </td>
               <td className="px-2 text-xs"><span className="inline-flex items-center rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-700">{it.viewCount ?? 0}</span></td>

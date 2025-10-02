@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 
 type Op = 'markViewed' | 'archive' | 'unarchive' | 'delete';
@@ -8,13 +9,14 @@ interface BulkActionsProps {
   count: number;
   disabled?: boolean;
   onAction: (op: Op) => Promise<void> | void;
-  t: (k: string) => string;
 }
 
-export const BulkActions: React.FC<BulkActionsProps> = ({ count, disabled, onAction, t }) => {
+export const BulkActions: React.FC<BulkActionsProps> = ({ count, disabled, onAction }) => {
   const [confirming, setConfirming] = useState<Op | null>(null);
 
   if (count === 0) return null;
+
+  const t = useTranslations("ProviderEstimates");
 
   return (
     <div className="flex flex-wrap items-center gap-2 bg-neutral-50 border border-neutral-200 rounded-md p-2 text-xs">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import type { DraftShape } from "./types";
 
@@ -7,13 +8,14 @@ interface BaseLocaleFormProps {
   draft: DraftShape;
   onChange: (patch: Partial<DraftShape>) => void;
   disabled?: boolean;
-  t: (k: string) => string;
   coverPreviewUrl?: string | null;
   onSelectCoverFile?: (file: File | null) => void;
   onRemoveCoverImage?: () => void;
 }
 
-export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, disabled, t, coverPreviewUrl, onSelectCoverFile, onRemoveCoverImage }) => {
+export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, disabled, coverPreviewUrl, onSelectCoverFile, onRemoveCoverImage }) => {
+  const t = useTranslations("ProviderCategories");
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">

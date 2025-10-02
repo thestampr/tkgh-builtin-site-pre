@@ -1,17 +1,19 @@
 "use client";
 
 import { defaultLocale } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import React from "react";
 import type { CategoryDto } from "./types";
 
 interface ItemsTableProps {
   items: CategoryDto[];
-  t: (k: string) => string;
   onEdit: (cat: CategoryDto) => void;
   onDelete: (cat: CategoryDto) => void;
 }
 
-export const ItemsTable: React.FC<ItemsTableProps> = ({ items, t, onEdit, onDelete }) => {
+export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onEdit, onDelete }) => {
+  const t = useTranslations("ProviderCategories");
+
   return (
     <table className="w-full text-sm border-separate border-spacing-y-2">
       <thead>

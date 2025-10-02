@@ -1,6 +1,7 @@
 "use client";
 
 import { ModalShell } from "@/components/ModalShell";
+import { useTranslations } from "next-intl";
 import React from "react";
 import type { EstimateDto } from "./types";
 
@@ -8,12 +9,14 @@ interface Props {
   open: boolean;
   onClose: () => void;
   estimate: EstimateDto | null;
-  t: (k: string) => string;
   onMarkViewed: (id: string) => void;
 }
 
-export const EstimateDetailModal: React.FC<Props> = ({ open, onClose, estimate, t, onMarkViewed }) => {
+export const EstimateDetailModal: React.FC<Props> = ({ open, onClose, estimate, onMarkViewed }) => {
   if (!estimate) return null;
+
+  const t = useTranslations("ProviderEstimates");
+
   return (
     <ModalShell
       open={open}
