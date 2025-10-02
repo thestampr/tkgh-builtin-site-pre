@@ -49,7 +49,10 @@ async function listCategories(userId: string, params: {
     });
   });
   languages = Array.from(new Set(languages)); // ensure uniqueness
-  const categories = cats.map(c => ({ ...c, languages: languages.join(", ") }));
+  const categories = cats.map(c => ({ 
+    ...c, 
+    languages: languages.join(", ") 
+  }));
 
   return categories;
 }
