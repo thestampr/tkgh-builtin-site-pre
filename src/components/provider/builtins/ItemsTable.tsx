@@ -1,9 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { PublishToggleButton } from "@/components/provider/common/PublishToggleButton";
 import React from "react";
 import { ImageAvatars } from "./ImageAvatars";
-import { PublishToggleButton } from "./PublishToggleButton";
 import type { BuiltInDto } from "./types";
 
 interface ItemsTableProps {

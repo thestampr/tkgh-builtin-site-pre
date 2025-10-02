@@ -22,8 +22,8 @@ export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status
       className={clsx(
         "px-2 py-0.5 rounded border text-[11px] transition disabled:opacity-50 cursor-pointer",
         isPub 
-          ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100" 
-          : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100",
+          ? "bg-accent/10 border-accent/20 text-accent hover:bg-accent/20" 
+          : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-200",
         className
       )}
       title={isPub ? t('publish.unpublish') : t('publish.publish')}
