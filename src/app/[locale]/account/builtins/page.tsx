@@ -15,7 +15,11 @@ async function fetchBuiltIns(providerId: string) {
       }, 
       include: { 
         translations: true, 
-        favorites: true
+        _count: {
+          select: {
+            favorites: true
+          }
+        }
       }, 
       orderBy: { 
         updatedAt: "desc" 
