@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { PublishToggleButton } from "@/components/provider/common/PublishToggleButton";
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 import { ImageAvatars } from "./ImageAvatars";
 import type { BuiltInDto } from "./types";
@@ -26,6 +26,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
   className = ""
 }) => {
   const t = useTranslations("ProviderBuiltIns");
+  const locale = useLocale();
 
   return (
     <table className={`w-full text-sm border-separate border-spacing-y-2 ${className}`}>
@@ -48,12 +49,14 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
           </tr>
         ) : items.map(it => {
           const gallery = (it.galleryJson ? JSON.parse(it.galleryJson as string) : it.gallery) || [];
+          const tr = it.translations?.find(tr => tr.locale === locale);
+
           return (
             <tr key={it.id} className="bg-white/70 backdrop-blur hover:bg-white/90 transition rounded shadow [&_td]:py-2">
               <td className="px-2">
                 <ImageAvatars coverImage={it.coverImage} gallery={gallery} />
               </td>
-              <td className="px-2 font-medium text-neutral-800 max-w-[280px] truncate">{it.title}</td>
+              <td className="px-2 font-medium text-neutral-800 max-w-[280px] truncate">{ tr?.title || it.title}</td>
               <td className="px-2 text-[11px] text-neutral-500">{it.languages || defaultLocale}</td>
               <td className="px-2 text-xs">
                 <PublishToggleButton
