@@ -1,14 +1,19 @@
+import { defaultLocale } from '@/i18n/navigation';
 import { assertProvider } from '@/lib/auth/assertProvider';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
 import { errorJson } from '@/lib/errors';
-import { defaultLocale } from '@/i18n/navigation';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
 type BuiltInSort = 'updated_desc' | 'title_asc' | 'title_desc' | 'views_desc' | 'favorites_desc';
 
-async function listBuiltIns(userId: string, params: { search?: string; status?: string | null; categoryId?: string | null; sort?: BuiltInSort | null; }) {
+async function listBuiltIns(userId: string, params: { 
+  search?: string; 
+  status?: string | null; 
+  categoryId?: string | null; 
+  sort?: BuiltInSort | null; 
+}) {
   const search = (params.search || '').trim();
   const status = params.status || null; // PUBLISHED | DRAFT | ALL | null
   const categoryId = params.categoryId || null;

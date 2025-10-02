@@ -1,7 +1,7 @@
 import BuiltInsManager from "@/components/provider/builtins/BuiltInsManager";
+import { defaultLocale } from "@/i18n/navigation";
 import { authOptions } from "@/lib/auth/options";
 import prisma from "@/lib/db/prisma";
-import { defaultLocale } from "@/i18n/navigation";
 import type { BuiltIn } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -52,6 +52,7 @@ async function fetchCategories(providerId: string) {
 
 export default async function BuiltInsManagerPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect(`/${locale}/login`);
   if (session.user.role !== "PROVIDER") redirect(`/${locale}/account`);
@@ -87,5 +88,6 @@ export default async function BuiltInsManagerPage({ params }: { params: Promise<
     languages: [defaultLocale, ...(grouped[i.id] || [])].join(", "),
     galleryJson: i.galleryJson
   }));
+  
   return <BuiltInsManager initialItems={items} categories={categories} />;
 }
