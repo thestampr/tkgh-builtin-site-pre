@@ -45,7 +45,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
 
-  const { list, detail, create, update: updateService, upsertTranslation, publishToggle, remove: removeService, uploadCover } = useCategoriesService();
+  const { list, create, update: updateService, upsertTranslation, publishToggle, remove: removeService, uploadCover } = useCategoriesService();
 
   const t = useTranslations("ProviderCategories");
 

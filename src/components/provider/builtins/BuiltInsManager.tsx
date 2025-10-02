@@ -51,7 +51,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const [sort, setSort] = useState<sortKind>("updated_desc");
   const fetchAbort = useRef<AbortController | null>(null);
 
-  const { list, detail, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService } = useBuiltInsService();
+  const { list, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService } = useBuiltInsService();
 
   const t = useTranslations("ProviderBuiltIns");
 
