@@ -2,18 +2,12 @@ import BuiltInsManager from "@/components/provider/builtins/BuiltInsManager";
 import { defaultLocale } from "@/i18n/navigation";
 import { authOptions } from "@/lib/auth/options";
 import prisma from "@/lib/db/prisma";
-import type { BuiltIn } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-interface BuiltInTranslation {
-  builtInId: string;
-  locale: string;
-}
-
-async function fetchBuiltIns(providerId: string): Promise<BuiltIn[]> {
+async function fetchBuiltIns(providerId: string) {
   try {
     return await prisma.builtIn.findMany({ 
       where: { 
@@ -38,7 +32,6 @@ async function fetchCategories(providerId: string) {
     return await prisma.category.findMany({ 
       where: { 
         providerId, 
-        published: true 
       }, 
       orderBy: { 
         createdAt: "asc" 
@@ -52,7 +45,7 @@ async function fetchCategories(providerId: string) {
 
 export default async function BuiltInsManagerPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  
+
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect(`/${locale}/login`);
   if (session.user.role !== "PROVIDER") redirect(`/${locale}/account`);
@@ -63,30 +56,16 @@ export default async function BuiltInsManagerPage({ params }: { params: Promise<
     fetchCategories(providerId)
   ]);
   const ids = itemsRaw.map(i => i.id);
-  let translations: BuiltInTranslation[] = [];
-  if (ids.length && prisma.builtInTranslation?.findMany) {
-    translations = await prisma.builtInTranslation.findMany({ 
-      where: { 
-        builtInId: { 
-          in: ids 
-        }, 
-        published: true 
-      }, 
-      select: { 
-        builtInId: true, 
-        locale: true 
-      } 
+  let languages: string[] = [defaultLocale];
+  itemsRaw.forEach(i => {
+    i.translations?.forEach(t => {
+      if (!languages.includes(t.locale)) languages.push(t.locale);
     });
-  }
-
-  const grouped = translations.reduce((acc: Record<string, string[]>, t: BuiltInTranslation) => { 
-    (acc[t.builtInId] ||= []).push(t.locale); 
-    return acc; 
-  }, {});
+  });
+  languages = Array.from(new Set(languages)); // ensure uniqueness
   const items = itemsRaw.map(i => ({ 
     ...i, 
-    languages: [defaultLocale, ...(grouped[i.id] || [])].join(", "),
-    galleryJson: i.galleryJson
+    languages: languages.join(", ") 
   }));
   
   return <BuiltInsManager initialItems={items} categories={categories} />;
