@@ -108,7 +108,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
       description: cat.description || null,
     });
     setTranslationDraft({});
-    setActiveLocale(process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "th");
+    setActiveLocale(defaultLocale);
     setModalOpen(true);
     if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
     setCoverFile(null);
