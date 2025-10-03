@@ -1,7 +1,7 @@
 import { BuiltInGrid } from "@/components/BuiltInGrid";
 import Hero from "@/components/Hero";
-import { getBuiltInItemsByProvider, getCategoryByProvider } from "@/lib/api";
 import ProviderButton from "@/components/ProviderButton";
+import { getCategoryByProvider } from "@/lib/api";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -16,12 +16,10 @@ export default async function CategoryByProviderSlug({ params }: { params: Promi
   // URL decoding
   const decodedSlug = decodeURIComponent(slug);
 
-  const [category, items] = await Promise.all([
-    getCategoryByProvider(providerId, decodedSlug, { locale }),
-    getBuiltInItemsByProvider(providerId, { categorySlug: decodedSlug, locale })
-  ]);
-
+  const category = await getCategoryByProvider(providerId, decodedSlug, { locale, includeItems: true });
   if (!category) return notFound();
+
+  const items = category.builtIns ?? [];
 
   return (
     <>
