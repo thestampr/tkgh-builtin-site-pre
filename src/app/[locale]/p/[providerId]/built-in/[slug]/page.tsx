@@ -1,12 +1,12 @@
-import BackButton from "@/components/common/BackButton";
 import { CategoryButton } from "@/components/CategoryButton";
+import BackButton from "@/components/common/BackButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import GallerySwiper from "@/components/common/GallerySwiper";
 import ProviderButton from "@/components/ProviderButton";
 import { TrackBuiltInView } from "@/components/TrackBuiltInView";
 import { getBuiltInItem } from "@/lib/api";
 import { authOptions } from "@/lib/auth/options";
 import { formatPrice } from "@/lib/formatting";
+import { ImageGallery } from "@/src/components/gallery/ImageGallery";
 import DOMPurify from "isomorphic-dompurify";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
@@ -141,7 +141,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
           <div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">{tCommon("gallery")}</h2>
           </div>
-          <GallerySwiper images={item.images?.map((img) => ({ url: img.url })) || []} className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20" />
+          <ImageGallery imageSrcList={item.images?.map((src) => src.url) || []} className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20" />
         </section>
       )}
     </main>
