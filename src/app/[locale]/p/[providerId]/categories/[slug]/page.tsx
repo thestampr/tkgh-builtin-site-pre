@@ -13,9 +13,12 @@ export default async function CategoryByProviderSlug({ params }: { params: Promi
 
   const tBuiltIn = await getTranslations({ locale, namespace: "BuiltIn" });
 
+  // URL decoding
+  const decodedSlug = decodeURIComponent(slug);
+
   const [category, items] = await Promise.all([
-    getCategoryByProvider(providerId, slug, { locale }),
-    getBuiltInItemsByProvider(providerId, { categorySlug: slug, locale })
+    getCategoryByProvider(providerId, decodedSlug, { locale }),
+    getBuiltInItemsByProvider(providerId, { categorySlug: decodedSlug, locale })
   ]);
 
   if (!category) return notFound();

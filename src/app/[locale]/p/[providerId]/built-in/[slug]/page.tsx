@@ -25,7 +25,10 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
   const tCommon = await getTranslations({ locale, namespace: "Common" });
   const tBuiltIn = await getTranslations({ locale, namespace: "BuiltIn" });
 
-  const item = await getBuiltInItem(providerId, slug, { userId: session?.user?.id, locale });
+  // URL decoding
+  const decodedSlug = decodeURIComponent(slug);
+
+  const item = await getBuiltInItem(providerId, decodedSlug, { userId: session?.user?.id, locale });
   if (!item) return notFound();
 
   const hero = item.images?.[0] || null;
