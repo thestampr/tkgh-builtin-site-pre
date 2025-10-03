@@ -11,7 +11,6 @@ export const dynamic = "force-dynamic";
 export default async function CategoryByProviderSlug({ params }: { params: Promise<{ locale: string; providerId: string; slug: string }> }) {
   const { locale, providerId, slug } = await params;
 
-  const tCategories = await getTranslations({ locale, namespace: "Categories" });
   const tBuiltIn = await getTranslations({ locale, namespace: "BuiltIn" });
 
   const [category, items] = await Promise.all([
