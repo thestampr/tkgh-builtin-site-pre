@@ -26,6 +26,7 @@ export interface Category {
   image?: { url: string; alt?: string | null } | null;
   providerId?: string;
   provider?: ProviderInfo | null;
+  builtIns?: BuiltInItem[]; // if includeItems is true
 };
 
 export interface BuiltInItemCategory {
@@ -67,10 +68,17 @@ export type OrderKind = "title_asc" | "title_desc" | "newest" | "price_low" | "p
 type KeyValue = Record<string, unknown>;
 interface CacheableParams { revalidate?: number, tags?: string[] }
 interface LocaleParams { locale?: string }
+interface ItemsQueryParams { includeItems?: boolean }
 
 // Extended types
-type Provider = User & { profile?: Profile | null };
-type CategoryBase = _C & { translations?: _CT[] } & { provider: Provider | null };
+interface Provider extends User { 
+  profile?: Profile | null 
+};
+interface CategoryBase extends _C { 
+  translations?: _CT[], 
+  provider: Provider | null,
+  builtIns?: BuiltIn[]
+};
 
 const DEFAULT_LANG = process.env.NEXT_PUBLIC_DEFAULT_LOCALE || "en";
 
@@ -100,7 +108,8 @@ function mapCategory(c: CategoryBase, locale?: string): Category {
       id: c.provider.id,
       displayName: c.provider.profile?.displayName || null,
       avatarUrl: c.provider.profile?.avatarUrl || null
-    } : null
+    } : null,
+    builtIns: c.builtIns ? c.builtIns.map((b) => mapBuiltIn(b, c, locale)) : undefined
   };
 }
 
@@ -449,9 +458,9 @@ export async function getBuiltInItemsByProvider(
 export async function getCategoryByProvider(
   providerId: string,
   categorySlug: string,
-  params?: CacheableParams & LocaleParams
+  params?: CacheableParams & LocaleParams & ItemsQueryParams
 ): Promise<Category | null> {
-  const { revalidate, locale = DEFAULT_LANG } = params || {};
+  const { revalidate, locale = DEFAULT_LANG, includeItems } = params || {};
   const run = cacheable(async () => {
     const category = await prisma.category.findFirst({
       where: {
@@ -465,7 +474,21 @@ export async function getCategoryByProvider(
           include: {
             profile: true
           }
-        }
+        },
+        builtIns: includeItems ? {
+          include: {
+            provider: {
+              select: {
+                id: true,
+              }
+            },
+            category: {
+              select: {
+                slug: true,
+              }
+            }
+          }
+        }: undefined
       }
     });
     return category ? mapCategory(category, locale) : null;
@@ -611,10 +634,6 @@ export async function queryCategories(params: CategoryQueryParams & LocaleParams
           status: "PUBLISHED",
           providerId: providerId || undefined
         },
-        select: {
-          id: true,
-          viewCount: true
-        }
       },
       translations: true,
       provider: {
