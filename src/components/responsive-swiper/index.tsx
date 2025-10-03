@@ -70,7 +70,7 @@ export default function ResponsiveSwiper({
           "sw-responsive-swiper w-full select-none !overflow-visible",
           swiperClassName
         )}
-        spaceBetween={18}
+        spaceBetween={16}
         slidesPerView={slidesPerView}
         navigation={true} 
         modules={[Navigation]} >
