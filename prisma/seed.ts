@@ -43,8 +43,8 @@ async function demoData() {
           ctaJson: { label: 'Get a Quote', href: '/estimate', style: 'solid' } as any,
           translations: {
             create: [
-              { locale: 'th', displayName: 'ผู้ให้บริการเดโม่', bio: 'งานบิลท์อินคุณภาพ ราคาชัดเจน บริการเป็นกันเอง', ctaLabel: 'ขอใบเสนอราคา', published: true },
-              { locale: 'en', displayName: 'Demo Provider', bio: 'Quality built-ins, clear pricing, friendly service.', ctaLabel: 'Get a Quote', published: true },
+              { locale: 'th', displayName: 'ผู้ให้บริการเดโม่', bio: 'งานบิลท์อินคุณภาพ ราคาชัดเจน บริการเป็นกันเอง', ctaLabel: 'ขอใบเสนอราคา' },
+              { locale: 'en', displayName: 'Demo Provider', bio: 'Quality built-ins, clear pricing, friendly service.', ctaLabel: 'Get a Quote' },
             ],
           },
         },
@@ -58,7 +58,7 @@ async function demoData() {
       email: 'customer@example.com',
       passwordHash: password,
       role: 'CUSTOMER',
-      profile: { create: { displayName: 'Demo Customer', published: true } },
+      profile: { create: { displayName: 'Demo Customer' } },
     },
     select: { id: true },
   });
