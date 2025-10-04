@@ -1,15 +1,16 @@
+import type { CTAConfig } from "@/components/ProviderCTA";
 import type {
   BuiltIn,
   Estimate,
   FavoriteBuiltIn,
   Profile,
+  ProfileTranslation,
   User,
   Category as _C,
   CategoryTranslation as _CT
 } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { prisma } from "./db/prisma";
-import type { CTAConfig } from "@/components/ProviderCTA";
 
 export interface ProviderInfo {
   id: string;
@@ -766,8 +767,13 @@ export async function fetchCategories(providerId: string): Promise<_C[]> {
 }
 
 // User profile and provider public profile
-export async function getProfile(userId: string): Promise<Profile | null> {
-  return prisma.profile.findUnique({ where: { userId } });
+export async function getProfile(userId: string): Promise<(Profile & { translations: ProfileTranslation[] }) | null> {
+  return prisma.profile.findUnique({
+    where: { userId },
+    include: {
+      translations: true
+    }
+  });
 }
 
 export async function getProviderPublicProfile(providerId: string, locale: string = DEFAULT_LANG): Promise<ProviderPublicProfile | null> {
@@ -792,7 +798,7 @@ export async function getProviderPublicProfile(providerId: string, locale: strin
     ctaBase = JSON.parse(profile.ctaJson?.toString() || "{}");
   } catch { /* ignored */ }
   if (locale !== DEFAULT_LANG && profile.translations) {
-    const tr = profile.translations.find((t) => t.locale === locale && t.published);
+    const tr = profile.translations.find((t) => t.locale === locale);
     if (tr) {
       if (tr.displayName) displayName = tr.displayName;
       if (tr.bio) bio = tr.bio;
