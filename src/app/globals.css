@@ -18,7 +18,7 @@
   /* --secondary: #0E2A47; */
   --primary: #8a6a40;
   --secondary: #292F36;
-  --accent: #54b54f;
+  --accent: #047e37;
   --variant: #d01a22;
   --alert: oklch(87.9% 0.169 91.605);
   --divider: #51545a;
@@ -186,14 +186,16 @@ body {
   background: var(--muted-hover);
 }
 
+.btn-accent,
 .btn-success {
-  background: var(--success);
+  background: var(--accent);
   color: white;
   border-color: transparent;
 }
 
-.btn-danger {
-  background: var(--danger);;
+.btn-danger,
+.btn-variant {
+  background: var(--danger);
   color: white;
   border-color: transparent;
 }
@@ -234,21 +236,15 @@ body {
   color: var(--secondary);
   text-decoration-color: var(--secondary);
 }
-.text-btn-accent {
+.text-btn-accent,
+.text-btn-success {
   color: var(--accent);
   text-decoration-color: var(--accent);
 }
-.text-btn-variant {
+.text-btn-variant,
+.text-btn-danger {
   color: var(--variant);
   text-decoration-color: var(--variant);
-}
-.text-btn-success {
-  color: var(--success);
-  text-decoration-color: var(--success);
-}
-.text-btn-danger {
-  color: var(--danger);
-  text-decoration-color: var(--danger);
 }
 .text-btn-warning {
   color: var(--warning);
