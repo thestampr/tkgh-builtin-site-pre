@@ -416,6 +416,9 @@
       "lastLogin": "Last login"
     },
     "ui": {
+      "removeImage": "Remove",
+      "noImage": "No image selected",
+      "chooseImage": "Choose image",
       "editProfile": "Edit profile",
       "favoritesHeading": "Favorites",
       "noFavorites": "No favorites yet",
@@ -430,6 +433,9 @@
       "contactChannels": "Contact Channels",
       "addChannel": "Add",
       "avatar": "Avatar",
+      "coverImage": "Cover Image",
+      "basicInfo": "Basic Info",
+      "cta": "CTA Button",
       "provider": "Provider",
       "ownedBy": "by {name}",
       "save": "Save",
@@ -438,6 +444,7 @@
       "saveFailed": "Save failed",
       "saveError": "An error occurred",
       "unsaved": "Unsaved changes",
+      "discard": "Discard",
       "cancel": "Cancel",
       "canceled": "Canceled",
       "fileTooLarge": "File too large (max 512KB)",

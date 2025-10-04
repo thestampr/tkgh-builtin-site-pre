@@ -416,6 +416,9 @@
       "lastLogin": "เข้าสู่ระบบล่าสุด"
     },
     "ui": {
+      "removeImage": "ลบรูปภาพ",
+      "noImage": "ยังไม่มีรูป",
+      "chooseImage": "เลือกรูปภาพ",
       "editProfile": "แก้ไขโปรไฟล์",
       "favoritesHeading": "รายการโปรด",
       "noFavorites": "ยังไม่มีรายการโปรด",
@@ -430,6 +433,9 @@
       "contactChannels": "ช่องทางติดต่อ",
       "addChannel": "เพิ่ม",
       "avatar": "รูปโปรไฟล์",
+      "coverImage": "รูปปก",
+      "basicInfo": "ข้อมูลทั่วไป",
+      "cta": "ปุ่ม CTA",
       "provider": "ผู้ให้บริการ",
       "ownedBy": "โดย {name}",
       "save": "บันทึก",
@@ -438,6 +444,7 @@
       "saveFailed": "บันทึกไม่สำเร็จ",
       "saveError": "เกิดข้อผิดพลาด",
       "unsaved": "มีการแก้ไขยังไม่บันทึก",
+      "discard": "ยกเลิก",
       "cancel": "ยกเลิก",
       "canceled": "ยกเลิกแล้ว",
       "fileTooLarge": "ไฟล์ใหญ่เกิน (สูงสุด 512KB)",
@@ -600,7 +607,7 @@
       }
     },
     "ui": {
-      "removeImage": "ลบ",
+      "removeImage": "ลบรูปภาพ",
       "noImage": "ยังไม่มีรูป",
       "chooseImage": "เลือกรูปภาพ",
       "shortTeaserPlaceholder": "คำโปรยสั้น",
