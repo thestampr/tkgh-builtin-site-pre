@@ -10,6 +10,7 @@ import * as Lucide from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
+import { LocaleTabs } from "../LocaleTabs";
 
 interface ProfileEditorProps {
   initialProfile: Profile | null;
@@ -425,18 +426,14 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
           </button>
           {message && <span className="text-xs text-neutral-500">{message}</span>}
           {dirty && <span className="text-xs text-warning">{t("unsaved")}</span>}
-          <div className="flex items-center gap-2 ml-auto">
-            {locales.map(loc => (
-              <button
-                key={loc}
-                onClick={() => setActiveLocale(loc)}
-                className={clsx(
-                  "btn btn-sm",
-                  activeLocale === loc ? "btn-secondary" : "btn-ghost"
-                )}
-              >{loc.toUpperCase()}</button>
-            ))}
-          </div>
+
+          <LocaleTabs
+            className="ml-auto"
+            locales={locales}
+            active={activeLocale}
+            onChange={setActiveLocale}
+          />
+          
         </div>
         {!!errors.length && (
           <ul className="text-xs text-danger space-y-1">
