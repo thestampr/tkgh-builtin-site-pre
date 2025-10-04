@@ -1,7 +1,9 @@
 "use client";
 
 import { IconPicker } from "@/components/IconPicker";
+import { LocaleTabs } from "@/components/LocaleTabs";
 import { defaultCta, ProviderCTA, type CTAConfig } from "@/components/ProviderCTA";
+import UserAvatar from "@/components/common/UserAvatar";
 import { useToast } from "@/hooks/useToast";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { Profile, ProfileTranslation } from "@prisma/client";
@@ -10,7 +12,6 @@ import * as Lucide from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
-import { LocaleTabs } from "../LocaleTabs";
 
 interface ProfileEditorProps {
   initialProfile: Profile | null;
@@ -93,17 +94,18 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
   const [errors, setErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [loadingTranslation, setLoadingTranslation] = useState(false);
+  const [toastId, setToastId] = useState<string | null>(null);
 
   // Local controlled hex inputs for colors
   const [textColorHex, setTextColorHex] = useState<string>(ctaConfig.textColor || "#ffffff");
   const [bgColorHex, setBgColorHex] = useState<string>(ctaConfig.color || "#8a6a40");
-  
+
   const t = useTranslations("Account.ui");
   const tErrors = useTranslations("Errors");
   const tProfile = useTranslations("Profile");
 
   // Toasts
-  const { showSuccessToast, showErrorToast } = useToast();
+  const { showToast, removeToast, showSuccessToast, showErrorToast } = useToast();
 
   useEffect(() => {
     setTextColorHex(ctaConfig.textColor || "#ffffff");
@@ -341,7 +343,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
       .finally(() => setLoadingTranslation(false));
   }, [activeLocale, defaultLocale]);
 
-  async function onAvatarSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
@@ -374,7 +376,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     setSaving(false);
   }
 
-  async function onCoverSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
@@ -396,6 +398,61 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
     setSaving(false);
   }
 
+  const LocaleLabel = () => {
+    if (activeLocale === defaultLocale) return null;
+
+    return (
+      <div className="ml-auto text-xs font-normal text-neutral-400">
+        {activeLocale}
+      </div>
+    );
+  }
+
+  // Show toast when dirty
+  useEffect(() => {
+    if (!dirty) {
+      if (toastId) {
+        removeToast(toastId);
+      }
+      return setToastId(null);
+    }
+
+    if (!toastId) {
+      const id = showToast({
+        pin: true,
+        dismissible: false,
+        style: {
+          maxWidth: 600
+        },
+        direction: "up-down",
+        className: "!p-4 !-m-4 !gap-0 !border-none !w-screen !translate-x-0 !left-0 !bg-transparent !shadow-none",
+        content: <div className="p-[1.5px] bg-gradient-to-br from-blue-300 to-pink-300 rounded-2xl shadow-xl">
+          <div className="flex items-center bg-white rounded-[14px] p-3 m-px">
+            <div className="flex-1 min-w-0 text-sm truncate">
+              {t("unsaved")}
+            </div>
+            <div className="ml-3 flex items-center gap-2">
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={cancel}>
+                {t("reset")}
+              </button>
+              <button
+                onClick={activeLocale === defaultLocale ? saveBase : saveTranslation}
+                disabled={saving || !dirty}
+                className="btn btn-accent btn-sm"
+              >
+                {saving ? t("saving") : t("saveChanges")}
+              </button>
+            </div>
+          </div>
+        </div>
+      });
+      setToastId(id);
+    }
+  }, [dirty, showToast, t]);
+
   return (
     <div className={inline ? "space-y-8" : "max-w-5xl mx-auto md:px-6 pb-10 space-y-10"}>
       <div>
@@ -409,31 +466,12 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
         inline ? "md:grid-cols-2 gap-10" : "max-w-2xl gap-10"
       )}>
         <div className="flex items-center gap-2 text-sm flex-wrap">
-          <button
-            onClick={activeLocale === defaultLocale ? saveBase : saveTranslation}
-            disabled={saving || !dirty}
-            className="btn btn-primary"
-          >
-            {saving ? t("saving") : t("save")}
-          </button>
-          <button
-            type="button"
-            onClick={cancel}
-            disabled={!dirty || saving}
-            className="btn btn-ghost"
-          >
-            {t("cancel")}
-          </button>
-          {message && <span className="text-xs text-neutral-500">{message}</span>}
-          {dirty && <span className="text-xs text-warning">{t("unsaved")}</span>}
-
           <LocaleTabs
             className="ml-auto"
             locales={locales}
             active={activeLocale}
             onChange={setActiveLocale}
           />
-          
         </div>
         {!!errors.length && (
           <ul className="text-xs text-danger space-y-1">
@@ -454,44 +492,65 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
             </div>
           )}
           <div className="space-y-6">
+            {activeLocale === defaultLocale &&
+              <>
+                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                  <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("avatar") || "Avatar"}</h3>
+                  <fieldset className="grid grid-cols-3 items-center">
+                    <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer col-span-2">
+                      <UserAvatar src={avatarUrl || undefined} sessionUser={false} size={80} name={displayName} />
+                      <div className="text-neutral-500 text-xs">{t("userProfile.clickToUpload")}</div>
+                      <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarChange} className="hidden" />
+                    </label>
+                    <div className="flex flex-col items-start gap-2">
+                      {avatarUrl && <button type="button" onClick={() => setAvatarUrl(null)} className="text-btn text-btn-xs text-btn-ghost">
+                        {t("removeImage") || "Remove"}
+                      </button>}
+                    </div>
+                  </fieldset>
+                </section>
+                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                  <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("coverImage") || "Cover Image"}</h3>
+                  <fieldset className="space-y-3">
+                    <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image-input">
+                      <span className="aspect-[16/6] w-full rounded-lg overflow-hidden bg-neutral-100 border border-neutral-300 cursor-pointer">
+                        {coverImage ? (
+                          <img src={coverImage} alt="cover" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[11px] text-slate-500 gap-2">
+                            <strong>{t("coverImage")}</strong> — {t("userProfile.clickToUpload")}
+                          </div>
+                        )}
+                      </span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer">{t("chooseImage") || "Choose Image"}</label>
+                      {coverImage && (
+                        <button type="button" onClick={() => setCoverImage(null)} className="text-btn text-btn-xs text-btn-ghost">
+                          {t("removeImage") || "Remove"}
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      id="cover-image-input"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onCoverChange}
+                    />
+                  </fieldset>
+                </section>
+              </>
+            }
+
             <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">Avatar</h3>
-              <fieldset className="space-y-3">
-                <div className="flex items-center gap-4">
-                  <div className="size-16 rounded-full bg-neutral-200 overflow-hidden flex items-center justify-center border border-neutral-300">
-                    {avatarUrl ? <img src={avatarUrl} alt="avatar" className="object-cover w-full h-full" /> : <span className="text-[10px] text-neutral-500">IMG</span>}
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarSelect} />
-                    {avatarUrl && <button type="button" onClick={() => setAvatarUrl(null)} className="underline text-neutral-600">Remove</button>}
-                  </div>
-                </div>
-              </fieldset>
-            </section>
-            <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">Cover Image</h3>
-              <fieldset className="space-y-3">
-                <div className="space-y-2">
-                  <div className="aspect-[16/6] w-full rounded-lg overflow-hidden bg-neutral-100 border border-neutral-300">
-                    {coverImage ? (
-                      <img src={coverImage} alt="cover" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[11px] text-neutral-400">No cover</div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 text-xs">
-                    <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onCoverSelect} />
-                    {coverImage && <button type="button" onClick={() => setCoverImage(null)} className="underline text-neutral-600">Remove</button>}
-                  </div>
-                  <p className="text-[11px] text-neutral-500">Recommended 1600x600px, JPG/PNG/WebP, up to 1MB.</p>
-                </div>
-              </fieldset>
-            </section>
-            <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">Basic Info</h3>
+              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">
+                {t("basicInfo") || "Basic Info"}
+                <LocaleLabel />
+              </h3>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Display Name{activeLocale !== defaultLocale && " (EN)"}</label>
+                  <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Display Name</label>
                   <input
                     value={activeLocale === defaultLocale ? displayName : trDisplayName}
                     onChange={e => activeLocale === defaultLocale ? setDisplayName(e.target.value) : setTrDisplayName(e.target.value)}
@@ -499,7 +558,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Bio{activeLocale !== defaultLocale && " (EN)"}</label>
+                  <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Bio</label>
                   <textarea
                     value={activeLocale === defaultLocale ? bio : trBio}
                     onChange={e => activeLocale === defaultLocale ? setBio(e.target.value) : setTrBio(e.target.value)}
@@ -508,172 +567,169 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                 </div>
               </div>
             </section>
-            {activeLocale === defaultLocale && (
-              <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-                <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">CTA Button</h3>
-                <fieldset className="space-y-3">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Label</label>
-                      <input value={ctaConfig.label || ""} onChange={e => setCtaConfig((c) => ({ ...c, label: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Href</label>
-                      <input value={ctaConfig.href || ""} onChange={e => setCtaConfig((c) => ({ ...c, href: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Label Color</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={isValidFullHex(textColorHex) ? textColorHex : (ctaConfig.textColor || "#FFFFFF")}
-                          onChange={(e) => {
-                            const v = e.target.value.toUpperCase();
-                            setTextColorHex(v);
-                            setCtaConfig(c => ({ ...c, textColor: v }));
-                          }}
-                          className="h-9 w-9 rounded cursor-pointer"
-                        />
-                        <input
-                          value={textColorHex}
-                          onChange={(e) => handleHexChange("textColor", e.target.value.toUpperCase())}
-                          placeholder="#FFFFFF"
-                          className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
-                            isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
-                        />
+
+            {activeLocale === defaultLocale ? (
+              <>
+                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                  <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("cta") || "CTA Button"}</h3>
+                  <fieldset className="space-y-3">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Label</label>
+                        <input value={ctaConfig.label || ""} onChange={e => setCtaConfig((c) => ({ ...c, label: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Color</label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={isValidFullHex(bgColorHex) ? bgColorHex : (ctaConfig.color || "#8A6A40")}
-                          onChange={(e) => {
-                            const v = e.target.value.toUpperCase();
-                            setBgColorHex(v);
-                            setCtaConfig(c => ({ ...c, color: v }));
-                          }}
-                          className="h-9 w-9 rounded cursor-pointer"
-                        />
-                        <input
-                          value={bgColorHex}
-                          onChange={(e) => handleHexChange("color", e.target.value.toUpperCase())}
-                          placeholder="#8A6A40"
-                          className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono tracking-tight flex-1",
-                            isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
-                        />
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Href</label>
+                        <input value={ctaConfig.href || ""} onChange={e => setCtaConfig((c) => ({ ...c, href: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Size</label>
-                      <select value={ctaConfig.size || "md"} onChange={e => setCtaConfig((c) => ({ ...c, size: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
-                        <option value="sm">Small</option>
-                        <option value="md">Medium</option>
-                        <option value="lg">Large</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Icon</label>
-                      <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => setIconPickerOpen(true)} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2 flex-1 cursor-pointer">
-                          {ctaConfig.icon && (() => { const I = (Lucide as any)[ctaConfig.icon]; return I ? <I size={16} /> : null; })()}
-                          <span>{ctaConfig.icon || "Pick"}</span>
-                        </button>
-                        {ctaConfig.icon &&
-                          <button
-                            type="button"
-                            onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))}
-                            className="btn btn-ghost btn-xs h-8 w-8"
-                          >
-                            ✕
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Label Color</label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={isValidFullHex(textColorHex) ? textColorHex : (ctaConfig.textColor || "#FFFFFF")}
+                            onChange={(e) => {
+                              const v = e.target.value.toUpperCase();
+                              setTextColorHex(v);
+                              setCtaConfig(c => ({ ...c, textColor: v }));
+                            }}
+                            className="h-9 w-9 rounded cursor-pointer"
+                          />
+                          <input
+                            value={textColorHex}
+                            onChange={(e) => handleHexChange("textColor", e.target.value.toUpperCase())}
+                            placeholder="#FFFFFF"
+                            className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1",
+                              isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Color</label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={isValidFullHex(bgColorHex) ? bgColorHex : (ctaConfig.color || "#8A6A40")}
+                            onChange={(e) => {
+                              const v = e.target.value.toUpperCase();
+                              setBgColorHex(v);
+                              setCtaConfig(c => ({ ...c, color: v }));
+                            }}
+                            className="h-9 w-9 rounded cursor-pointer"
+                          />
+                          <input
+                            value={bgColorHex}
+                            onChange={(e) => handleHexChange("color", e.target.value.toUpperCase())}
+                            placeholder="#8A6A40"
+                            className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1",
+                              isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Size</label>
+                        <select value={ctaConfig.size || "md"} onChange={e => setCtaConfig((c) => ({ ...c, size: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                          <option value="sm">Small</option>
+                          <option value="md">Medium</option>
+                          <option value="lg">Large</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Icon</label>
+                        <div className="flex items-center gap-2">
+                          <button type="button" onClick={() => setIconPickerOpen(true)} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2 flex-1 cursor-pointer">
+                            {ctaConfig.icon && (() => { const I = (Lucide as any)[ctaConfig.icon]; return I ? <I size={16} /> : null; })()}
+                            <span>{ctaConfig.icon || "Pick"}</span>
                           </button>
-                        }
+                          {ctaConfig.icon &&
+                            <button
+                              type="button"
+                              onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))}
+                              className="btn btn-ghost btn-xs h-8 w-8"
+                            >
+                              ✕
+                            </button>
+                          }
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Style</label>
+                        <select value={ctaConfig.style || "solid"} onChange={e => setCtaConfig((c) => ({ ...c, style: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                          <option value="solid">Solid</option>
+                          <option value="outline">Outline</option>
+                          <option value="ghost">Ghost</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] tracking-wide text-neutral-500">Radius</label>
+                        <select value={ctaConfig.radius || "full"} onChange={e => setCtaConfig((c) => ({ ...c, radius: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                          <option value="sm">Small</option>
+                          <option value="md">Medium</option>
+                          <option value="lg">Large</option>
+                          <option value="full">Full</option>
+                        </select>
                       </div>
                     </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Style</label>
-                      <select value={ctaConfig.style || "solid"} onChange={e => setCtaConfig((c) => ({ ...c, style: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
-                        <option value="solid">Solid</option>
-                        <option value="outline">Outline</option>
-                        <option value="ghost">Ghost</option>
-                      </select>
+                    <br />
+                    <div className="pt-2">
+                      <div className="text-[11px] text-neutral-500">Preview</div>
+                      <div className="py-16 flex items-center justify-center bg-neutral-100 rounded">
+                        <ProviderCTA config={ctaConfig} preview />
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Radius</label>
-                      <select value={ctaConfig.radius || "full"} onChange={e => setCtaConfig((c) => ({ ...c, radius: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
-                        <option value="sm">Small</option>
-                        <option value="md">Medium</option>
-                        <option value="lg">Large</option>
-                        <option value="full">Full</option>
-                      </select>
+                    <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
+                      <div className="flex items-center gap-1">
+                        <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-success" : "bg-warning")} />
+                        <span>Label HEX</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-success" : "bg-warning")} />
+                        <span>Color HEX</span>
+                      </div>
                     </div>
+                  </fieldset>
+                </section>
+
+                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">
+                      {t("contactChannels")}
+                    </h3>
+                    <button type="button" onClick={addChannel} className="btn btn-secondary btn-xs">
+                      <Lucide.Plus size={14} />
+                      {t("addChannel")}
+                    </button>
                   </div>
-                  <div className="pt-2">
-                    <div className="text-[11px] text-neutral-500">Preview:</div>
-                    <div className="py-16 flex items-center justify-center bg-neutral-100 rounded">
-                      <ProviderCTA config={ctaConfig} preview />
+                  <fieldset className="space-y-3">
+                    <div className="space-y-3">
+                      {contacts.channels.map((ch, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <select value={ch.type} onChange={e => updateChannel(i, "type", e.target.value)} className="rounded border border-neutral-300 px-2 py-1 text-xs">
+                            <option value="link">Link</option>
+                            <option value="phone">Phone</option>
+                            <option value="email">Email</option>
+                            <option value="line">Line</option>
+                          </select>
+                          <input value={ch.value} placeholder="Value" onChange={e => updateChannel(i, "value", e.target.value)} className="flex-1 rounded border border-neutral-300 px-2 py-1 text-xs" />
+                          <button type="button" onClick={() => removeChannel(i)} className="btn btn-ghost btn-xs">✕</button>
+                        </div>
+                      ))}
+                      {!contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
                     </div>
-                  </div>
-                  <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
-                    <div className="flex items-center gap-1">
-                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-success" : "bg-warning")} />
-                      <span>Label HEX</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-success" : "bg-warning")} />
-                      <span>Color HEX</span>
-                    </div>
-                  </div>
-                </fieldset>
-              </section>
-            )}
-            {activeLocale !== defaultLocale && (
+                  </fieldset>
+                </section>
+              </>
+            ) : (
               <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-                <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">CTA (EN)</h3>
+                <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">CTA Label <LocaleLabel /></h3>
                 <fieldset className="space-y-3">
                   <legend className="sr-only">CTA Label EN</legend>
                   <input value={ctaLabelTr} onChange={e => setCtaLabelTr(e.target.value)} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                 </fieldset>
               </section>
             )}
-            <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">
-                  {t("contactChannels")}
-                </h3>
-                <button type="button" onClick={addChannel} className="btn btn-secondary btn-xs">
-                  <Lucide.Plus size={14} />
-                  {t("addChannel")}
-                </button>
-              </div>
-              <fieldset className="space-y-3">
-                <div className="space-y-3">
-                  {contacts.channels.map((ch, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <select value={ch.type} onChange={e => updateChannel(i, "type", e.target.value)} className="rounded border border-neutral-300 px-2 py-1 text-xs">
-                        <option value="link">Link</option>
-                        <option value="phone">Phone</option>
-                        <option value="email">Email</option>
-                        <option value="line">Line</option>
-                      </select>
-                      <input value={ch.value} placeholder="Value" onChange={e => updateChannel(i, "value", e.target.value)} className="flex-1 rounded border border-neutral-300 px-2 py-1 text-xs" />
-                      <button type="button" onClick={() => removeChannel(i)} className="btn btn-ghost btn-xs">✕</button>
-                    </div>
-                  ))}
-                  {!contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
-                </div>
-              </fieldset>
-            </section>
           </div>
           <div className="flex items-center gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={saving || !dirty}
-              className="btn btn-primary"
-            >
-              {loadingTranslation && activeLocale !== defaultLocale ? "..." : saving ? t("saving") : t("save")}
-            </button>
             {activeLocale !== defaultLocale && (
               <button
                 type="button"
@@ -684,9 +740,9 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                   setCtaLabelTr(baseTr.ctaLabel);
                 }}
                 disabled={!dirty}
-                className="btn btn-ghost"
+                className="btn btn-ghost btn-danger btn-sm"
               >
-                Reset {activeLocale.toUpperCase()}
+                <Lucide.Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
               </button>
             )}
           </div>
