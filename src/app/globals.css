@@ -206,3 +206,64 @@ body {
   .btn.btn-lg { padding: 0.75rem 1.5rem; font-size: 1.125rem; } /* text-lg */
   .btn.btn-xl { padding: 1rem 1.75rem; font-size: 1.25rem; } /* text-xl */
 }
+
+.text-btn {
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1.5px;
+  cursor: pointer;
+}
+.text-btn:hover {
+  text-decoration: underline;
+}
+.text-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  pointer-events: none;
+}
+.text-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* text-btn colors */
+.text-btn-primary {
+  color: var(--primary);
+  text-decoration-color: var(--primary);
+}
+.text-btn-secondary {
+  color: var(--secondary);
+  text-decoration-color: var(--secondary);
+}
+.text-btn-accent {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+.text-btn-variant {
+  color: var(--variant);
+  text-decoration-color: var(--variant);
+}
+.text-btn-success {
+  color: var(--success);
+  text-decoration-color: var(--success);
+}
+.text-btn-danger {
+  color: var(--danger);
+  text-decoration-color: var(--danger);
+}
+.text-btn-warning {
+  color: var(--warning);
+  text-decoration-color: var(--warning);
+}
+.text-btn-ghost {
+  color: var(--divider);
+  text-decoration-color: var(--divider);
+}
+
+/* text-btn sizes */
+@layer utilities {
+  .text-btn.text-btn-xs { font-size: 0.75rem; } /* text-xs */
+  .text-btn.text-btn-sm { font-size: 0.875rem; } /* text-sm */
+  .text-btn { font-size: 1rem; } /* text-base */
+  .text-btn.text-btn-lg { font-size: 1.125rem; } /* text-lg */
+  .text-btn.text-btn-xl { font-size: 1.25rem; } /* text-xl */
+}
