@@ -60,13 +60,12 @@ model Profile {
   contactJson  Json?
   coverImage   String?
   ctaJson      Json?
-  published    Boolean              @default(true)
   updatedAt    DateTime             @updatedAt
 
   user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   translations ProfileTranslation[]
 
-  @@index([published, updatedAt(sort: Desc)])
+  @@index([updatedAt(sort: Desc)])
 }
 
 model ProfileTranslation {
@@ -76,7 +75,6 @@ model ProfileTranslation {
   displayName String?
   bio         String?
   ctaLabel    String?
-  published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
