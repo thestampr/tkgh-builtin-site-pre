@@ -44,16 +44,14 @@ export async function PUT(request: Request) {
         update: {
           displayName: translation.displayName ?? null,
           bio: translation.bio ?? null,
-          ctaLabel: translation.ctaLabel ?? null,
-          published: translation.published ?? false
+          ctaLabel: translation.ctaLabel ?? null
         },
         create: {
           profileId: base.id,
           locale: translationLocale,
           displayName: translation.displayName ?? null,
           bio: translation.bio ?? null,
-          ctaLabel: translation.ctaLabel ?? null,
-          published: translation.published ?? false
+          ctaLabel: translation.ctaLabel ?? null
         }
       });
       return NextResponse.json({ translation: rec });
