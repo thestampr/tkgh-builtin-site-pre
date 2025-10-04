@@ -1,12 +1,12 @@
 import { CategoryButton } from "@/components/CategoryButton";
 import BackButton from "@/components/common/BackButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { ImageGallery } from "@/components/gallery/ImageGallery";
 import ProviderButton from "@/components/ProviderButton";
 import { TrackBuiltInView } from "@/components/TrackBuiltInView";
 import { getBuiltInItem } from "@/lib/api";
 import { authOptions } from "@/lib/auth/options";
 import { formatPrice } from "@/lib/formatting";
-import { ImageGallery } from "@/src/components/gallery/ImageGallery";
 import DOMPurify from "isomorphic-dompurify";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
