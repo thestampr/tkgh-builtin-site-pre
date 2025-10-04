@@ -88,7 +88,6 @@ export const authOptions: NextAuthOptions = {
         select: { 
           id: true, 
           displayName: true, 
-          published: true, 
           coverImage: true, 
           avatarUrl: true 
         }

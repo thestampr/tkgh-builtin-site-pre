@@ -27,7 +27,6 @@ declare module "next-auth" {
         profile?: {
             id: string;
             displayName: string | null;
-            published: boolean;
             coverImage: string | null;
             avatarUrl: string | null;
         } | null;
