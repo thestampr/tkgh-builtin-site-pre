@@ -75,6 +75,7 @@ export interface ToastContextProps {
   showErrorToast: (options: ToastOptions) => string;
   showInfoToast: (options: ToastOptions) => string;
   showWarningToast: (options: ToastOptions) => string;
+  updateToast: (id: string, options: Partial<ToastOptions>) => void;
   removeToast: (id: string) => void;
   setToastZIndex: (zIndex: number) => void;
   resetToastZIndex: () => void;
@@ -317,6 +318,13 @@ export function ToastProvider({
   const showWarningToast = useCallback((options: ToastOptions) => {
     return showToast({ ...options, icon: <AlertTriangle className="w-5 h-5 text-warning" /> });
   }, [showToast]);
+  
+  // Update toast
+  const updateToast = (id: string, options: Partial<ToastOptions>) => {
+    const exists = toasts.find((t) => t.id === id);
+    if (!exists) return;
+    setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, ...options } : t)));
+  };
 
   // Remove toast
   const removeToast = useCallback((id: string) => {
@@ -374,7 +382,8 @@ export function ToastProvider({
       showSuccessToast, 
       showErrorToast, 
       showInfoToast, 
-      showWarningToast, 
+      showWarningToast,
+      updateToast, 
       removeToast, 
       setToastZIndex, 
       resetToastZIndex 
