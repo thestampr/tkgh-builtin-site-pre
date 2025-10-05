@@ -1,7 +1,7 @@
 "use client";
 
 import { RefreshButton } from "@/components/common/RefreshButton";
-import { useEstimatesService } from "@/lib/useEstimatesService";
+import { useEstimatesService } from "@/services/useEstimatesService";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { BulkActions } from "./BulkActions";
@@ -92,8 +92,8 @@ export const EstimateManager: React.FC<Props> = ({ initial }) => {
     setRaw(prev => prev.map(e => {
       if (!selectedIds.has(e.id)) return e;
       if (op === 'markViewed') return { ...e, viewed: true };
-      if (op === 'archive') return { ...e, archived: true } as any; // archived property may exist on model
-      if (op === 'unarchive') return { ...e, archived: false } as any;
+      if (op === 'archive') return { ...e, archived: true }; // archived property may exist on model
+      if (op === 'unarchive') return { ...e, archived: false };
       if (op === 'delete') return e; // remove later
       return e;
     }).filter(e => op === 'delete' ? !selectedIds.has(e.id) : true));

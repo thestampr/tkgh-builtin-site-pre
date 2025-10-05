@@ -5,7 +5,7 @@ import { ModalShell } from "@/components/common/ModalShell";
 import { RefreshButton } from "@/components/common/RefreshButton";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { confirmModal } from "@/lib/confirm";
-import { useCategoriesService } from "@/lib/useCategoriesService";
+import { useCategoriesService } from "@/services/useCategoriesService";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
