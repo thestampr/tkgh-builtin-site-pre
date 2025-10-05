@@ -102,12 +102,18 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 			<div className="space-y-1">
 				<label className="block text-sm font-medium">Email</label>
 				<input type="email" required value={email} onChange={onEmailChange}
-					className="w-full rounded-md border px-3 py-2 text-sm bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary" />
+					className={clsx(
+						"w-full input",
+						!!success ? "input-success" : error ? "input-error" : "",
+					)} />
 			</div>
 			<div className="space-y-1">
 				<label className="block text-sm font-medium">Password</label>
 				<input type="password" required value={password} onChange={onPasswordChange}
-					className="w-full rounded-md border px-3 py-2 text-sm bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary" />
+					className={clsx(
+						"w-full input",
+						!!success ? "input-success" : error ? "input-error" : "",
+					)} />
 			</div>
 			<div className="text-xs">
 				{ success 
