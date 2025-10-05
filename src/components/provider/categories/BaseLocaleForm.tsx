@@ -57,7 +57,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
         <div className="flex items-center gap-2">
           <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer">{t("ui.chooseImage") || "Choose Image"}</label>
           {(coverPreviewUrl || draft.coverImage) && (
-            <button type="button" onClick={() => { onSelectCoverFile?.(null); onRemoveCoverImage?.(); }} className="text-xs text-red-500 hover:underline">
+            <button type="button" onClick={() => { onSelectCoverFile?.(null); onRemoveCoverImage?.(); }} className="text-btn text-danger text-xs">
               {t("ui.removeImage")}
             </button>
           )}

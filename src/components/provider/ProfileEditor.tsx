@@ -318,7 +318,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                     </label>
                     <div className="flex flex-col items-start gap-2">
                       {(profile.avatarUrl || avatar.file) && (
-                        <button type="button" onClick={handleClearAvatar} className="text-btn text-btn-xs text-btn-ghost">
+                        <button type="button" onClick={handleClearAvatar} className="text-btn text-xs text-ghost">
                           {t("removeImage") || "Remove"}
                         </button>
                       )}
@@ -343,7 +343,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                     <div className="flex items-center gap-3">
                       <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer" onClick={handleChooseImageClick}>{t("chooseImage") || "Choose Image"}</label>
                       {(profile.coverImage || cover.file) && (
-                        <button type="button" onClick={handleClearCover} className="text-btn text-btn-xs text-btn-ghost">
+                        <button type="button" onClick={handleClearCover} className="text-btn text-xs text-ghost">
                           {t("removeImage") || "Remove"}
                         </button>
                       )}

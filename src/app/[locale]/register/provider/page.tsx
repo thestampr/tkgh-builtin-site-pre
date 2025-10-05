@@ -19,19 +19,20 @@ export default async function ProviderRegisterPage({ params }: { params: Promise
       subtitle={t('providerRegisterSubtitle') || 'Create a provider account to manage content & services.'}
       tone="provider"
       footer={(
-        <div className="space-y-4">
-          <p className="text-[11px] leading-relaxed">
+        <div className="text-xs space-y-3">
+          <p className="leading-relaxed">
             {t('alreadyHaveAccount') || 'Already have an account?'}{' '}
-            <Link href={`/${locale}/login`} className="font-semibold text-primary hover:underline underline-offset-4">
+            <Link href={`/${locale}/login`} className="font-semibold text-btn text-primary">
               {t('loginLink') || 'Login here'}
             </Link>
           </p>
-          <p className="text-[11px] leading-relaxed">
+          <p className="leading-relaxed">
             {t('wantNormalAccount') || 'Need a regular user account?'}{' '}
-            <Link href={`/${locale}/register`} className="font-semibold text-primary hover:underline underline-offset-4">
+            <Link href={`/${locale}/register`} className="font-semibold text-btn text-primary">
               {t('registerUser') || 'Register as User'}
             </Link>
           </p>
+          <br />
           <p className="text-[10px] text-[#6b5433]/70 leading-relaxed">
             {t('providerDisclaimer') || 'Provider accounts may be subject to review.'}
           </p>

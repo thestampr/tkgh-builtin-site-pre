@@ -20,16 +20,16 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
       title={tAuth("loginTitle")}
       subtitle={tAuth("loginSubtitle") || "Access your dashboard and services."}
       footer={(
-        <div className="space-y-3">
+        <div className="text-xs space-y-3">
           <p className="leading-relaxed">
             {tAuth("noAccount") || "Need an account?"}{" "}
-            <Link href={`/${locale}/register`} className="font-semibold text-primary hover:underline underline-offset-4">
+            <Link href={`/${locale}/register`} className="font-semibold text-btn text-primary">
               {tAuth("registerUser") || "Register as User"}
             </Link>
           </p>
           <p className="leading-relaxed">
             {tAuth("becomeProvider") || "Offer services?"}{" "}
-            <Link href={`/${locale}/register/provider`} className="font-semibold text-primary hover:underline underline-offset-4">
+            <Link href={`/${locale}/register/provider`} className="font-semibold text-btn text-primary">
               {tAuth("registerProvider") || "Register as Provider"}
             </Link>
           </p>

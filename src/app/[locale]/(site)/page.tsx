@@ -66,7 +66,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <h2 className="text-2xl font-semibold">
             {tCategories("title")}
           </h2>
-          <Link href={`/${locale}/categories`} className="text-sm text-primary hover:underline">
+          <Link href={`/${locale}/categories`} className="text-btn text-primary text-sm">
             {tCommon("exploreMore")}
           </Link>
         </div>
@@ -78,7 +78,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <h2 className="text-2xl font-semibold">
             {tBuiltIn("title")}
           </h2>
-          <Link href={`/${locale}/built-in`} className="text-sm text-primary hover:underline">
+          <Link href={`/${locale}/built-in`} className="text-btn text-primary text-sm">
             {tCommon("exploreMore")}
           </Link>
         </div>

@@ -47,7 +47,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
               <ul className="space-y-2 text-sm max-h-72 overflow-auto pr-1">
                 {favorites.map(f => (
                   <li key={f.id} className="flex items-center justify-between gap-2">
-                    <Link className="truncate hover:underline" href={`/${locale}/p/${f.provider?.id}/built-in/${f.slug || f.id}`}>{f.title}</Link>
+                    <Link className="truncate text-btn" href={`/${locale}/p/${f.provider?.id}/built-in/${f.slug || f.id}`}>{f.title}</Link>
                   </li>
                 ))}
               </ul>

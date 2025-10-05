@@ -115,7 +115,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
             <h2 className="text-2xl font-semibold">
               {tCategories("title")}
             </h2>
-            <Link href={`/${locale}/p/${providerId}/categories`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/p/${providerId}/categories`} className="text-btn text-primary tex-sm">
               {tCommon("exploreMore")}
             </Link>
           </div>
@@ -132,7 +132,7 @@ export default async function ProviderPublicPage({ params }: { params: Promise<{
             <h2 className="text-2xl font-semibold">
               {tBuiltIn("title")}
             </h2>
-            <Link href={`/${locale}/p/${providerId}/built-in`} className="text-sm text-primary hover:underline">
+            <Link href={`/${locale}/p/${providerId}/built-in`} className="text-btn text-primary tex-sm">
               {tCommon("exploreMore")}
             </Link>
           </div>

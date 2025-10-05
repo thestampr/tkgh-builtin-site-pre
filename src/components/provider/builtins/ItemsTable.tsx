@@ -74,8 +74,8 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({
               </td>
               <td className="px-2 text-xs text-neutral-500">{new Date(it.updatedAt).toLocaleDateString()}</td>
               <td className="px-2 text-right text-xs space-x-3">
-                <button onClick={() => onEdit(it)} className="text-neutral-600 hover:underline cursor-pointer">Edit</button>
-                <button onClick={() => onDelete(it)} className="text-danger hover:underline cursor-pointer">Delete</button>
+                <button onClick={() => onEdit(it)} className="text-btn text-ghost text-xs">Edit</button>
+                <button onClick={() => onDelete(it)} className="text-btn text-danger text-xs">Delete</button>
               </td>
             </tr>
           );
