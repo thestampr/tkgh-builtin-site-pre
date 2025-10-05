@@ -1,0 +1,718 @@
+{
+  "Nav": {
+    "home": {
+      "label": "ホーム",
+      "title": "ホーム"
+    },
+    "drafting": {
+      "label": "製図",
+      "title": "製図・BOQサービス"
+    },
+    "categories": {
+      "label": "カテゴリー",
+      "title": "カテゴリー"
+    },
+    "builtIn": {
+      "label": "ビルトイン",
+      "title": "ビルトイン"
+    },
+    "estimate": {
+      "label": "見積もり",
+      "title": "見積もり"
+    },
+    "contact": {
+      "label": "お問い合わせ",
+      "title": "お問い合わせ"
+    },
+    "language": {
+      "label": "言語",
+      "title": "言語"
+    },
+    "menu": {
+      "label": "メニュー",
+      "title": "メニュー"
+    }
+  },
+  "Home": {
+    "title": "理想のインテリアをデザイン",
+    "desc": "理想のインテリアをデザイン",
+    "heroTitle": "空間を美しくデザイン",
+    "heroSubtitle": "次のプロジェクトに向けて、カテゴリーやビルトインをブラウズ。",
+    "categoriesTitle": "カテゴリー"
+  },
+  "Common": {
+    "brand": "Your Brand",
+    "freeEstimate": "無料見積もり",
+    "back": "戻る",
+    "send": "送信",
+    "sending": "送信中...",
+    "success": "送信しました。担当者より折り返しご連絡します。",
+    "failed": "送信に失敗しました",
+    "explore": "見る",
+    "exploreMore": "もっと見る",
+    "viewDetails": "詳細を見る",
+    "summary": "概要",
+    "gallery": "ギャラリー",
+    "price": "価格",
+    "loading": "読み込み中...",
+    "save": "保存",
+    "saving": "保存中...",
+    "saved": "保存しました",
+    "saveFailed": "保存に失敗",
+    "unsaved": "未保存",
+    "undo": "元に戻す",
+    "requestEstimate": "見積もり依頼",
+    "category": "カテゴリー",
+    "categories": "ビルトインカテゴリー",
+    "contact": "お問い合わせ",
+    "services": "サービス (2D/3D/BOQ)",
+    "ourProjects": "実績",
+    "aboutUs": "私たちについて",
+    "newsPromotions": "ニュース・プロモーション",
+    "blog": "ブログ",
+    "localeName": "英語",
+    "localeEN": "英語",
+    "localeTH": "タイ語",
+    "lineChat": "LINE チャット",
+    "contactUs": "お問い合わせ",
+    "provider": "プロバイダー",
+    "providerItems": "アイテム",
+    "providerCategories": "カテゴリー",
+    "register": "登録",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "signUp": "サインアップ",
+    "signIn": "サインイン",
+    "signOut": "サインアウト",
+    "bulk": {
+      "selectAll": "すべて選択",
+      "selectOne": "行を選択",
+      "selectedPrefix": "選択中: ",
+      "markViewed": "既読にする",
+      "archive": "アーカイブ",
+      "unarchive": "アーカイブ解除",
+      "delete": "削除",
+      "confirm": {
+        "delete": {
+          "message": "選択したリクエストを削除しますか？ この操作は元に戻せません。"
+        },
+        "ok": "確認",
+        "cancel": "キャンセル"
+      }
+    }
+  },
+  "ProviderCTA": {
+    "label": "お問い合わせ",
+    "href": "/estimate",
+    "preview": "プレビュー",
+    "saveLabel": "CTAラベルを保存",
+    "config": "CTAボタン",
+    "color": "色",
+    "size": "サイズ",
+    "icon": "アイコン",
+    "style": "スタイル"
+  },
+  "Locale": {
+    "name": "日本語",
+    "en": "English",
+    "th": "ไทย",
+    "ja": "日本語"
+  },
+  "Categories": {
+    "title": "カテゴリー",
+    "desc": "カテゴリーのコレクションをご覧ください。",
+    "listTitle": "すべてのカテゴリー",
+    "listSubtitle": "カテゴリーを選んでアイテムを確認。",
+    "empty": "カテゴリーはありません。",
+    "emptyDesc": "まだカテゴリーはありません。",
+    "emptySearch": "検索やフィルターに一致するカテゴリーがありません。",
+    "notExist": "このカテゴリーは存在しません。",
+    "providerNoCategories": "このプロバイダーにはカテゴリーがありません。",
+    "noItems": "このカテゴリーにはまだアイテムがありません。"
+  },
+  "BuiltIn": {
+    "title": "ビルトイン",
+    "desc": "ビルトインアイテムのコレクションを見つけよう。",
+    "listTitle": "ビルトイン一覧",
+    "listSubtitle": "ビルトインのセレクションをチェック。",
+    "empty": "アイテムがありません。",
+    "emptyDesc": "まだビルトインアイテムがありません。",
+    "emptySearch": "検索やフィルターに一致するビルトインがありません。",
+    "providerNoItems": "このプロバイダーにはビルトインがありません。",
+    "noContent": "内容がありません。"
+  },
+  "Estimate": {
+    "title": "お見積もり",
+    "desc": "プロジェクトのお話をぜひお聞かせください。いくつかの情報から、親切で分かりやすいお見積もりをご提示します。",
+    "side": {
+      "points": {
+        "0": "あなたに合わせた迅速で親切なお見積もり",
+        "1": "透明性のある価格と明確な選択肢",
+        "2": "空間とご予算に合うご提案",
+        "3": "スケジュールに合わせた柔軟な対応"
+      },
+      "lovedBy": "{count}+ 人に支持されています"
+    },
+    "form": {
+      "title": "プロジェクトについて教えてください",
+      "subtitle": "少しの情報で、精度の高い見積もりと最適な提案ができます。"
+    },
+    "messages": {
+      "success": "送信しました。追ってご連絡いたします。",
+      "failed": "送信中にエラーが発生しました。もう一度お試しください。",
+      "estimateRequestSent": {
+        "title": "送信完了",
+        "description": "担当チームが間もなくご連絡します。"
+      },
+      "submitFailed": {
+        "title": "エラー",
+        "description": "送信中にエラーが発生しました。もう一度お試しください。"
+      },
+      "errors": {
+        "missingInfo": {
+          "title": "未入力",
+          "description": "必須項目をすべて入力してください。"
+        },
+        "invalid": {
+          "title": "不正な入力",
+          "description": "入力内容を確認してください。"
+        },
+        "error": {
+          "title": "エラー",
+          "description": "送信中にエラーが発生しました。もう一度お試しください。"
+        }
+      }
+    },
+    "pageTitle": "見積もりを依頼",
+    "pageSubtitle": "ご要望をお知らせください。折り返しご連絡します。",
+    "name": "氏名",
+    "phone": "電話",
+    "email": "メール",
+    "location": "場所",
+    "category": "カテゴリー",
+    "budget": "予算",
+    "detail": "詳細",
+    "sending": "送信中...",
+    "submit": "送信",
+    "validation": "必須項目を入力してください。",
+    "optionLiving": "リビング",
+    "optionBedroom": "寝室",
+    "optionKitchen": "キッチン",
+    "optionRenovation": "リノベーション",
+    "optionConstruction": "建設"
+  },
+  "Contact": {
+    "title": "お問い合わせ",
+    "desc": "サービスに関する詳細はお問い合わせください。",
+    "subtitle": "皆さまからのご連絡をお待ちしています。",
+    "email": "メール",
+    "phone": "電話",
+    "address": "住所"
+  },
+  "Inspiration": {
+    "title": "インスピレーション",
+    "desc": "デザインやアイデアのコレクションをご覧ください。"
+  },
+  "BOQServices": {
+    "hero": {
+      "title": "2D / 3D デザイン & BOQ サービス",
+      "subtitle": "高品質な建築・エンジニアリングビジュアルと正確な数量内訳（BOQ）を提供。承認獲得、調達の効率化、プロジェクトの実現を支援します。",
+      "bullets": [
+        "フォトリアルなレンダーとウォークスルー",
+        "施工準備が整った 2D/3D ドキュメント",
+        "調達向けの正確な明細付き BOQ",
+        "ローカル規準への適合と材料最適化"
+      ],
+      "ctaQuote": "見積もりを依頼",
+      "ctaWork": "実績を見る",
+      "card": {
+        "title": "ラグジュアリー住宅コンセプト",
+        "subtitle": "素材検討とライティングを伴う高精細レンダー。",
+        "alt": "3D 建築レンダー"
+      }
+    },
+    "deliver": {
+      "heading": "提供物",
+      "subheading": "コンセプトから調達までをシームレスに連携：コンセプト図、詳細設計、他分野調整、3D ビジュアライゼーション、入札にそのまま使える構造化 BOQ。",
+      "cards": [
+        {
+          "title": "コンセプト & スキーマティック設計",
+          "text": "レイアウト、ボリューム、素材意図など初期段階の検討を素早く。"
+        },
+        {
+          "title": "詳細 2D / CAD ドキュメント",
+          "text": "施工図、断面、スケジュール、詳細パッケージ。"
+        },
+        {
+          "title": "フォトリアル 3D ビジュアル",
+          "text": "クライアント承認やマーケティングに使える高品質イメージとアニメーション。"
+        },
+        {
+          "title": "包括的 BOQ",
+          "text": "明細レベルの数量、材料記述、調達に使えるコスト準備済みアウトプット。"
+        }
+      ],
+      "why": {
+        "heading": "私たちを選ぶ理由",
+        "list": [
+          "専任のデザイン & 積算チーム",
+          "マイルストーンが明確な迅速な納期",
+          "透明性の高い成果物と改訂範囲",
+          "サプライヤー・施工業者との連携"
+        ],
+        "turnaroundLabel": "納期目安",
+        "turnaroundValue": "2〜6 週間"
+      }
+    },
+    "gallery": {
+      "heading": "ビジュアル例",
+      "altInterior": "内観レンダー",
+      "altExterior": "外観レンダー",
+      "altSite": "配置図"
+    },
+    "packages": {
+      "heading": "パッケージ",
+      "subheading": "規模に合わせて最適化。まずはスコープ見積もりから。",
+      "requestQuote": "見積もりを依頼",
+      "items": [
+        {
+          "title": "エッセンシャル",
+          "price": "₹ / $",
+          "description": "コンセプト図、基本 BOQ、改訂 1 回。",
+          "features": [
+            "2D コンセプト平面",
+            "予備的 BOQ",
+            "デザイン改訂 1 回"
+          ]
+        },
+        {
+          "title": "スタンダード",
+          "price": "₹ / $",
+          "description": "詳細 2D セット、BOQ、3D ビジュアル、コーディネーション。",
+          "features": [
+            "2D ドキュメント一式",
+            "フォトリアルレンダー",
+            "材料拾い出し付き BOQ"
+          ]
+        },
+        {
+          "title": "プレミアム",
+          "price": "₹ / $",
+          "description": "エンドツーエンド設計、高度なレンダー、調達支援。",
+          "features": [
+            "BIM 連携",
+            "複数のデザインオプション",
+            "調達準備済み BOQ"
+          ]
+        }
+      ]
+    },
+    "faq": {
+      "heading": "よくある質問",
+      "subheading": "ワークフローと成果物に関する代表的な質問への簡潔な回答。",
+      "items": [
+        {
+          "q": "2D/3D デザインと BOQ サービスには何が含まれますか？",
+          "a": "詳細な 2D 図面、フォトリアリスティックな 3D ビジュアル、スキーマティック／施工図、そして入札・調達にそのまま使える包括的な BOQ を提供します。"
+        },
+        {
+          "q": "地域の法規や材料供給に合わせて設計を調整できますか？",
+          "a": "はい。地域の建築基準、サプライヤーの供給状況、プロジェクト制約に合わせて、実現可能でコスト効率の高い設計に調整します。"
+        },
+        {
+          "q": "納品ファイル形式は？",
+          "a": "一般的には DWG、PDF、IFC/3D エクスポート、高解像度 PNG/JPEG、Excel 形式の BOQ です。ご要望に応じてカスタム形式も対応可能です。"
+        }
+      ]
+    },
+    "contact": {
+      "heading": "プロジェクト見積もり",
+      "subheading": "プロジェクトについてお知らせください。最適なスコープとタイムラインをご提案します。",
+      "form": {
+        "name": "氏名",
+        "email": "メールアドレス",
+        "phone": "電話（任意）",
+        "message": "プロジェクト概要",
+        "submit": "送信",
+        "submitting": "送信中..."
+      },
+      "sent": "送信しました。追ってご連絡いたします。"
+    },
+    "footerCta": {
+      "heading": "準備はできましたか？",
+      "subheading": "デザインと見積もりの担当に相談して、スコープと固定見積もりをすばやく取得しましょう。",
+      "requestQuote": "見積もりを依頼",
+      "scheduleCall": "相談を予約"
+    }
+  },
+  "Auth": {
+    "loginTitle": "サインイン",
+    "loginSubtitle": "アカウントとプロジェクトツールにアクセス。",
+    "registerTitle": "アカウント作成",
+    "registerSubtitle": "お気に入り保存やサービス依頼のために参加。",
+    "providerRegisterTitle": "プロバイダー登録",
+    "providerRegisterSubtitle": "コンテンツとサービスを管理するプロバイダーアカウントを作成。",
+    "providerDisclaimer": "プロバイダーアカウントは手動承認が必要な場合があります。",
+    "noAccount": "アカウント未作成ですか？",
+    "registerUser": "ユーザーとして登録",
+    "registerProvider": "プロバイダーとして登録",
+    "becomeProvider": "サービス提供者になりますか？",
+    "alreadyHaveAccount": "すでにアカウントがありますか？",
+    "loginLink": "こちらからログイン",
+    "providerCtaPrompt": "サービス提供をご希望ですか？",
+    "providerCta": "プロバイダー登録",
+    "wantNormalAccount": "通常のユーザーアカウントが必要ですか？",
+    "registerUserAlt": "ユーザーとして登録",
+    "errors": {
+      "invalidCredentials": "認証情報が無効です",
+      "invalidEmail": "メールが無効です",
+      "emailInUse": "このメールは既に使用されています",
+      "weakPassword": "パスワードは6文字以上で入力してください",
+      "required": "必須項目です",
+      "passwordMismatch": "パスワードが一致しません",
+      "unknown": "不明なエラーが発生しました"
+    }
+  },
+  "Account": {
+    "titleUser": "あなたのアカウント",
+    "subtitleUser": "プロフィールと保存済みのアクティビティを管理。",
+    "titleProvider": "プロバイダーダッシュボード",
+    "subtitleProvider": "コンテンツとパフォーマンスの概要",
+    "menu": {
+      "overview": "概要",
+      "profile": "プロフィール",
+      "builtIns": "ビルトイン",
+      "categories": "カテゴリー",
+      "estimates": "見積もり",
+      "settings": "設定",
+      "register": "登録",
+      "login": "ログイン",
+      "logout": "ログアウト",
+      "signUp": "サインアップ",
+      "signIn": "サインイン",
+      "signOut": "サインアウト"
+    },
+    "summary": {
+      "builtIns": "ビルトイン",
+      "published": "公開",
+      "drafts": "下書き",
+      "categories": "カテゴリー"
+    },
+    "tables": {
+      "topViews": "トップ閲覧数",
+      "recent": "最近の更新",
+      "views": "閲覧数",
+      "status": "ステータス",
+      "updated": "更新"
+    },
+    "empty": {
+      "noData": "データなし",
+      "noBuiltIns": "まだビルトインはありません。",
+      "noCategories": "まだカテゴリーはありません。"
+    },
+    "user": {
+      "email": "メール",
+      "role": "ロール",
+      "favorites": "お気に入り",
+      "lastLogin": "最終ログイン"
+    },
+    "ui": {
+      "removeImage": "削除",
+      "noImage": "画像が選択されていません",
+      "chooseImage": "画像を選択",
+      "editProfile": "プロフィールを編集",
+      "favoritesHeading": "お気に入り",
+      "noFavorites": "お気に入りはまだありません",
+      "views30Days": "閲覧数（30日）",
+      "topCategories": "人気カテゴリー",
+      "noViewsYet": "まだ閲覧がありません",
+      "noDataGeneric": "データなし",
+      "saveDraft": "下書きを保存",
+      "publish": "公開",
+      "previewDraft": "下書きをプレビュー",
+      "advancedJson": "詳細 JSON",
+      "contactChannels": "連絡手段",
+      "addChannel": "追加",
+      "avatar": "アバター",
+      "coverImage": "カバー画像",
+      "basicInfo": "基本情報",
+      "cta": "CTA ボタン",
+      "provider": "プロバイダー",
+      "ownedBy": "{name} による",
+      "save": "保存",
+      "saveChanges": "変更を保存",
+      "saving": "保存中...",
+      "saved": "保存しました",
+      "saveFailed": "保存に失敗",
+      "saveError": "エラーが発生しました",
+      "unsaved": "未保存の変更",
+      "discard": "破棄",
+      "reset": "リセット",
+      "cancel": "キャンセル",
+      "canceled": "キャンセルしました",
+      "fileTooLarge": "ファイルが大きすぎます（最大 512KB）",
+      "fileTypeInvalid": "未対応のファイル形式",
+      "userProfile": {
+        "title": "プロフィール設定",
+        "avatar": "プロフィール画像",
+        "email": "メール",
+        "changeEmail": "メールを変更",
+        "newEmail": "新しいメール",
+        "saveEmail": "メールを保存",
+        "password": "パスワード",
+        "currentPassword": "現在のパスワード",
+        "newPassword": "新しいパスワード",
+        "confirmPassword": "新しいパスワード（確認）",
+        "updatePassword": "パスワードを更新",
+        "updating": "更新中...",
+        "updated": "更新しました",
+        "emailUpdated": "メールを更新しました",
+        "passwordUpdated": "パスワードを更新しました",
+        "mismatch": "パスワードが一致しません",
+        "weakPassword": "パスワードは8文字以上で入力してください",
+        "invalidEmail": "無効なメールです",
+        "emailInUse": "メールは既に使用されています",
+        "invalidCurrent": "現在のパスワードが正しくありません",
+        "clickToUpload": "クリックしてアップロード"
+      },
+      "settings": {
+        "title": "アカウント設定",
+        "subtitle": "基本的なアカウント設定を管理します。",
+        "accountSectionTitle": "アカウント",
+        "accountSectionSubtitle": "基本アカウント情報",
+        "passwordSectionTitle": "パスワード",
+        "passwordSectionSubtitle": "パスワードを更新",
+        "currentEmail": "現在のメール"
+      }
+    }
+  },
+  "Profile": {
+    "title": "プロフィール",
+    "subtitle": "プロフィール情報を管理。"
+  },
+  "ProviderBuiltIns": {
+    "title": "ビルトイン",
+    "subtitle": "ビルトインアイテムの作成と管理。",
+    "new": "新規アイテム",
+    "editTitle": "ビルトインを編集",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "saving": "保存中...",
+    "filters": {
+      "search": "検索",
+      "searchPlaceholder": "ビルトインを検索...",
+      "status": "ステータス",
+      "category": "カテゴリー",
+      "published": "公開",
+      "draft": "下書き",
+      "all": "すべて",
+      "sort": "並び替え",
+      "sortNewest": "新しい順",
+      "sortOldest": "古い順",
+      "sortTitle": "タイトル A-Z",
+      "sortTitleDesc": "タイトル Z-A",
+      "sortPriceLow": "価格 低→高",
+      "sortPriceHigh": "価格 高→低",
+      "reset": "リセット"
+    },
+    "imagesLabel": "画像（先頭 = カバー）",
+    "imagesHint": "Make Cover で画像を先頭に移動できます。",
+    "upload": "アップロード",
+    "makeCover": "Make Cover",
+    "remove": "削除",
+    "coverBadge": "カバー",
+    "empty": "まだアイテムはありません",
+    "fields": {
+      "title": "タイトル",
+      "slug": "スラッグ",
+      "price": "価格",
+      "currency": "通貨",
+      "category": "カテゴリー",
+      "content": "コンテンツ（Markdown）"
+    },
+    "status": {
+      "draft": "下書き",
+      "published": "公開"
+    },
+    "messages": {
+      "titleRequired": "タイトルは必須です",
+      "categoryRequired": "カテゴリーは必須です",
+      "translationTitleRequired": "翻訳タイトルは必須です",
+      "createFailed": "作成に失敗しました",
+      "updateFailed": "更新に失敗しました",
+      "translationFailed": "翻訳の保存に失敗しました"
+    },
+    "publish": {
+      "publish": "公開",
+      "unpublish": "非公開にする",
+      "publishing": "公開中...",
+      "unpublishing": "非公開に変更中...",
+      "published": "公開済み",
+      "draft": "下書き"
+    },
+    "confirm": {
+      "delete": {
+        "title": "アイテムを削除",
+        "message": "このアイテムを削除してもよろしいですか？",
+        "confirmText": "削除",
+        "cancelText": "キャンセル"
+      }
+    },
+    "ui": {
+      "refresh": "更新",
+      "refreshing": "更新中..."
+    }
+  },
+  "ProviderCategories": {
+    "title": "カテゴリー",
+    "subtitle": "ビルトインアイテムを整理。",
+    "new": "新規カテゴリー",
+    "editTitle": "カテゴリーを編集",
+    "empty": "まだカテゴリーはありません",
+    "fields": {
+      "name": "名前",
+      "slug": "スラッグ",
+      "excerpt": "概要",
+      "description": "説明",
+      "coverImage": "カバー画像"
+    },
+    "filters": {
+      "search": "検索",
+      "searchPlaceholder": "カテゴリーを検索...",
+      "published": "公開",
+      "unpublished": "未公開",
+      "all": "すべて",
+      "sort": "並び替え",
+      "sortUpdated": "更新が新しい順",
+      "sortNameAsc": "名前 A-Z",
+      "sortNameDesc": "名前 Z-A",
+      "sortCreatedNewest": "作成が新しい順",
+      "sortCreatedOldest": "作成が古い順"
+    },
+    "messages": {
+      "nameSlugRequired": "名前とスラッグは必須です",
+      "translationNameRequired": "翻訳名は必須です",
+      "createFailed": "作成に失敗しました",
+      "updateFailed": "更新に失敗しました",
+      "translationFailed": "翻訳の保存に失敗しました",
+      "uploadFailed": "アップロードに失敗しました"
+    },
+    "publish": {
+      "published": "公開",
+      "unpublished": "未公開"
+    },
+    "confirm": {
+      "delete": {
+        "title": "カテゴリーを削除",
+        "message": "このカテゴリーを削除してもよろしいですか？",
+        "confirmText": "削除",
+        "cancelText": "キャンセル"
+      }
+    },
+    "ui": {
+      "removeImage": "削除",
+      "noImage": "画像が選択されていません",
+      "chooseImage": "画像を選択",
+      "shortTeaserPlaceholder": "短い説明",
+      "longerDescriptionPlaceholder": "詳しい説明",
+      "refresh": "更新",
+      "refreshing": "更新中...",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "saving": "保存中..."
+    }
+  },
+  "ProviderEstimates": {
+    "title": "見積もり",
+    "subtitle": "受信した見積もり依頼を閲覧・管理。",
+    "view": "詳細を見る",
+    "markViewed": "既読にする",
+    "close": "閉じる",
+    "empty": "まだ送信はありません",
+    "fields": {
+      "createdAt": "日付",
+      "name": "名前",
+      "phone": "電話",
+      "email": "メール",
+      "category": "カテゴリー",
+      "budget": "予算",
+      "detail": "詳細",
+      "status": "ステータス",
+      "locale": "言語",
+      "location": "場所"
+    },
+    "status": {
+      "new": "新規",
+      "inProgress": "進行中",
+      "completed": "完了",
+      "viewed": "閲覧済み"
+    },
+    "filters": {
+      "search": "検索",
+      "searchPlaceholder": "見積もりを検索...",
+      "status": "ステータス",
+      "all": "すべて",
+      "new": "新規",
+      "inProgress": "進行中",
+      "completed": "完了",
+      "sort": "並び替え",
+      "sortNewest": "新しい順",
+      "sortOldest": "古い順"
+    },
+    "messages": {
+      "fetchFailed": "取得に失敗しました"
+    },
+    "ui": {
+      "noData": "見積もりはまだありません",
+      "refresh": "更新",
+      "refreshing": "更新中..."
+    },
+    "bulk": {
+      "selectAll": "すべて選択",
+      "selectOne": "行を選択",
+      "selectedPrefix": "選択中: ",
+      "markViewed": "既読にする",
+      "archive": "アーカイブ",
+      "unarchive": "アーカイブ解除",
+      "delete": "削除",
+      "confirm": {
+        "delete": {
+          "message": "選択したリクエストを削除しますか？ この操作は元に戻せません。"
+        },
+        "ok": "確認",
+        "cancel": "キャンセル"
+      }
+    }
+  },
+  "PublishState": {
+    "publish": "公開",
+    "unpublish": "非公開",
+    "publishing": "公開中...",
+    "unpublishing": "非公開に変更中...",
+    "published": "公開済み",
+    "draft": "下書き"
+  },
+  "Errors": {
+    "403": {
+      "title": "アクセス拒否",
+      "message": "このページにアクセスする権限がありません。"
+    },
+    "404": {
+      "title": "ページが見つかりません",
+      "message": "お探しのページは存在しません。"
+    },
+    "500": {
+      "title": "サーバーエラー",
+      "message": "予期しないエラーが発生しました。しばらくしてからお試しください。"
+    },
+    "media": {
+      "invalidFileType": "無効なファイル形式",
+      "fileTooLarge": "ファイルが大きすぎます（最大 {maxSize}）",
+      "avatarUploadFailed": "アバターのアップロードに失敗しました"
+    },
+    "common": {
+      "required": "必須項目です",
+      "unknown": "不明なエラーが発生しました"
+    }
+  }
+}

@@ -115,7 +115,8 @@
   "Locale": {
     "name": "English",
     "en": "English",
-    "th": "ภาษาไทย"
+    "th": "ภาษาไทย",
+    "ja": "日本語"
   },
   "Categories": {
     "title": "Categories",
