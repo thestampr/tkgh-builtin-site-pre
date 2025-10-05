@@ -95,14 +95,27 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 				<input type="password" required value={password} onChange={e => setPassword(e.target.value)}
 					className="w-full rounded-md border px-3 py-2 text-sm bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary" />
 			</div>
-			{error && <div className="text-sm text-danger">{error}</div>}
-			{success && <div className="text-sm text-success">{success}</div>}
+			<div className="text-xs">
+				{ success 
+					? (
+						<div className="text-success">{success}</div>
+					)
+					: error
+					  ? (
+						  <div className="text-danger">{error}</div>
+						)
+						: (
+							<div className="pointer-events-none opacity-0">placeholder</div>
+						)
+				}
+			</div>
+			<br />
 			<button
 				type="submit"
 				disabled={loading}
 				className={clsx(
-					"w-full py-2 rounded-md text-sm font-medium text-white bg-primary hover:bg-primary/90",
-					loading ? "opacity-60" : "cursor-pointer"
+					"btn w-full btn-sm",
+					loading ? "btn-secondary" : "btn-primary"
 				)}>
 				{mode === "login" ? t("signIn") : t("signUp")}
 			</button>
