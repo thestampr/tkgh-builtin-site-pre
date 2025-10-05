@@ -130,6 +130,7 @@ body {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--foreground);
+  text-wrap: nowrap;
   cursor: pointer;
 }
 
@@ -213,6 +214,7 @@ body {
   text-underline-offset: 2px;
   text-decoration-thickness: 1.5px;
   cursor: pointer;
+  text-wrap: nowrap;
 }
 .text-btn:hover {
   text-decoration: underline;
