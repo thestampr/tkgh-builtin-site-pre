@@ -20,7 +20,7 @@ export default async function RegisterPage({ params }: { params: Promise<{ local
       subtitle={tAuth("registerSubtitle") || "Join to access personalized features."}
       tone="register"
       footer={(
-        <div className="ttext-xs space-y-3">
+        <div className="text-xs space-y-3">
           <p className="leading-relaxed">
             {tAuth("alreadyHaveAccount") || "Already have an account?"}{" "}
             <Link href={`/${locale}/login`} className="font-semibold text-btn text-primary">
