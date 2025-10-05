@@ -2,28 +2,20 @@
 
 import { IconPicker } from "@/components/IconPicker";
 import { LocaleTabs } from "@/components/LocaleTabs";
-import { defaultCta, ProviderCTA, type CTAConfig } from "@/components/ProviderCTA";
+import type { CTAConfig } from "@/components/ProviderCTA";
+import { ProviderCTA } from "@/components/ProviderCTA";
 import UserAvatar from "@/components/common/UserAvatar";
 import { useToast } from "@/hooks/useToast";
 import { defaultLocale, locales } from "@/i18n/navigation";
-import { Profile, ProfileTranslation } from "@prisma/client";
+import { useProfileService, type InitialProfileRecord } from "@/services/useProfileService";
 import clsx from "clsx";
 import * as Lucide from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-interface ProfileEditorProps {
-  initialProfile: Profile | null;
-  inline?: boolean;
-}
-
-type Channel = { type: string; value: string };
-interface ContactData { channels: Channel[] }
-
-function parseJSON<T>(raw: string | null | undefined, fallback: T): T {
-  if (!raw) return fallback;
-  try { return JSON.parse(raw) as T; } catch { return fallback; }
+interface Props { 
+  initialProfile: InitialProfileRecord | null; 
+  inline?: boolean 
 }
 
 function normalizeHex(v: string) {
@@ -34,488 +26,298 @@ function normalizeHex(v: string) {
   if (val.length > 7) val = val.slice(0, 7);
   return val;
 }
-
-function isValidFullHex(v: string) {
-  return /^#[0-9a-fA-F]{6}$/.test(v);
+function isValidFullHex(v: string) { 
+  return /^#[0-9a-fA-F]{6}$/.test(v); 
 }
 
-// Baseline state types to track last saved values (base + translations)
-interface BaseLocaleState {
-  displayName: string;
-  bio: string;
-  contacts: ContactData;
-  avatarUrl: string | null;
-  coverImage: string | null;
-  ctaConfig: CTAConfig;
-}
-
-interface TranslationState {
-  displayName: string;
-  bio: string;
-  ctaLabel: string;
-}
-
-export default function ProfileEditor({ initialProfile, inline = false }: ProfileEditorProps) {
-  const { data: session, update } = useSession();
-
-  const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
-
-  // Editable states (base locale)
-  const [displayName, setDisplayName] = useState(initialProfile?.displayName || "");
-  const [bio, setBio] = useState(initialProfile?.bio || "");
-  const [contacts, setContacts] = useState<ContactData>(() => parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }));
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => initialProfile?.avatarUrl || null);
-  const [coverImage, setCoverImage] = useState<string | null>(initialProfile ? initialProfile.coverImage || null : null);
-  const [ctaConfig, setCtaConfig] = useState<CTAConfig>(() => {
-    const parsed = parseJSON<CTAConfig>(initialProfile?.ctaJson as string, defaultCta);
-    if (!parsed.radius) parsed.radius = "full";
-    return parsed;
-  });
-
-  // Editable states (translation)
-  const [trDisplayName, setTrDisplayName] = useState<string>("");
-  const [trBio, setTrBio] = useState<string>("");
-  const [ctaLabelTr, setCtaLabelTr] = useState<string>("");
-
-  // Baseline (last saved) states
-  const [baselineBase, setBaselineBase] = useState<BaseLocaleState>(() => ({
-    displayName: initialProfile?.displayName || "",
-    bio: initialProfile?.bio || "",
-    contacts: parseJSON<ContactData>(initialProfile?.contactJson as string, { channels: [] }),
-    avatarUrl: initialProfile?.avatarUrl || null,
-    coverImage: initialProfile?.coverImage || null,
-    ctaConfig: parseJSON<CTAConfig>(initialProfile?.ctaJson as string, { ...defaultCta })
-  }));
-  const [baselineTranslations, setBaselineTranslations] = useState<Record<string, TranslationState>>({});
-
-  // UI states
-  const [iconPickerOpen, setIconPickerOpen] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [saving, setSaving] = useState(false);
-  const [loadingTranslation, setLoadingTranslation] = useState(false);
-  const [toastId, setToastId] = useState<string | null>(null);
-
-  // Local controlled hex inputs for colors
-  const [textColorHex, setTextColorHex] = useState<string>(ctaConfig.textColor || "#ffffff");
-  const [bgColorHex, setBgColorHex] = useState<string>(ctaConfig.color || "#8a6a40");
-
+export default function ProfileEditor({ initialProfile, inline = false }: Props) {
   const t = useTranslations("Account.ui");
   const tErrors = useTranslations("Errors");
   const tProfile = useTranslations("Profile");
-
-  // Toasts
   const { showToast, removeToast, showSuccessToast, showErrorToast } = useToast();
 
-  useEffect(() => {
-    setTextColorHex(ctaConfig.textColor || "#ffffff");
-  }, [ctaConfig.textColor]);
+  const {
+    profile,
+    translations,
+    avatar,
+    cover,
+    isDirty,
+    isDirtyFor,
+    loading,
+    error,
+    isSaving,
+    updateBase,
+    addChannel,
+    updateChannel,
+    removeChannel,
+    updateTranslation,
+    ensureTranslationLoaded,
+    resetLocale,
+    chooseAvatar,
+    chooseCover,
+    updateProfile,
+  } = useProfileService(initialProfile);
 
-  useEffect(() => {
-    setBgColorHex(ctaConfig.color || "#8a6a40");
-  }, [ctaConfig.color]);
+  const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [toastId, setToastId] = useState<string | null>(null);
+  const [textColorHex, setTextColorHex] = useState<string>(profile.ctaConfig.textColor || "#ffffff");
+  const [bgColorHex, setBgColorHex] = useState<string>(profile.ctaConfig.color || "#8a6a40");
+  // Keep latest save/cancel callbacks available to the toast without recreating it
+  const saveRef = useRef<() => void>(() => { });
+  const cancelRef = useRef<() => void>(() => { });
 
-  function handleHexChange(kind: "textColor" | "color", raw: string) {
+  // Keep local HEX inputs in sync
+  useEffect(() => { setTextColorHex(profile.ctaConfig.textColor || "#ffffff"); }, [profile.ctaConfig.textColor]);
+  useEffect(() => { setBgColorHex(profile.ctaConfig.color || "#8a6a40"); }, [profile.ctaConfig.color]);
+
+  const handleHexChange = useCallback((kind: "textColor" | "color", raw: string) => {
     const normalized = normalizeHex(raw);
     if (kind === "textColor") {
       setTextColorHex(normalized);
-      if (isValidFullHex(normalized)) {
-        setCtaConfig(c => ({ ...c, textColor: normalized }));
-      }
+      if (isValidFullHex(normalized)) updateBase({ ctaConfig: { ...profile.ctaConfig, textColor: normalized } as CTAConfig });
     } else {
       setBgColorHex(normalized);
-      if (isValidFullHex(normalized)) {
-        setCtaConfig(c => ({ ...c, color: normalized }));
-      }
+      if (isValidFullHex(normalized)) updateBase({ ctaConfig: { ...profile.ctaConfig, color: normalized } as CTAConfig });
     }
-  }
+  }, [profile.ctaConfig, updateBase]);
 
-  function addChannel() {
-    setContacts(c => ({ channels: [...c.channels, { type: "link", value: "" }] }));
-  }
-  function updateChannel(i: number, field: keyof Channel, value: string) {
-    setContacts(c => ({ channels: c.channels.map((ch, idx) => idx === i ? { ...ch, [field]: value } : ch) }));
-  }
-  function removeChannel(i: number) {
-    setContacts(c => ({ channels: c.channels.filter((_, idx) => idx !== i) }));
-  }
+  const dirtyAny = isDirty; // any locale or base changed
+  const dirtyActive = useMemo(() => isDirtyFor(activeLocale), [isDirtyFor, activeLocale]);
 
-  function validate(): boolean {
-    const errs: string[] = [];
-    contacts.channels.forEach((ch, i) => { if (!ch.value.trim()) errs.push(`Channel #${i + 1} empty`); });
-    setErrors(errs);
-    return !errs.length;
-  }
-
-  // Deep compare helpers
-  function shallowCompareCTA(a: CTAConfig, b: CTAConfig) {
-    const keys: (keyof CTAConfig)[] = ["label", "href", "textColor", "color", "size", "icon", "style", "radius"];
-    return keys.every(k => (a[k] || "") === (b[k] || ""));
-  }
-
-  function contactsEqual(a: ContactData, b: ContactData) {
-    if (a.channels.length !== b.channels.length) return false;
-    for (let i = 0; i < a.channels.length; i++) {
-      if (a.channels[i].type !== b.channels[i].type || a.channels[i].value !== b.channels[i].value) return false;
-    }
-    return true;
-  }
-
-  const dirty = useMemo(() => {
-    if (activeLocale === defaultLocale) {
-      if (displayName !== baselineBase.displayName) return true;
-      if (bio !== baselineBase.bio) return true;
-      if (!contactsEqual(contacts, baselineBase.contacts)) return true;
-      if (avatarUrl !== baselineBase.avatarUrl) return true;
-      if (coverImage !== baselineBase.coverImage) return true;
-      if (!shallowCompareCTA(ctaConfig, baselineBase.ctaConfig)) return true;
-      return false;
-    } else {
-      const baseTr = baselineTranslations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
-      if (trDisplayName !== baseTr.displayName) return true;
-      if (trBio !== baseTr.bio) return true;
-      if (ctaLabelTr !== baseTr.ctaLabel) return true;
-      return false;
-    }
-  }, [
-    activeLocale,
-    baselineBase,
-    baselineTranslations,
-    displayName,
-    bio,
-    contacts,
-    avatarUrl,
-    coverImage,
-    ctaConfig,
-    trDisplayName,
-    trBio,
-    ctaLabelTr,
-    defaultLocale
-  ]);
-
-  async function saveBase() {
-    if (!validate()) return;
-    setSaving(true);
-    setMessage(null);
-    try {
-      const res = await fetch("/api/provider/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayName,
-          bio,
-          contactJson: JSON.stringify(contacts),
-          avatarUrl,
-          coverImage,
-          ctaJson: JSON.stringify(ctaConfig)
-        })
-      });
-      setSaving(false);
-      if (res.ok) {
-        setMessage(t("saved"));
-        showSuccessToast({ title: t("saved") });
-        // Update baseline to reflect last saved state (optimistic)
-        setBaselineBase({
-          displayName,
-          bio,
-          contacts: JSON.parse(JSON.stringify(contacts)),
-          avatarUrl,
-          coverImage,
-          ctaConfig: { ...ctaConfig }
-        });
-        if (update) {
-          try {
-            const newUser = await res.json();
-            update(newUser);
-          } catch {
-            // Ignore JSON parse error if server not returning user object
-          }
-        }
-      } else {
-        setMessage(t("saveFailed"));
-        showErrorToast({ title: t("saveFailed") });
-      }
-    } catch (e: unknown) {
-      setMessage(t("saveError"));
-      showErrorToast({ title: t("saveError") });
-      const message = e instanceof Error ? e.message : typeof e === 'string' ? e : t("saveError");
-      console.error("Save base profile error:", message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function saveTranslation() {
-    if (activeLocale === defaultLocale) return;
-    if (!validate()) return;
-    setSaving(true);
-    setMessage(null);
-    try {
-      const res = await fetch("/api/provider/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          translationLocale: activeLocale,
-          translation: {
-            displayName: trDisplayName || null,
-            bio: trBio || null,
-            ctaLabel: ctaLabelTr === "" ? "" : ctaLabelTr
-          }
-        })
-      });
-      setSaving(false);
-      if (res.ok) {
-        setMessage(t("saved"));
-        showSuccessToast({ title: t("saved") });
-        setBaselineTranslations(prev => ({
-          ...prev,
-          [activeLocale]: {
-            displayName: trDisplayName,
-            bio: trBio,
-            ctaLabel: ctaLabelTr
-          }
-        }));
-      } else {
-        setMessage(t("saveFailed"));
-        showErrorToast({ title: t("saveFailed") });
-      }
-    } catch (e: unknown) {
-      setMessage(t("saveError"));
-      showErrorToast({ title: t("saveError") });
-      const message = e instanceof Error ? e.message : typeof e === 'string' ? e : t("saveError");
-      console.error("Save base profile error:", message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  function cancel() {
-    if (activeLocale === defaultLocale) {
-      // Reset to last saved baseline
-      setDisplayName(baselineBase.displayName);
-      setBio(baselineBase.bio);
-      setContacts(JSON.parse(JSON.stringify(baselineBase.contacts)));
-      setAvatarUrl(baselineBase.avatarUrl);
-      setCoverImage(baselineBase.coverImage);
-      setCtaConfig({ ...baselineBase.ctaConfig });
-      setTextColorHex(baselineBase.ctaConfig.textColor || "#ffffff");
-      setBgColorHex(baselineBase.ctaConfig.color || "#8a6a40");
-    } else {
-      const baseTr = baselineTranslations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
-      setTrDisplayName(baseTr.displayName);
-      setTrBio(baseTr.bio);
-      setCtaLabelTr(baseTr.ctaLabel);
-    }
-    setMessage(t("canceled"));
-    setErrors([]);
-  }
-
+  // When switching locales, lazily load translations
   useEffect(() => {
-    if (activeLocale === defaultLocale) return;
-    // Load translation when switching locale (except default)
-    setLoadingTranslation(true);
-    fetch(`/api/provider/profile?withTranslations=1`)
-      .then(r => r.json())
-      .then(json => {
-        const tr = json.profile?.translations?.find((x: ProfileTranslation) => x.locale === activeLocale);
-        if (tr) {
-          setTrDisplayName(tr.displayName || "");
-          setTrBio(tr.bio || "");
-          setCtaLabelTr(tr.ctaLabel || "");
-          setBaselineTranslations(prev => ({
-            ...prev,
-            [activeLocale]: {
-              displayName: tr.displayName || "",
-              bio: tr.bio || "",
-              ctaLabel: tr.ctaLabel || ""
-            }
-          }));
-        } else {
-          setTrDisplayName("");
-          setTrBio("");
-          setCtaLabelTr("");
-          setBaselineTranslations(prev => ({
-            ...prev,
-            [activeLocale]: { displayName: "", bio: "", ctaLabel: "" }
-          }));
-        }
-      })
-      .finally(() => setLoadingTranslation(false));
-  }, [activeLocale, defaultLocale]);
+    if (activeLocale !== defaultLocale) {
+      ensureTranslationLoaded(activeLocale);
+    }
+  }, [activeLocale, ensureTranslationLoaded]);
 
-  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  // per-locale dirty value is available as dirtyActive
+
+  const cancel = useCallback(() => {
+    resetLocale(activeLocale);
+  }, [resetLocale, activeLocale]);
+
+  // Avatar / Cover file input handlers to enforce type/size then set into service
+  const onAvatarChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
     if (!file) return;
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      setErrors(er => [...er, "TYPE"]);
-      return;
-    }
-    if (file.size > 512 * 1024) {
-      setErrors(er => [...er, "SIZE"]);
-      return;
-    }
-    setSaving(true);
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/provider/profile/avatar", { method: "POST", body: form });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.url) {
-        setAvatarUrl(json.url);
-        // Not updating baseline here until user saves base profile
-        if (update && session) {
-          const newUser = { ...session.user, avatarUrl: json.url };
-          update(newUser);
-        }
-      }
-    } else {
-      const j = await res.json().catch(() => ({}));
-      const err = j.error === "TYPE" ? tErrors("invalidFileType") : j.error === "SIZE" ? tErrors("fileTooLarge", { maxSize: "2MB" }) : tErrors("avatarUploadFailed");
-      setErrors(er => [...er, err]);
-    }
-    setSaving(false);
-  }
+    if (["image/png", "image/jpeg", "image/webp"].includes(file.type) === false) { setErrors((er) => [...er, "TYPE"]); return; }
+    if (file.size > 512 * 1024) { setErrors((er) => [...er, "SIZE"]); return; }
+    chooseAvatar(file);
+  }, [chooseAvatar]);
 
-  async function onCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  const onCoverChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
     if (!file) return;
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      setErrors(er => [...er, "TYPE"]);
-      return;
-    }
-    if (file.size > 1024 * 1024) {
-      setErrors(er => [...er, "SIZE"]);
-      return;
-    }
-    setSaving(true);
-    const form = new FormData();
-    form.append("file", file);
-    const res = await fetch("/api/provider/profile/cover", { method: "POST", body: form });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.url) setCoverImage(json.url);
-    }
-    setSaving(false);
-  }
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) { setErrors((er) => [...er, "TYPE"]); return; }
+    if (file.size > 1024 * 1024) { setErrors((er) => [...er, "SIZE"]); return; }
+    chooseCover(file);
+  }, [chooseCover]);
 
-  const LocaleLabel = () => {
+  const save = async () => {
+    try {
+      await updateProfile();
+      showSuccessToast({ title: t("saved") });
+    } catch (e) {
+      showErrorToast({ title: t("saveFailed") });
+    }
+  };
+  // Update refs so the toast always invokes the latest functions/state
+  useEffect(() => { saveRef.current = () => { void save(); }; }, [save]);
+  useEffect(() => { cancelRef.current = () => cancel(); }, [cancel]);
+
+  const onSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dirtyAny) return; // Check if any changes are made
+    void save();
+  }, [dirtyAny, save]);
+
+  const LocaleLabel = useCallback(() => {
     if (activeLocale === defaultLocale) return null;
+    return (<div className="ml-auto text-xs font-normal text-neutral-400">{activeLocale}</div>);
+  }, [activeLocale]);
 
-    return (
-      <div className="ml-auto text-xs font-normal text-neutral-400">
-        {activeLocale}
-      </div>
-    );
-  }
+  // Handlers without inline logic for inputs/buttons
+  const handleDisplayNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    console.log("Display name change:", v);
+    if (activeLocale === defaultLocale) updateBase({ displayName: v });
+    else updateTranslation(activeLocale, { displayName: v });
+  }, [activeLocale, updateBase, updateTranslation]);
 
-  // Show toast when dirty
+  const handleBioChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const v = e.target.value;
+    if (activeLocale === defaultLocale) updateBase({ bio: v });
+    else updateTranslation(activeLocale, { bio: v });
+  }, [activeLocale, updateBase, updateTranslation]);
+
+  const handleCtaLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateBase({ ctaConfig: { ...profile.ctaConfig, label: e.target.value } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const handleCtaHrefChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateBase({ ctaConfig: { ...profile.ctaConfig, href: e.target.value } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const onTextColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value.toUpperCase();
+    setTextColorHex(v);
+    updateBase({ ctaConfig: { ...profile.ctaConfig, textColor: v } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const onBgColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value.toUpperCase();
+    setBgColorHex(v);
+    updateBase({ ctaConfig: { ...profile.ctaConfig, color: v } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const onTextHexChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleHexChange("textColor", e.target.value.toUpperCase());
+  }, [handleHexChange]);
+
+  const onBgHexChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleHexChange("color", e.target.value.toUpperCase());
+  }, [handleHexChange]);
+
+  const handleCtaSizeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateBase({ ctaConfig: { ...profile.ctaConfig, size: e.target.value } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const handleOpenIconPicker = useCallback(() => setIconPickerOpen(true), []);
+  const handleClearIcon = useCallback(() => { updateBase({ ctaConfig: { ...profile.ctaConfig, icon: "" } }); }, [profile.ctaConfig, updateBase]);
+
+  const handleCtaStyleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateBase({ ctaConfig: { ...profile.ctaConfig, style: e.target.value } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const handleCtaRadiusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateBase({ ctaConfig: { ...profile.ctaConfig, radius: e.target.value } });
+  }, [profile.ctaConfig, updateBase]);
+
+  const handleAddChannel = useCallback(() => addChannel(), [addChannel]);
+  const handleChannelChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const index = Number((e.currentTarget as HTMLElement).dataset.index);
+    const field = ((e.currentTarget as HTMLElement).dataset.field || "value") as "type" | "value";
+    const value = (e.target as HTMLInputElement).value;
+    updateChannel(index, field, value);
+  }, [updateChannel]);
+  const handleChannelRemove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const index = Number((e.currentTarget as HTMLElement).dataset.index);
+    removeChannel(index);
+  }, [removeChannel]);
+
+  const handleChooseImageClick = useCallback(() => { /* no-op: label clicks input */ }, []);
+  const handleClearAvatar = useCallback(() => { chooseAvatar(null); updateBase({ avatarUrl: null }); }, [chooseAvatar, updateBase]);
+  const handleClearCover = useCallback(() => { chooseCover(null); updateBase({ coverImage: null }); }, [chooseCover, updateBase]);
+
+  const handleChangeLocale = useCallback((loc: string) => setActiveLocale(loc), []);
+
+  const handleCtaLabelTrChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTranslation(activeLocale, { ctaLabel: e.target.value });
+  }, [activeLocale, updateTranslation]);
+
+  const ctaIconEl = useMemo(() => {
+    const name = profile.ctaConfig.icon;
+    if (!name) return null;
+    const I = (Lucide as unknown as Record<string, React.ComponentType<{ size?: number }>>)[name];
+    return I ? <I size={16} /> : null;
+  }, [profile.ctaConfig.icon]);
+
+  const handleIconPicked = useCallback((name?: string | null) => {
+    updateBase({ ctaConfig: { ...profile.ctaConfig, icon: name || "" } });
+  }, [profile.ctaConfig, updateBase]);
+  const handleCloseIconPicker = useCallback(() => setIconPickerOpen(false), []);
+
+  // Floating save toast when dirty
   useEffect(() => {
-    if (!dirty) {
-      if (toastId) {
-        removeToast(toastId);
-      }
-      return setToastId(null);
+    if (!dirtyAny) {
+      if (toastId) removeToast(toastId);
+      setToastId(null);
+      return;
     }
-
     if (!toastId) {
       const id = showToast({
         pin: true,
         dismissible: false,
-        style: {
-          maxWidth: 600
-        },
+        style: { maxWidth: 600 },
         direction: "up-down",
         className: "!p-4 !-m-4 !gap-0 !border-none !w-screen !translate-x-0 !left-0 !bg-transparent !shadow-none",
-        content: <div className="p-[1.5px] bg-gradient-to-br from-blue-300 to-pink-300 rounded-2xl shadow-xl">
-          <div className="flex items-center bg-white rounded-[14px] p-3 m-px">
-            <div className="flex-1 min-w-0 text-sm truncate">
-              {t("unsaved")}
-            </div>
-            <div className="ml-3 flex items-center gap-2">
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={cancel}>
-                {t("reset")}
-              </button>
-              <button
-                onClick={activeLocale === defaultLocale ? saveBase : saveTranslation}
-                disabled={saving || !dirty}
-                className="btn btn-accent btn-sm"
-              >
-                {saving ? t("saving") : t("saveChanges")}
-              </button>
+        content: (
+          <div className="p-[1.5px] bg-gradient-to-br from-blue-300 to-pink-300 rounded-2xl shadow-xl">
+            <div className="flex items-center bg-white rounded-[14px] p-3 m-px">
+              <div className="flex-1 min-w-0 text-sm truncate">{t("unsaved")}</div>
+              <div className="ml-3 flex items-center gap-2">
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => cancelRef.current()}>{t("reset")}</button>
+                <button onClick={() => saveRef.current()} disabled={isSaving || !dirtyAny} className="btn btn-accent btn-sm">{isSaving ? t("saving") : t("saveChanges")}</button>
+              </div>
             </div>
           </div>
-        </div>
+        )
       });
       setToastId(id);
     }
-  }, [dirty, showToast, t]);
+  }, [dirtyAny, showToast, removeToast, t, toastId, cancel, save, isSaving]);
+
+  const currentTr = translations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
 
   return (
     <div className={inline ? "space-y-8" : "max-w-5xl mx-auto md:px-6 pb-10 space-y-10"}>
       <div>
-        {!inline && <>
-          <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
-          <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
-        </>}
+        {!inline && (
+          <>
+            <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
+            <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
+          </>
+        )}
       </div>
-      <div className={clsx(
-        "grid ",
-        inline ? "md:grid-cols-2 gap-10" : "max-w-2xl gap-10"
-      )}>
+      <div className={clsx("grid ", inline ? "md:grid-cols-2 gap-10" : "max-w-2xl gap-10")}>
         <div className="flex items-center gap-2 text-sm flex-wrap">
-          <LocaleTabs
-            className="ml-auto"
-            locales={locales}
-            active={activeLocale}
-            onChange={setActiveLocale}
-          />
+          <LocaleTabs className="ml-auto" locales={locales} active={activeLocale} onChange={handleChangeLocale} />
         </div>
         {!!errors.length && (
           <ul className="text-xs text-danger space-y-1">
-            {errors.map(e => <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>)}
+            {errors.map((e) => (
+              <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>
+            ))}
           </ul>
         )}
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            if (!dirty) return;
-            activeLocale === defaultLocale ? saveBase() : saveTranslation();
-          }}
-          className="space-y-6"
-        >
+        <form className="space-y-6">
           {activeLocale !== defaultLocale && (
             <div className="rounded-md border border-warning bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
               Editing translation for locale <strong>{activeLocale}</strong>
             </div>
           )}
+
           <div className="space-y-6">
-            {activeLocale === defaultLocale &&
+            {activeLocale === defaultLocale && (
               <>
                 <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
                   <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("avatar") || "Avatar"}</h3>
                   <fieldset className="grid grid-cols-3 items-center">
                     <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer col-span-2">
-                      <UserAvatar src={avatarUrl || undefined} sessionUser={false} size={80} name={displayName} />
+                      <UserAvatar src={avatar.previewUrl || profile.avatarUrl || undefined} sessionUser={false} size={80} name={profile.displayName} />
                       <div className="text-neutral-500 text-xs">{t("userProfile.clickToUpload")}</div>
                       <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarChange} className="hidden" />
                     </label>
                     <div className="flex flex-col items-start gap-2">
-                      {avatarUrl && <button type="button" onClick={() => setAvatarUrl(null)} className="text-btn text-btn-xs text-btn-ghost">
-                        {t("removeImage") || "Remove"}
-                      </button>}
+                      {(profile.avatarUrl || avatar.file) && (
+                        <button type="button" onClick={handleClearAvatar} className="text-btn text-btn-xs text-btn-ghost">
+                          {t("removeImage") || "Remove"}
+                        </button>
+                      )}
                     </div>
                   </fieldset>
                 </section>
+
                 <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
                   <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("coverImage") || "Cover Image"}</h3>
                   <fieldset className="space-y-3">
                     <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image-input">
                       <span className="aspect-[16/6] w-full rounded-lg overflow-hidden bg-neutral-100 border border-neutral-300 cursor-pointer">
-                        {coverImage ? (
-                          <img src={coverImage} alt="cover" className="w-full h-full object-cover" />
+                        {cover.previewUrl || profile.coverImage ? (
+                          <img src={(cover.previewUrl || profile.coverImage) as string} alt="cover" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[11px] text-slate-500 gap-2">
                             <strong>{t("coverImage")}</strong> — {t("userProfile.clickToUpload")}
@@ -524,46 +326,29 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                       </span>
                     </label>
                     <div className="flex items-center gap-3">
-                      <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer">{t("chooseImage") || "Choose Image"}</label>
-                      {coverImage && (
-                        <button type="button" onClick={() => setCoverImage(null)} className="text-btn text-btn-xs text-btn-ghost">
+                      <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer" onClick={handleChooseImageClick}>{t("chooseImage") || "Choose Image"}</label>
+                      {(profile.coverImage || cover.file) && (
+                        <button type="button" onClick={handleClearCover} className="text-btn text-btn-xs text-btn-ghost">
                           {t("removeImage") || "Remove"}
                         </button>
                       )}
                     </div>
-                    <input
-                      id="cover-image-input"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={onCoverChange}
-                    />
+                    <input id="cover-image-input" type="file" accept="image/*" className="hidden" onChange={onCoverChange} />
                   </fieldset>
                 </section>
               </>
-            }
+            )}
 
             <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
-              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">
-                {t("basicInfo") || "Basic Info"}
-                <LocaleLabel />
-              </h3>
+              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">{t("basicInfo") || "Basic Info"}<LocaleLabel /></h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Display Name</label>
-                  <input
-                    value={activeLocale === defaultLocale ? displayName : trDisplayName}
-                    onChange={e => activeLocale === defaultLocale ? setDisplayName(e.target.value) : setTrDisplayName(e.target.value)}
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white"
-                  />
+                  <input value={activeLocale === defaultLocale ? profile.displayName : currentTr.displayName} onChange={handleDisplayNameChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Bio</label>
-                  <textarea
-                    value={activeLocale === defaultLocale ? bio : trBio}
-                    onChange={e => activeLocale === defaultLocale ? setBio(e.target.value) : setTrBio(e.target.value)}
-                    className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm h-32 resize-y focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white"
-                  />
+                  <textarea value={activeLocale === defaultLocale ? profile.bio : currentTr.bio} onChange={handleBioChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm h-32 resize-y focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white" />
                 </div>
               </div>
             </section>
@@ -576,59 +361,29 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Label</label>
-                        <input value={ctaConfig.label || ""} onChange={e => setCtaConfig((c) => ({ ...c, label: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
+                        <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Href</label>
-                        <input value={ctaConfig.href || ""} onChange={e => setCtaConfig((c) => ({ ...c, href: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
+                        <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Label Color</label>
                         <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={isValidFullHex(textColorHex) ? textColorHex : (ctaConfig.textColor || "#FFFFFF")}
-                            onChange={(e) => {
-                              const v = e.target.value.toUpperCase();
-                              setTextColorHex(v);
-                              setCtaConfig(c => ({ ...c, textColor: v }));
-                            }}
-                            className="h-9 w-9 rounded cursor-pointer"
-                          />
-                          <input
-                            value={textColorHex}
-                            onChange={(e) => handleHexChange("textColor", e.target.value.toUpperCase())}
-                            placeholder="#FFFFFF"
-                            className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1",
-                              isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
-                          />
+                          <input type="color" value={isValidFullHex(textColorHex) ? textColorHex : (profile.ctaConfig.textColor || "#FFFFFF")} onChange={onTextColorPickerChange} className="h-9 w-9 rounded cursor-pointer" />
+                          <input value={textColorHex} onChange={onTextHexChange} placeholder="#FFFFFF" className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1", isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")} />
                         </div>
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Color</label>
                         <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={isValidFullHex(bgColorHex) ? bgColorHex : (ctaConfig.color || "#8A6A40")}
-                            onChange={(e) => {
-                              const v = e.target.value.toUpperCase();
-                              setBgColorHex(v);
-                              setCtaConfig(c => ({ ...c, color: v }));
-                            }}
-                            className="h-9 w-9 rounded cursor-pointer"
-                          />
-                          <input
-                            value={bgColorHex}
-                            onChange={(e) => handleHexChange("color", e.target.value.toUpperCase())}
-                            placeholder="#8A6A40"
-                            className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1",
-                              isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")}
-                          />
+                          <input type="color" value={isValidFullHex(bgColorHex) ? bgColorHex : (profile.ctaConfig.color || "#8A6A40")} onChange={onBgColorPickerChange} className="h-9 w-9 rounded cursor-pointer" />
+                          <input value={bgColorHex} onChange={onBgHexChange} placeholder="#8A6A40" className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1", isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")} />
                         </div>
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Size</label>
-                        <select value={ctaConfig.size || "md"} onChange={e => setCtaConfig((c) => ({ ...c, size: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                        <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
                           <option value="lg">Large</option>
@@ -637,24 +392,16 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Icon</label>
                         <div className="flex items-center gap-2">
-                          <button type="button" onClick={() => setIconPickerOpen(true)} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2 flex-1 cursor-pointer">
-                            {ctaConfig.icon && (() => { const I = (Lucide as any)[ctaConfig.icon]; return I ? <I size={16} /> : null; })()}
-                            <span>{ctaConfig.icon || "Pick"}</span>
+                          <button type="button" onClick={handleOpenIconPicker} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2 flex-1 cursor-pointer">
+                            {ctaIconEl}
+                            <span>{profile.ctaConfig.icon || "Pick"}</span>
                           </button>
-                          {ctaConfig.icon &&
-                            <button
-                              type="button"
-                              onClick={() => setCtaConfig((c) => ({ ...c, icon: "" }))}
-                              className="btn btn-ghost btn-xs h-8 w-8"
-                            >
-                              ✕
-                            </button>
-                          }
+                          {profile.ctaConfig.icon && (<button type="button" onClick={handleClearIcon} className="btn btn-ghost btn-xs h-8 w-8">✕</button>)}
                         </div>
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Style</label>
-                        <select value={ctaConfig.style || "solid"} onChange={e => setCtaConfig((c) => ({ ...c, style: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                        <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
                           <option value="solid">Solid</option>
                           <option value="outline">Outline</option>
                           <option value="ghost">Ghost</option>
@@ -662,7 +409,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Radius</label>
-                        <select value={ctaConfig.radius || "full"} onChange={e => setCtaConfig((c) => ({ ...c, radius: e.target.value }))} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                        <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
                           <option value="lg">Large</option>
@@ -674,7 +421,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                     <div className="pt-2">
                       <div className="text-[11px] text-neutral-500">Preview</div>
                       <div className="py-16 flex items-center justify-center bg-neutral-100 rounded">
-                        <ProviderCTA config={ctaConfig} preview />
+                        <ProviderCTA config={profile.ctaConfig} preview />
                       </div>
                     </div>
                     <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
@@ -692,29 +439,27 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
 
                 <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">
-                      {t("contactChannels")}
-                    </h3>
-                    <button type="button" onClick={addChannel} className="btn btn-secondary btn-xs">
+                    <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("contactChannels")}</h3>
+                    <button type="button" onClick={handleAddChannel} className="btn btn-secondary btn-xs">
                       <Lucide.Plus size={14} />
                       {t("addChannel")}
                     </button>
                   </div>
                   <fieldset className="space-y-3">
                     <div className="space-y-3">
-                      {contacts.channels.map((ch, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <select value={ch.type} onChange={e => updateChannel(i, "type", e.target.value)} className="rounded border border-neutral-300 px-2 py-1 text-xs">
+                      {profile.contacts.channels.map((ch, i) => (
+                        <div key={`${ch.type}-${i}`} className="flex items-center gap-2">
+                          <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="rounded border border-neutral-300 px-2 py-1 text-xs">
                             <option value="link">Link</option>
                             <option value="phone">Phone</option>
                             <option value="email">Email</option>
                             <option value="line">Line</option>
                           </select>
-                          <input value={ch.value} placeholder="Value" onChange={e => updateChannel(i, "value", e.target.value)} className="flex-1 rounded border border-neutral-300 px-2 py-1 text-xs" />
-                          <button type="button" onClick={() => removeChannel(i)} className="btn btn-ghost btn-xs">✕</button>
+                          <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 rounded border border-neutral-300 px-2 py-1 text-xs" />
+                          <button type="button" data-index={i} onClick={handleChannelRemove} className="btn btn-ghost btn-xs">✕</button>
                         </div>
                       ))}
-                      {!contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
+                      {!profile.contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
                     </div>
                   </fieldset>
                 </section>
@@ -724,24 +469,15 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
                 <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">CTA Label <LocaleLabel /></h3>
                 <fieldset className="space-y-3">
                   <legend className="sr-only">CTA Label EN</legend>
-                  <input value={ctaLabelTr} onChange={e => setCtaLabelTr(e.target.value)} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
+                  <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
                 </fieldset>
               </section>
             )}
           </div>
+
           <div className="flex items-center gap-3 pt-2">
             {activeLocale !== defaultLocale && (
-              <button
-                type="button"
-                onClick={() => {
-                  const baseTr = baselineTranslations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
-                  setTrDisplayName(baseTr.displayName);
-                  setTrBio(baseTr.bio);
-                  setCtaLabelTr(baseTr.ctaLabel);
-                }}
-                disabled={!dirty}
-                className="btn btn-ghost btn-danger btn-sm"
-              >
+              <button type="button" onClick={cancel} disabled={!dirtyActive} className="btn btn-ghost btn-danger btn-sm">
                 <Lucide.Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
               </button>
             )}
@@ -749,7 +485,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Profil
         </form>
       </div>
       {iconPickerOpen && (
-        <IconPicker value={ctaConfig.icon} onChange={(name) => setCtaConfig((c) => ({ ...c, icon: name || "" }))} onClose={() => setIconPickerOpen(false)} />
+        <IconPicker value={profile.ctaConfig.icon} onChange={handleIconPicked} onClose={handleCloseIconPicker} />
       )}
     </div>
   );
