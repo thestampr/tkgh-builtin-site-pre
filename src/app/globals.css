@@ -211,7 +211,7 @@ body {
 }
 
 .text-btn {
-  text-underline-offset: 2px;
+  text-underline-offset: 0.075rem;
   text-decoration-thickness: 1.5px;
   cursor: pointer;
   text-wrap: nowrap;
