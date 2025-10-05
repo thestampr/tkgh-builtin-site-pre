@@ -1,5 +1,5 @@
+import { hashPassword } from '@/lib/auth/password';
 import { PrismaClient } from '@prisma/client';
-import { hashPassword } from '../src/lib/auth/password';
 
 const prisma = new PrismaClient();
 
@@ -39,8 +39,8 @@ async function demoData() {
               { type: 'phone', value: '+66 80 000 0000' },
               { type: 'line', value: '@demo' },
             ],
-          } as any,
-          ctaJson: { label: 'Get a Quote', href: '/estimate', style: 'solid' } as any,
+          },
+          ctaJson: { label: 'Get a Quote', href: '/estimate', style: 'solid' },
           translations: {
             create: [
               { locale: 'th', displayName: 'ผู้ให้บริการเดโม่', bio: 'งานบิลท์อินคุณภาพ ราคาชัดเจน บริการเป็นกันเอง', ctaLabel: 'ขอใบเสนอราคา' },
@@ -108,10 +108,10 @@ async function demoData() {
       summary: 'Sleek storage + display for living room',
       content: '# Modern Living Wall Unit\nA sample description in markdown.',
       coverImage: '/images/hero.jpg',
-  galleryJson: ['/images/hero.jpg'] as any,
+      galleryJson: ['/images/hero.jpg'],
       price: 259900,
-  currency: 'THB',
-  status: 'PUBLISHED',
+      currency: 'THB',
+      status: 'PUBLISHED',
       publishedAt: new Date(),
       translations: {
         create: [
@@ -131,10 +131,10 @@ async function demoData() {
       summary: 'Minimal lines, matte finish',
       content: 'Details coming soon',
       coverImage: '/images/hero.jpg',
-  galleryJson: ['/images/hero.jpg'] as any,
+      galleryJson: ['/images/hero.jpg'],
       price: 189500,
-  currency: 'THB',
-  status: 'DRAFT',
+      currency: 'THB',
+      status: 'DRAFT',
       translations: {
         create: [
           { locale: 'th', title: 'ตู้ครัวมินิมอล', summary: 'เส้นสายมินิมอล ผิวด้าน', content: 'รายละเอียดเร็วๆ นี้', published: false },
@@ -170,7 +170,7 @@ async function demoData() {
       userId: customer.id,
       categoryId: living.id,
       providerId: provider.id,
-    } as any,
+    },
   });
 
   console.log('Seeded demo data:', { provider: provider.id, customer: customer.id });
@@ -187,10 +187,10 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+.catch((e) => {
+  console.error(e);
+  process.exit(1);
+})
+.finally(async () => {
+  await prisma.$disconnect();
+});
