@@ -12,7 +12,6 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   const session = await getServerSession(authOptions);
   if (session?.user) redirect(`/${locale}/account`);
-
   const tAuth = await getTranslations({ locale, namespace: "Auth" });
 
   return (

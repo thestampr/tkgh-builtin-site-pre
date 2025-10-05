@@ -10,9 +10,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProviderRegisterPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'Auth' });
   const session = await getServerSession(authOptions);
   if (session?.user) redirect(`/${locale}/account`);
+  const t = await getTranslations({ locale, namespace: 'Auth' });
+
   return (
     <AuthShell
       title={t('providerRegisterTitle') || 'Provider Registration'}
