@@ -33,7 +33,7 @@ function isValidFullHex(v: string) {
 export default function ProfileEditor({ initialProfile, inline = false }: Props) {
   const t = useTranslations("Account.ui");
   const tProfile = useTranslations("Profile");
-  const { showToast, removeToast, showSuccessToast, showErrorToast } = useToast();
+  const { showToast, removeToast, showSuccessToast, showErrorToast, updateToast } = useToast();
 
   const {
     profile,
@@ -221,6 +221,34 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
   const handleCloseIconPicker = useCallback(() => setIconPickerOpen(false), []);
 
   // Floating save toast when dirty
+  const Toast = () => {
+    const disabled = isSaving || !dirtyAny;
+    return (
+      <div className="p-[1.5px] bg-gradient-to-br from-blue-300 to-pink-300 rounded-2xl shadow-xl">
+        <div className="flex items-center bg-white rounded-[14px] p-3 m-px">
+          <div className="flex-1 min-w-0 text-sm truncate">{t("unsaved")}</div>
+          <div className="ml-3 flex items-center gap-2">
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => cancelRef.current()}
+              className="btn btn-ghost btn-sm"
+            >
+              {t("reset")}
+            </button>
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => saveRef.current()}
+              className="btn btn-accent btn-sm"
+            >
+              {isSaving ? t("saving") : t("saveChanges")}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   useEffect(() => {
     if (!dirtyAny) {
       if (toastId) removeToast(toastId);
@@ -234,33 +262,18 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
         style: { maxWidth: 600 },
         direction: "up-down",
         className: "!p-4 !-m-4 !gap-0 !border-none !w-screen !translate-x-0 !left-0 !bg-transparent !shadow-none",
-        content: (
-          <div className="p-[1.5px] bg-gradient-to-br from-blue-300 to-pink-300 rounded-2xl shadow-xl">
-            <div className="flex items-center bg-white rounded-[14px] p-3 m-px">
-              <div className="flex-1 min-w-0 text-sm truncate">{t("unsaved")}</div>
-              <div className="ml-3 flex items-center gap-2">
-                <button 
-                  type="button" 
-                  className="btn btn-ghost btn-sm" 
-                  onClick={() => cancelRef.current()}
-                >
-                  {t("reset")}
-                </button>
-                <button 
-                  onClick={() => saveRef.current()} 
-                  disabled={isSaving || !dirtyAny} 
-                  className="btn btn-accent btn-sm"
-                >
-                  {isSaving ? t("saving") : t("saveChanges")}
-                </button>
-              </div>
-            </div>
-          </div>
-        )
+        content: <Toast />,
       });
       setToastId(id);
     }
   }, [dirtyAny, showToast, removeToast, t, toastId, cancel, save, isSaving]);
+  useEffect(() => {
+    if (!toastId) return;
+    if (!isSaving) return;
+    updateToast(toastId, {
+      content: <Toast />,
+    });
+  }, [toastId, isSaving]);
 
   const currentTr = translations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
 
