@@ -364,7 +364,7 @@
     "wantNormalAccount": "ต้องการบัญชีผู้ใช้ทั่วไป?",
     "registerUserAlt": "สมัครเป็นผู้ใช้",
     "errors": {
-      "invalidCredentials": "ข้อมูลประจำตัวไม่ถูกต้อง",
+      "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
       "invalidEmail": "อีเมลไม่ถูกต้อง",
       "emailInUse": "อีเมลนี้ถูกใช้งานแล้ว",
       "weakPassword": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
