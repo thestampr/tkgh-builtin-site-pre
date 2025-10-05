@@ -1,7 +1,6 @@
 "use client";
 
-import type { CTAConfig } from "@/components/ProviderCTA";
-import { defaultCta } from "@/components/ProviderCTA";
+import { defaultCta, type CTAConfig } from "@/components/ProviderCTA";
 import { defaultLocale } from "@/i18n/navigation";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -206,7 +205,6 @@ export function useProfileService(initial?: InitialProfileRecord | null) {
   const updateBase = useCallback((patch: Partial<ProfileData>) => {
     setProfile((p) => {
       const next = { ...p, ...patch };
-      console.log("Profile updated:", next);
       return next;
     });
   }, []);
@@ -328,7 +326,6 @@ export function useProfileService(initial?: InitialProfileRecord | null) {
     if (validation.length) {
       throw new Error(validation.join("\n"));
     }
-    console.log("Saving, Computing changes:", profile, baseline);
     const patch = changes ?? computeChanges();
     if (!patch.avatarFile && !patch.coverFile && !patch.translations && Object.keys({ ...patch }).filter(k => (k !== "avatarFile" && k !== "coverFile" && k !== "translations")).length === 0) {
       return { ok: true } as const; // nothing to save

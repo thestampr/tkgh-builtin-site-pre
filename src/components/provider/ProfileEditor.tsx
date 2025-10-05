@@ -32,7 +32,6 @@ function isValidFullHex(v: string) {
 
 export default function ProfileEditor({ initialProfile, inline = false }: Props) {
   const t = useTranslations("Account.ui");
-  const tErrors = useTranslations("Errors");
   const tProfile = useTranslations("Profile");
   const { showToast, removeToast, showSuccessToast, showErrorToast } = useToast();
 
@@ -43,8 +42,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
     cover,
     isDirty,
     isDirtyFor,
-    loading,
-    error,
     isSaving,
     updateBase,
     addChannel,
@@ -128,12 +125,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
   useEffect(() => { saveRef.current = () => { void save(); }; }, [save]);
   useEffect(() => { cancelRef.current = () => cancel(); }, [cancel]);
 
-  const onSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (!dirtyAny) return; // Check if any changes are made
-    void save();
-  }, [dirtyAny, save]);
-
   const LocaleLabel = useCallback(() => {
     if (activeLocale === defaultLocale) return null;
     return (<div className="ml-auto text-xs font-normal text-neutral-400">{activeLocale}</div>);
@@ -142,7 +133,6 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
   // Handlers without inline logic for inputs/buttons
   const handleDisplayNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
-    console.log("Display name change:", v);
     if (activeLocale === defaultLocale) updateBase({ displayName: v });
     else updateTranslation(activeLocale, { displayName: v });
   }, [activeLocale, updateBase, updateTranslation]);
@@ -249,8 +239,20 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
             <div className="flex items-center bg-white rounded-[14px] p-3 m-px">
               <div className="flex-1 min-w-0 text-sm truncate">{t("unsaved")}</div>
               <div className="ml-3 flex items-center gap-2">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => cancelRef.current()}>{t("reset")}</button>
-                <button onClick={() => saveRef.current()} disabled={isSaving || !dirtyAny} className="btn btn-accent btn-sm">{isSaving ? t("saving") : t("saveChanges")}</button>
+                <button 
+                  type="button" 
+                  className="btn btn-ghost btn-sm" 
+                  onClick={() => cancelRef.current()}
+                >
+                  {t("reset")}
+                </button>
+                <button 
+                  onClick={() => saveRef.current()} 
+                  disabled={isSaving || !dirtyAny} 
+                  className="btn btn-accent btn-sm"
+                >
+                  {isSaving ? t("saving") : t("saveChanges")}
+                </button>
               </div>
             </div>
           </div>
