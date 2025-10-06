@@ -113,10 +113,8 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
     }
   }
 
-  const labelCls = "block text-sm font-medium mb-1 text-slate-800";
-  const inputCls =
-    "w-full rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 px-3 py-2 " +
-    "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary";
+  const labelCls = "block text-xs font-medium mb-1 text-slate-800";
+  const inputCls = "w-full input";
   const textareaCls = inputCls + " min-h-[120px]";
 
   return (
