@@ -63,7 +63,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
   const [bgColorHex, setBgColorHex] = useState<string>(profile.ctaConfig.color || "#8a6a40");
   // Keep latest save/cancel callbacks available to the toast without recreating it
   const saveRef = useRef<() => void>(() => { });
-  const cancelRef = useRef<() => void>(() => { });
+  const resetRef = useRef<() => void>(() => { });
 
   // Keep local HEX inputs in sync
   useEffect(() => { setTextColorHex(profile.ctaConfig.textColor || "#ffffff"); }, [profile.ctaConfig.textColor]);
@@ -90,11 +90,11 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
     }
   }, [activeLocale, ensureTranslationLoaded]);
 
-  // per-locale dirty value is available as dirtyActive
-
-  const cancel = useCallback(() => {
-    resetLocale(activeLocale);
-  }, [resetLocale, activeLocale]);
+  const resetAll = useCallback(() => {
+    locales.forEach((loc) => {
+      resetLocale(loc);
+    });
+  }, [resetLocale, locales]);
 
   // Avatar / Cover file input handlers to enforce type/size then set into service
   const onAvatarChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +123,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
   };
   // Update refs so the toast always invokes the latest functions/state
   useEffect(() => { saveRef.current = () => { void save(); }; }, [save]);
-  useEffect(() => { cancelRef.current = () => cancel(); }, [cancel]);
+  useEffect(() => { resetRef.current = () => resetAll(); }, [resetAll]);
 
   const LocaleLabel = useCallback(() => {
     if (activeLocale === defaultLocale) return null;
@@ -231,7 +231,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
             <button
               type="button"
               disabled={disabled}
-              onClick={() => cancelRef.current()}
+              onClick={() => resetRef.current()}
               className="btn btn-ghost btn-sm"
             >
               {t("reset")}
@@ -267,7 +267,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
       });
       setToastId(id);
     }
-  }, [dirtyAny, showToast, removeToast, t, toastId, cancel, save, isSaving]);
+  }, [dirtyAny, showToast, removeToast, t, toastId, resetAll, save, isSaving]);
   useEffect(() => {
     if (!toastId) return;
     if (!isSaving) return;
@@ -494,7 +494,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
 
           <div className="flex items-center gap-3 pt-2">
             {activeLocale !== defaultLocale && (
-              <button type="button" onClick={cancel} disabled={!dirtyActive} className="btn btn-ghost btn-danger btn-sm">
+              <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className="btn btn-ghost btn-danger btn-sm">
                 <Lucide.Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
               </button>
             )}
