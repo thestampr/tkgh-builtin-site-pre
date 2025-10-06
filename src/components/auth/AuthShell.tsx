@@ -42,7 +42,10 @@ export function AuthShell({
       <div className="w-full max-w-md">
         <div className="rounded-2xl ring-1 ring-primary/10 bg-white p-10 relative shadow-xl shadow-[#d4af37]/5">
           <div className="relative mb-8 text-center space-y-3">
-            <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40] [filter:brightness(1.02)]">
+            <h1 className={clsx(
+              "text-2xl font-semibold tracking-wide bg-clip-text text-transparent",
+              "bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40] [filter:brightness(1.02)]"
+            )}>
               {title}
             </h1>
             {subtitle && (
