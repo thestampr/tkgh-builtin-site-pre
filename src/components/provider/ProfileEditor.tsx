@@ -310,7 +310,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
           <div className="space-y-6">
             {activeLocale === defaultLocale && (
               <>
-                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                <section className="card">
                   <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("avatar") || "Avatar"}</h3>
                   <fieldset className="grid grid-cols-3 items-center">
                     <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer col-span-2">
@@ -328,7 +328,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                   </fieldset>
                 </section>
 
-                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                <section className="card">
                   <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("coverImage") || "Cover Image"}</h3>
                   <fieldset className="space-y-3">
                     <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image-input">
@@ -356,33 +356,33 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
               </>
             )}
 
-            <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+            <section className="card">
               <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">{t("basicInfo") || "Basic Info"}<LocaleLabel /></h3>
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Display Name</label>
-                  <input value={activeLocale === defaultLocale ? profile.displayName : currentTr.displayName} onChange={handleDisplayNameChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white" />
+                <div className="space-y-1">
+                  <label className="block text-[11px] tracking-wide text-neutral-500">Display Name</label>
+                  <input value={activeLocale === defaultLocale ? profile.displayName : currentTr.displayName} onChange={handleDisplayNameChange} className="w-full input input-secondary" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wide text-neutral-500">Bio</label>
-                  <textarea value={activeLocale === defaultLocale ? profile.bio : currentTr.bio} onChange={handleBioChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm h-32 resize-y focus:outline-none focus:ring-2 focus:ring-neutral-400 bg-white" />
+                <div className="space-y-1">
+                  <label className="block text-[11px] tracking-wide text-neutral-500">Bio</label>
+                  <textarea value={activeLocale === defaultLocale ? profile.bio : currentTr.bio} onChange={handleBioChange} className="w-full input input-secondary resize-y min-h-32" />
                 </div>
               </div>
             </section>
 
             {activeLocale === defaultLocale ? (
               <>
-                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                <section className="card">
                   <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("cta") || "CTA Button"}</h3>
                   <fieldset className="space-y-3">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Label</label>
-                        <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
+                        <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full input input-secondary input-sm" />
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Href</label>
-                        <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
+                        <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full input input-secondary input-sm" />
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Label Color</label>
@@ -400,7 +400,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Size</label>
-                        <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                        <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full input input-secondary input-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
                           <option value="lg">Large</option>
@@ -409,7 +409,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Icon</label>
                         <div className="flex items-center gap-2">
-                          <button type="button" onClick={handleOpenIconPicker} className="px-3 py-2 rounded border border-neutral-300 text-xs bg-white hover:bg-neutral-50 inline-flex items-center gap-2 flex-1 cursor-pointer">
+                          <button type="button" onClick={handleOpenIconPicker} className="input input-sm inline-flex gap-2 items-center btn-ghost flex-1 cursor-pointer !ring-0">
                             {ctaIconEl}
                             <span>{profile.ctaConfig.icon || "Pick"}</span>
                           </button>
@@ -418,7 +418,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Style</label>
-                        <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                        <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full input input-secondary input-sm">
                           <option value="solid">Solid</option>
                           <option value="outline">Outline</option>
                           <option value="ghost">Ghost</option>
@@ -426,7 +426,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                       </div>
                       <div className="space-y-1">
                         <label className="block text-[11px] tracking-wide text-neutral-500">Radius</label>
-                        <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm">
+                        <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full input input-secondary input-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
                           <option value="lg">Large</option>
@@ -454,7 +454,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                   </fieldset>
                 </section>
 
-                <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+                <section className="card">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("contactChannels")}</h3>
                     <button type="button" onClick={handleAddChannel} className="btn btn-secondary btn-xs">
@@ -466,13 +466,13 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                     <div className="space-y-3">
                       {profile.contacts.channels.map((ch, i) => (
                         <div key={`${ch.type}-${i}`} className="flex items-center gap-2">
-                          <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="rounded border border-neutral-300 px-2 py-1 text-xs">
+                          <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="input input-secondary input-sm">
                             <option value="link">Link</option>
                             <option value="phone">Phone</option>
                             <option value="email">Email</option>
                             <option value="line">Line</option>
                           </select>
-                          <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 rounded border border-neutral-300 px-2 py-1 text-xs" />
+                          <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 input input-secondary input-sm" />
                           <button type="button" data-index={i} onClick={handleChannelRemove} className="btn btn-ghost btn-xs">✕</button>
                         </div>
                       ))}
@@ -482,11 +482,11 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                 </section>
               </>
             ) : (
-              <section className="rounded-xl border border-neutral-200 bg-white/60 backdrop-blur p-5 space-y-4">
+              <section className="card">
                 <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">CTA Label <LocaleLabel /></h3>
                 <fieldset className="space-y-3">
                   <legend className="sr-only">CTA Label EN</legend>
-                  <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full rounded border border-neutral-300 px-2 py-1 text-sm" />
+                  <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full input input-secondary input-sm" />
                 </fieldset>
               </section>
             )}
