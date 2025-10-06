@@ -283,14 +283,17 @@ export default function ProfileEditor({ initialProfile }: Props) {
 
   return (
     <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
-        <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
-      </div>
-      <div className="grid max-w-2xl gap-10">
-        <div className="flex items-center gap-2 text-sm flex-wrap">
+      <div className="flex flex-col gap-4 max-w-2xl">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
+            <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
+          </div>
           <LocaleTabs className="ml-auto" locales={locales} active={activeLocale} onChange={handleChangeLocale} />
         </div>
+      </div>
+
+      <div className="grid max-w-2xl gap-10">
         {!!errors.length && (
           <ul className="text-xs text-danger space-y-1">
             {errors.map((e) => (
