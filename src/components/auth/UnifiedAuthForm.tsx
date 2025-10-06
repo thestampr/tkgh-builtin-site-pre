@@ -18,6 +18,7 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [disabled, setDisabled] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [redirect, setRedirect] = useState<string | null>(null);
@@ -75,7 +76,8 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 					setError(handleErrors(r?.status));
 					return;
 				}
-				setSuccess("Logged in");
+				setDisabled(true);
+				setSuccess(t("signedIn") || "Signed in");
 				window.location.href = redirect || "/";
 			}
 		} catch (e: unknown) {
@@ -96,6 +98,8 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 		setPassword(e.target.value);
 		setError(null);
 	}
+
+	const disabledBtn = loading || disabled;
 
 	return (
 		<form onSubmit={onSubmit} className="space-y-3">
@@ -126,12 +130,12 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 			<br />
 			<button
 				type="submit"
-				disabled={loading}
-				className={clsx(
-					"btn w-full btn-sm",
-					loading ? "btn-secondary" : "btn-primary"
-				)}>
-				{mode === "login" ? t("signIn") : t("signUp")}
+				disabled={disabledBtn}
+				className="btn w-full btn-sm btn-primary">
+				{mode === "login" 
+					? loading ? t("signingIn") : t("signIn") 
+					: loading ? t("signingUp") : t("signUp")
+				}
 			</button>
 		</form>
 	);
