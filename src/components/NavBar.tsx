@@ -37,6 +37,7 @@ function UserMenu({ session, locale, showName }: UserMenuProps) {
         <>
           <PopoverButton className={clsx(
             "flex items-center gap-2 rounded-full group cursor-pointer",
+            "focus:outline-none",
             showName ? "w-full justify-start px-2 py-2 hover:bg-black/5 rounded-lg" : "px-1"
           )}>
             <UserAvatar padding={1} />
