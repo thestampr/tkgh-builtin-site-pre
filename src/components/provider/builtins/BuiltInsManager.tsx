@@ -345,7 +345,6 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             categories={categories}
             editing={editing}
             uploadImages={uploadImages}
-            slugify={kebabcase}
           />
         ) : (
           <TranslationForm

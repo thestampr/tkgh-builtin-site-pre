@@ -5,6 +5,7 @@ import { ModalShell } from "@/components/common/ModalShell";
 import { RefreshButton } from "@/components/common/RefreshButton";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { confirmModal } from "@/lib/confirm";
+import { kebabcase } from '@/lib/formatting';
 import { useCategoriesService } from "@/services/useCategoriesService";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -295,6 +296,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
           ? (
             <BaseLocaleForm
               draft={draft}
+              editing={editing}
               onChange={(patch) => update(patch)}
               coverPreviewUrl={coverPreviewUrl}
               onSelectCoverFile={onSelectCoverFile}

@@ -1,10 +1,11 @@
 "use client";
 
-import type { Category } from '@prisma/client';
-import { useTranslations } from 'next-intl';
-import React from 'react';
-import { GalleryEditor } from './GalleryEditor';
-import type { DraftShape } from './types';
+import { kebabcase } from "@/lib/formatting";
+import type { Category } from "@prisma/client";
+import { useTranslations } from "next-intl";
+import React from "react";
+import { GalleryEditor } from "./GalleryEditor";
+import type { DraftShape } from "./types";
 
 interface BaseLocaleFormProps {
   draft: DraftShape;
@@ -12,42 +13,47 @@ interface BaseLocaleFormProps {
   categories: Category[];
   editing: { id: string } | null;
   uploadImages: (files: FileList | null) => void;
-  slugify: (s: string) => string;
   className?: string;
 }
 
-export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, categories, editing, uploadImages, slugify, className = '' }) => {
+export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, categories, editing, uploadImages, className = "" }) => {
   const t = useTranslations("ProviderBuiltIns");
+
+  const onTitleChange = (title: string) => {
+    const slug = kebabcase(draft.title);
+    const touchedSlug = draft.slug !== slug;
+    onChange({ title, slug: touchedSlug || editing ? draft.slug : kebabcase(title) });
+  }
 
   return (
     <div className={`space-y-6 ${className}`}>
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.title')}</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.title")}</label>
           <input
             value={draft.title}
-            onChange={e => onChange({ title: e.target.value, slug: editing ? draft.slug : slugify(e.target.value) })}
-            className="w-full border border-neutral-300 rounded px-2 py-1"
+            onChange={e => onTitleChange(e.target.value)}
+            className="w-full input input-secondary input-sm"
           />
         </div>
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.slug')}</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">slug</label>
           <input
             value={draft.slug}
             disabled={!!editing}
-            onChange={e => onChange({ slug: e.target.value.toLowerCase() })}
-            className="w-full border border-neutral-300 rounded px-2 py-1 disabled:opacity-60"
+            onChange={e => onChange({ slug: kebabcase(e.target.value) })}
+            className="w-full input input-secondary input-sm disabled:opacity-60"
           />
         </div>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-1 md:col-span-2">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.category')}</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.category")}</label>
           {categories.length ? (
             <select
-              value={draft.categoryId || ''}
+              value={draft.categoryId || ""}
               onChange={e => onChange({ categoryId: e.target.value })}
-              className="w-full border border-neutral-300 rounded px-2 py-1 bg-white"
+              className="w-full input input-secondary input-sm"
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -58,20 +64,20 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
           )}
         </div>
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.price')}</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.price")}</label>
           <input
             type="number"
-            value={draft.price ?? ''}
+            value={draft.price ?? ""}
             onChange={e => onChange({ price: e.target.value ? parseInt(e.target.value, 10) : null })}
-            className="w-full border border-neutral-300 rounded px-2 py-1"
+            className="w-full input input-secondary input-sm"
           />
         </div>
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.currency') || 'Currency'}</label>
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.currency") || "Currency"}</label>
           <select
-            value={draft.currency || ''}
+            value={draft.currency || ""}
             onChange={e => onChange({ currency: e.target.value || null })}
-            className="w-full border border-neutral-300 rounded px-2 py-1 bg-white"
+            className="w-full input input-secondary input-sm"
           >
             <option value="">—</option>
             <option value="THB">THB</option>
@@ -82,12 +88,12 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
         </div>
       </div>
       <div className="space-y-1">
-        <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t('fields.content')}</label>
+        <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.content")}</label>
         <textarea
-          value={draft.content || ''}
+          value={draft.content || ""}
           onChange={e => onChange({ content: e.target.value })}
           rows={6}
-          className="w-full border border-neutral-300 rounded px-2 py-2 text-xs"
+          className="w-full input input-secondary !text-xs resize-y"
         />
       </div>
       <GalleryEditor

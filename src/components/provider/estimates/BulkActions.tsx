@@ -13,10 +13,9 @@ interface BulkActionsProps {
 
 export const BulkActions: React.FC<BulkActionsProps> = ({ count, disabled, onAction }) => {
   const [confirming, setConfirming] = useState<Op | null>(null);
+  const t = useTranslations("ProviderEstimates");
 
   if (count === 0) return null;
-
-  const t = useTranslations("ProviderEstimates");
 
   return (
     <div className="flex flex-wrap items-center gap-2 bg-neutral-50 border border-neutral-200 rounded-md p-2 text-xs">

@@ -1,5 +1,6 @@
 "use client";
 
+import { kebabcase } from "@/lib/formatting";
 import { useTranslations } from "next-intl";
 import React from "react";
 import type { DraftShape } from "./types";
@@ -7,25 +8,38 @@ import type { DraftShape } from "./types";
 interface BaseLocaleFormProps {
   draft: DraftShape;
   onChange: (patch: Partial<DraftShape>) => void;
-  disabled?: boolean;
+  editing: { id: string } | null;
   coverPreviewUrl?: string | null;
   onSelectCoverFile?: (file: File | null) => void;
   onRemoveCoverImage?: () => void;
 }
 
-export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, disabled, coverPreviewUrl, onSelectCoverFile, onRemoveCoverImage }) => {
+export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange, editing, coverPreviewUrl, onSelectCoverFile, onRemoveCoverImage }) => {
   const t = useTranslations("ProviderCategories");
+
+  const onNameChange = (name: string) => {
+    const slug = kebabcase(draft.name);
+    const touchedSlug = draft.slug !== slug;
+    onChange({ name, slug: touchedSlug || editing ? draft.slug : kebabcase(name) });
+  }
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
           <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.name")}</label>
-          <input disabled={disabled} value={draft.name} onChange={e => onChange({ name: e.target.value })} className="w-full border border-neutral-300 rounded px-2 py-1" />
+          <input 
+            value={draft.name} 
+            onChange={e => onNameChange(e.target.value)}
+            className="w-full input input-secondary input-sm" />
         </div>
         <div className="space-y-1">
-          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.slug")}</label>
-          <input disabled={disabled} value={draft.slug} onChange={e => onChange({ slug: e.target.value.toLowerCase() })} className="w-full border border-neutral-300 rounded px-2 py-1 disabled:opacity-60" />
+          <label className="block text-[11px] uppercase tracking-wide text-neutral-500">slug</label>
+          <input 
+            value={draft.slug} 
+            disabled={!!editing} 
+            onChange={e => onChange({ slug: kebabcase(e.target.value) })}
+            className="w-full input input-secondary input-sm disabled:opacity-60" />
         </div>
       </div>
 
@@ -66,11 +80,11 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
 
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.excerpt")}</label>
-        <textarea value={draft.excerpt || ""} onChange={e => onChange({ excerpt: e.target.value })} rows={2} className="w-full border border-neutral-300 rounded px-2 py-2 text-xs resize-none" placeholder={t("ui.shortTeaserPlaceholder")} />
+        <textarea value={draft.excerpt || ""} onChange={e => onChange({ excerpt: e.target.value })} rows={2} className="w-full input input-secondary !text-xs resize-none" placeholder={t("ui.shortTeaserPlaceholder")} />
       </div>
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.description")}</label>
-        <textarea value={draft.description || ""} onChange={e => onChange({ description: e.target.value })} rows={5} className="w-full border border-neutral-300 rounded px-2 py-2 text-xs" placeholder={t("ui.longerDescriptionPlaceholder")} />
+        <textarea value={draft.description || ""} onChange={e => onChange({ description: e.target.value })} rows={5} className="w-full input input-secondary !text-xs resize-y" placeholder={t("ui.longerDescriptionPlaceholder")} />
       </div>
     </div>
   );

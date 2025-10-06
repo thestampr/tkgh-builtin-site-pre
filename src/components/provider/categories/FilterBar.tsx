@@ -25,23 +25,25 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 }) => {
   const t = useTranslations("ProviderCategories");
 
+  const labelCls = "block font-medium mb-1 text-neutral-600";
+
   return (
     <div className={`rounded-lg border border-neutral-200 bg-white/60 backdrop-blur-sm px-4 py-3 flex flex-col gap-3 md:flex-row md:items-end md:gap-4 text-[11px] ${className}`}>
       <div className="flex-1 min-w-[180px]">
-        <label className="block font-medium mb-1 text-neutral-600">{t("filters.search")}</label>
+        <label className={labelCls}>{t("filters.search")}</label>
         <input
           value={search}
           onChange={e => onSearchChange(e.target.value)}
           placeholder={t("filters.searchPlaceholder")}
-          className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400/40"
+          className="w-full input !text-xs"
         />
       </div>
       <div className="min-w-[150px]">
-        <label className="block font-medium mb-1 text-neutral-600">{t("filters.published")}</label>
+        <label className={labelCls}>{t("filters.published")}</label>
         <select
           value={published}
           onChange={e => onPublishedChange(e.target.value as FilterBarProps["published"])}
-          className="w-full rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400/40"
+          className="w-full input !text-xs"
         >
           <option value="ALL">{t("filters.all")}</option>
           <option value="true">{t("filters.published")}</option>
@@ -49,11 +51,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </select>
       </div>
       <div className="min-w-[160px]">
-        <label className="block font-medium mb-1 text-neutral-600">{t("filters.sort")}</label>
+        <label className={labelCls}>{t("filters.sort")}</label>
         <select
           value={sort}
           onChange={e => onSortChange(e.target.value as SortKind)}
-          className="w-full rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-neutral-400/40"
+          className="w-full input !text-xs"
         >
           <option value="updated_desc">{t("filters.sortUpdated")}</option>
           <option value="name_asc">{t("filters.sortNameAsc")}</option>

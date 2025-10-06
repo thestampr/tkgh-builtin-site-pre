@@ -21,7 +21,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
         <input
           value={value.title || ""}
           onChange={e => onChange({ ...value, title: e.target.value })}
-          className="w-full border border-neutral-300 rounded px-2 py-1"
+          className="w-full input input-secondary input-sm"
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -31,7 +31,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
             type="number"
             value={value.price ?? ""}
             onChange={e => onChange({ ...value, price: e.target.value ? parseInt(e.target.value, 10) : null })}
-            className="w-full border border-neutral-300 rounded px-2 py-1"
+            className="w-full input input-secondary input-sm"
           />
         </div>
         <div className="space-y-1">
@@ -39,7 +39,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
             <select
               value={value.currency || ""}
               onChange={e => onChange({ ...value, currency: e.target.value || null })}
-              className="w-full border border-neutral-300 rounded px-2 py-1 bg-white"
+              className="w-full input input-secondary input-sm"
             >
               <option value="">—</option>
               <option value="THB">THB</option>
@@ -55,7 +55,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
           value={value.content || ""}
           onChange={e => onChange({ ...value, content: e.target.value })}
           rows={6}
-          className="w-full border border-neutral-300 rounded px-2 py-2 text-xs"
+          className="w-full input input-secondary !text-xs resize-y"
         />
       </div>
       <label className="inline-flex items-center gap-2 text-xs text-neutral-600">
