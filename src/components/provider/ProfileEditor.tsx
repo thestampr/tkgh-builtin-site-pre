@@ -15,7 +15,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface Props { 
   initialProfile: InitialProfileRecord | null; 
-  inline?: boolean 
 }
 
 function normalizeHex(v: string) {
@@ -30,7 +29,7 @@ function isValidFullHex(v: string) {
   return /^#[0-9a-fA-F]{6}$/.test(v); 
 }
 
-export default function ProfileEditor({ initialProfile, inline = false }: Props) {
+export default function ProfileEditor({ initialProfile }: Props) {
   const t = useTranslations("Account.ui");
   const tProfile = useTranslations("Profile");
   const { showToast, removeToast, showSuccessToast, showErrorToast, updateToast } = useToast();
@@ -283,16 +282,12 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
   const labelClass = "block text-[11px] tracking-wide text-neutral-500";
 
   return (
-    <div className={inline ? "space-y-8" : "max-w-5xl mx-auto md:px-6 pb-10 space-y-10"}>
+    <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
       <div>
-        {!inline && (
-          <>
-            <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
-            <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
-          </>
-        )}
+        <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
+        <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
       </div>
-      <div className={clsx("grid ", inline ? "md:grid-cols-2 gap-10" : "max-w-2xl gap-10")}>
+      <div className="grid max-w-2xl gap-10">
         <div className="flex items-center gap-2 text-sm flex-wrap">
           <LocaleTabs className="ml-auto" locales={locales} active={activeLocale} onChange={handleChangeLocale} />
         </div>
