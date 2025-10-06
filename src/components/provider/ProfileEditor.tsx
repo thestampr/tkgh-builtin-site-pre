@@ -279,6 +279,9 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
 
   const currentTr = translations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
 
+  const sectionLabelClass = "text-xs font-semibold tracking-wide uppercase flex";
+  const labelClass = "block text-[11px] tracking-wide text-neutral-500";
+
   return (
     <div className={inline ? "space-y-8" : "max-w-5xl mx-auto md:px-6 pb-10 space-y-10"}>
       <div>
@@ -311,7 +314,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
             {activeLocale === defaultLocale && (
               <>
                 <section className="card">
-                  <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("avatar") || "Avatar"}</h3>
+                  <h3 className={sectionLabelClass} >{t("avatar") || "Avatar"}</h3>
                   <fieldset className="grid grid-cols-3 items-center">
                     <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer col-span-2">
                       <UserAvatar src={avatar.previewUrl || profile.avatarUrl || undefined} sessionUser={false} size={80} name={profile.displayName} />
@@ -329,7 +332,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                 </section>
 
                 <section className="card">
-                  <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("coverImage") || "Cover Image"}</h3>
+                  <h3 className={sectionLabelClass} >{t("coverImage") || "Cover Image"}</h3>
                   <fieldset className="space-y-3">
                     <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image-input">
                       <span className="aspect-[16/6] w-full rounded-lg overflow-hidden bg-neutral-100 border border-neutral-300 cursor-pointer">
@@ -357,14 +360,14 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
             )}
 
             <section className="card">
-              <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">{t("basicInfo") || "Basic Info"}<LocaleLabel /></h3>
+              <h3 className={sectionLabelClass} >{t("basicInfo") || "Basic Info"}<LocaleLabel /></h3>
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <label className="block text-[11px] tracking-wide text-neutral-500">Display Name</label>
+                  <label className={labelClass} >Display Name</label>
                   <input value={activeLocale === defaultLocale ? profile.displayName : currentTr.displayName} onChange={handleDisplayNameChange} className="w-full input input-secondary" />
                 </div>
                 <div className="space-y-1">
-                  <label className="block text-[11px] tracking-wide text-neutral-500">Bio</label>
+                  <label className={labelClass} >Bio</label>
                   <textarea value={activeLocale === defaultLocale ? profile.bio : currentTr.bio} onChange={handleBioChange} className="w-full input input-secondary resize-y min-h-32" />
                 </div>
               </div>
@@ -373,33 +376,33 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
             {activeLocale === defaultLocale ? (
               <>
                 <section className="card">
-                  <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("cta") || "CTA Button"}</h3>
+                  <h3 className={sectionLabelClass} >{t("cta") || "CTA Button"}</h3>
                   <fieldset className="space-y-3">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Label</label>
+                        <label className={labelClass} >Label</label>
                         <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full input input-secondary input-sm" />
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Href</label>
+                        <label className={labelClass} >Href</label>
                         <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full input input-secondary input-sm" />
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Label Color</label>
+                        <label className={labelClass} >Label Color</label>
                         <div className="flex items-center gap-2">
                           <input type="color" value={isValidFullHex(textColorHex) ? textColorHex : (profile.ctaConfig.textColor || "#FFFFFF")} onChange={onTextColorPickerChange} className="h-9 w-9 rounded cursor-pointer" />
                           <input value={textColorHex} onChange={onTextHexChange} placeholder="#FFFFFF" className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1", isValidFullHex(textColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")} />
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Color</label>
+                        <label className={labelClass} >Color</label>
                         <div className="flex items-center gap-2">
                           <input type="color" value={isValidFullHex(bgColorHex) ? bgColorHex : (profile.ctaConfig.color || "#8A6A40")} onChange={onBgColorPickerChange} className="h-9 w-9 rounded cursor-pointer" />
                           <input value={bgColorHex} onChange={onBgHexChange} placeholder="#8A6A40" className={clsx("w-24 rounded border px-2 py-1 text-sm font-mono uppercase tracking-tight flex-1", isValidFullHex(bgColorHex) ? "border-neutral-300" : "border-warning bg-warning/10")} />
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Size</label>
+                        <label className={labelClass} >Size</label>
                         <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full input input-secondary input-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
@@ -407,7 +410,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Icon</label>
+                        <label className={labelClass} >Icon</label>
                         <div className="flex items-center gap-2">
                           <button type="button" onClick={handleOpenIconPicker} className="input input-sm inline-flex gap-2 items-center btn-ghost flex-1 cursor-pointer !ring-0">
                             {ctaIconEl}
@@ -417,7 +420,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Style</label>
+                        <label className={labelClass} >Style</label>
                         <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full input input-secondary input-sm">
                           <option value="solid">Solid</option>
                           <option value="outline">Outline</option>
@@ -425,7 +428,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-[11px] tracking-wide text-neutral-500">Radius</label>
+                        <label className={labelClass} >Radius</label>
                         <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full input input-secondary input-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
@@ -456,7 +459,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
 
                 <section className="card">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500">{t("contactChannels")}</h3>
+                    <h3 className={sectionLabelClass} >{t("contactChannels")}</h3>
                     <button type="button" onClick={handleAddChannel} className="btn btn-secondary btn-xs">
                       <Lucide.Plus size={14} />
                       {t("addChannel")}
@@ -483,7 +486,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
               </>
             ) : (
               <section className="card">
-                <h3 className="text-xs font-semibold tracking-wide uppercase text-neutral-500 flex">CTA Label <LocaleLabel /></h3>
+                <h3 className={sectionLabelClass} >CTA Label <LocaleLabel /></h3>
                 <fieldset className="space-y-3">
                   <legend className="sr-only">CTA Label EN</legend>
                   <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full input input-secondary input-sm" />
@@ -494,7 +497,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
 
           <div className="flex items-center gap-3 pt-2">
             {activeLocale !== defaultLocale && (
-              <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className="btn btn-ghost btn-danger btn-sm">
+              <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className={clsx("btn btn-sm", !dirtyActive ? "btn-ghost" : "btn-danger")}>
                 <Lucide.Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
               </button>
             )}
