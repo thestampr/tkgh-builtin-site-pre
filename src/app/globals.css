@@ -45,8 +45,8 @@
   --muted: rgba(0, 0, 0, 0.04);
   /* subtle hover background */
   --muted-hover: rgba(0, 0, 0, 0.08);
-  --muted-foreground: #6b7280;
-  /* gray-500 */
+  --muted-foreground: #99a1af;
+  /* gray-400 */
   --primary-foreground: #ffffff;
   --ring: rgba(0, 0, 0, 0.06);
   /* subtle divider/shadow tint */
@@ -275,6 +275,7 @@ body {
 }
 
 .input.input-secondary:focus {
+  border: 1px solid var(--secondary);
   box-shadow: 0 0 0 0.075rem var(--secondary);
 }
 
