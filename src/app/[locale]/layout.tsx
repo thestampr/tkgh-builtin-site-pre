@@ -27,7 +27,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <ToastProvider defaultzIndex={60} defaultPosition="bottom-center">
+      <ToastProvider defaultzIndex={60} defaultPosition="bottom">
         <main className="shrink-0 min-h-screen h-fit">
           <NavBar />
           {children}

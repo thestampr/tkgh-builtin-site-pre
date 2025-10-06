@@ -16,27 +16,32 @@ import React, {
 } from "react";
 
 // Position types
-const ToastBasePositionEnum = [
-  "top",
-  "top-left",
-  "top-center",
-  "top-right",
-  "center-left",
-  "center",
-  "center-right",
-  "bottom",
-  "bottom-left",
-  "bottom-center",
-  "bottom-right"
-] as const;
-type ToastPositionDesktop = typeof ToastBasePositionEnum[number];
-type ToastPositionMobile = "top" | "center" | "bottom";
-type ToastDirectionV = "up" | "down";
-type ToastDirectionVEnd = `${ToastDirectionV}-${ToastDirectionV}`;
-type ToastDirectionH = "left" | "right";
-type ToastDirectionHEnd = `${ToastDirectionH}-${ToastDirectionH}`;
-type ToastDirection = ToastDirectionV | ToastDirectionVEnd | ToastDirectionH | ToastDirectionHEnd | "center";
-type ToastBasePosition = ToastPositionDesktop | ToastPositionMobile;
+enum PositionVerticalEnum {
+  top = "top", 
+  center = "center", 
+  bottom = "bottom"
+};
+enum PositionHorizontalEnum { 
+  left = "left", 
+  right = "right" 
+};
+const verticals = Object.values(PositionVerticalEnum);
+const horizontals = Object.values(PositionHorizontalEnum);
+
+type PositionVertical = typeof verticals[number];
+type PositionHorizontal = typeof horizontals[number];
+type Position = `${PositionVertical}` | `${PositionHorizontal}` | `${PositionVertical}-${PositionHorizontal}`;
+export type PositionDesktop = Position;
+export type PositionMobile = `${PositionVertical}`;
+const positions: Position[] = [
+  ...verticals,
+  ...verticals.flatMap(v => horizontals.map(h => `${v}-${h}` as const))
+];
+
+// Direction types
+const directions = ["up", "down", "left", "right"] as const;
+type DirectionType = typeof directions[number];
+export type Direction = `${DirectionType}` | `${DirectionType}-${DirectionType}` | "none";
 
 export interface ToastOptions {
   /** Optional ID for the toast. If not provided, a random ID will be generated. */
@@ -49,24 +54,24 @@ export interface ToastOptions {
   icon?: ReactNode;
   /** Trailing node on the right, AKA Actions */
   actions?: ReactNode;
+  /** Custom content for the toast, if you want to render more complex content. */
+  content?: ReactNode;
   /** Duration in milliseconds before the toast is dismissed. Default is 5000 (5 seconds). Set to 0 to disable auto-dismiss. */
   duration?: number;
   /** Position of the toast on the screen. Default is "bottom-right" on desktop and "bottom" on mobile. */
-  position?: ToastBasePosition;
+  position?: Position;
+  /** Toast animation variants. If not provided, it will be determined by the position. */
+  direction?: Direction;
   /** Custom styles for the toast container */
   style?: React.CSSProperties;
   /** Custom class name for the toast container */
   className?: string;
-  /** Custom content for the toast, if you want to render more complex content. */
-  content?: ReactNode;
   /** Click handler for the toast. */
   onClick?: () => void;
   /** Whether the toast should be pinned (i.e., high priority in the stack). */
   pin?: boolean;
   /** Whether the toast can be dismissed by the user. the close button will be shown if true */
   dismissible?: boolean;
-  /** Toast animation variants. If not provided, it will be determined by the position. */
-  direction?: ToastDirection;
 }
 
 export interface ToastContextProps {
@@ -82,7 +87,7 @@ export interface ToastContextProps {
 }
 
 const DEFAULT_TOAST_DURATION = 5000;
-const DEFAULT_TOAST_POSITION: ToastBasePosition = "bottom-right";
+const DEFAULT_TOAST_POSITION: Position = "bottom-right";
 const DEFAULT_TOAST_Z_INDEX = 9999;
 
 interface ToastInstance extends ToastOptions {
@@ -97,14 +102,17 @@ function generateId() {
 }
 
 // Get default position according to device type
-function getDefaultPosition(deviceType: string): ToastBasePosition {
-  if (deviceType === "mobile") return "bottom";
-  return "bottom-right";
+function getDefaultPosition(deviceType: string): Position {
+  if (deviceType === "mobile") {
+    const [v, _] = DEFAULT_TOAST_POSITION.split("-") as [PositionVertical, PositionHorizontal?];
+    return v;
+  }
+  return DEFAULT_TOAST_POSITION;
 }
 
 function getAllEmptyToasts(): ToastInstance[] {
   const toasts: ToastInstance[] = [];
-  ToastBasePositionEnum.forEach(pos => {
+  positions.forEach(pos => {
     toasts.push({
       id: `__emptyToast-${pos}`,
       position: pos,
@@ -117,35 +125,45 @@ function getAllEmptyToasts(): ToastInstance[] {
 }
 
 // Determine stack direction for each position
-function getStackDirection(position: ToastBasePosition): ToastDirection {
-  const topPositions: ToastBasePosition[] = [
-    "top-left",
-    "top-center",
-    "top-right",
-    "top",
-  ];
-  const centerPositions: ToastBasePosition[] = [
+function getStackDirection(position: Position): Direction {
+  if (position === "top") return "down";
+  if (position === "bottom") return "up";
+  if (position === "top-left") return "right-down";
+  if (position === "top-right") return "left-down";
+
+  const leftUpPositions: Position[] = [
+    "left",
     "center-left",
-    "center",
-    "center-right",
-    "center",
-  ];
-  const bottomPositions: ToastBasePosition[] = [
     "bottom-left",
-    "bottom-center",
-    "bottom-right",
-    "bottom",
   ];
-  if (topPositions.includes(position)) return "down";
-  if (centerPositions.includes(position)) return "center";
-  if (bottomPositions.includes(position)) return "up";
-  return "up";
+  const rightUpPositions: Position[] = [
+    "right",
+    "center-right",
+    "bottom-right"
+  ];
+
+  if (leftUpPositions.includes(position)) return "right-up";
+  if (rightUpPositions.includes(position)) return "left-up";
+  return "none";
+}
+
+// Ensure device-specific position is valid
+function ensureDevicePosition(pos: Position, deviceType: string): Position {
+  if (deviceType === "mobile") {
+    const topPositions: Position[] = [ "top-left", "top-right" ];
+    if (topPositions.includes(pos)) return "top" as PositionMobile;
+    const centerPositions: Position[] = [ "left", "right", "center-left", "center-right" ];
+    if (centerPositions.includes(pos)) return "center" as PositionMobile;
+    const bottomPositions: Position[] = [ "bottom-left", "bottom-right" ];
+    if (bottomPositions.includes(pos)) return "bottom" as PositionMobile;
+  }
+  return pos;
 }
 
 // Position class for each stack
-const positionClass = (pos: ToastBasePosition, deviceType: string) => {
-  const base =
-    "fixed w-full max-w-sm pointer-events-none p-4 flex flex-col";
+function positionClass(pos: Position, deviceType: string) {
+  const base = "fixed w-full max-w-sm pointer-events-none p-4 flex flex-col";
+
   if (deviceType === "mobile") {
     if (pos === "top" || pos.startsWith("top-"))
       return `${base} top-2 left-0 right-0 items-center`;
@@ -153,27 +171,27 @@ const positionClass = (pos: ToastBasePosition, deviceType: string) => {
       return `${base} top-1/2 left-0 right-0 -translate-y-1/2 items-center justify-center`;
     return `${base} bottom-2 left-0 right-0 items-center`;
   }
-  const positions: Record<ToastPositionDesktop, string> = {
+  const positions: Record<PositionDesktop, string> = {
     "top": `${base} top-4 left-1/2 -translate-x-1/2 items-center`,
     "top-left": `${base} top-4 left-4 items-start`,
-    "top-center": `${base} top-4 left-1/2 -translate-x-1/2 items-center`,
     "top-right": `${base} top-4 right-4 items-end`,
+    "left": `${base} top-1/2 -translate-y-1/2 left-4 items-start justify-center`,
     "center-left": `${base} top-1/2 -translate-y-1/2 left-4 items-start justify-center`,
     "center": `${base} top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center`,
+    "right": `${base} top-1/2 -translate-y-1/2 right-4 items-end justify-center`,
     "center-right": `${base} top-1/2 -translate-y-1/2 right-4 items-end justify-center`,
     "bottom": `${base} bottom-4 left-1/2 -translate-x-1/2 items-center`,
     "bottom-left": `${base} bottom-4 left-4 items-start`,
-    "bottom-center": `${base} bottom-4 left-1/2 -translate-x-1/2 items-center`,
     "bottom-right": `${base} bottom-4 right-4 items-end`
   };
-  return positions[pos as ToastPositionDesktop] || positions[DEFAULT_TOAST_POSITION];
+  return positions[pos as PositionDesktop] || positions[DEFAULT_TOAST_POSITION];
 };
 
 // Animation for each toast (slide and fade in/out)
-function getToastVariants(dir: ToastDirection): Variants {
+function getToastVariants(dir: Direction): Variants {
   const [_start, _end] = dir.split("-");
-  const start = _start as ToastDirectionV | ToastDirectionH | "center";
-  const end = _end ?? start as ToastDirectionV | ToastDirectionH | undefined;
+  const start = _start as Direction;
+  const end = _end ?? start as Direction;
   let variants: Variants = {
     initial: { opacity: 0, scale: 0.9 },
     animate: { opacity: 1, scale: 1 },
@@ -255,7 +273,8 @@ function toastInnerStyle(deviceType: string): React.CSSProperties {
 interface ToastProviderProps {
   children: ReactNode;
   defaultDuration?: number;
-  defaultPosition?: ToastBasePosition;
+  defaultPosition?: Position;
+  defaultDirection?: Direction;
   defaultzIndex?: number;
 }
 
@@ -263,6 +282,7 @@ export function ToastProvider({
   children,
   defaultDuration,
   defaultPosition,
+  defaultDirection,
   defaultzIndex
 }: ToastProviderProps) {
   const { deviceType } = useDevice();
@@ -274,9 +294,16 @@ export function ToastProvider({
   // Show toast
   const showToast = useCallback(
     (options: ToastOptions) => {
+      if (options.position === "left") options.position = "center-left";
+      if (options.position === "right") options.position = "center-right";
+
       const id = options.id || generateId();
       const duration = options.duration ?? defaultDuration ?? DEFAULT_TOAST_DURATION;
-      const position = options.position ?? defaultPosition ?? getDefaultPosition(deviceType);
+      const position = ensureDevicePosition(
+        options.position ?? defaultPosition ?? getDefaultPosition(deviceType), 
+        deviceType
+      );
+      const direction = options.direction ?? defaultDirection ?? getStackDirection(position);
       const pin = options.pin ?? false;
       const dismissible = options.dismissible ?? true;
 
@@ -289,7 +316,7 @@ export function ToastProvider({
             t.id === id ? { ...t, ...options, expiresAt } : t
           );
         }
-        return [...prev, { ...options, id, expiresAt, position, pin, dismissible }];
+        return [...prev, { ...options, id, expiresAt, position, direction, pin, dismissible }];
       });
 
       if (!pin) {
@@ -355,13 +382,13 @@ export function ToastProvider({
   }, {});
 
   // Sort toast for each position according to stack direction
-  function getSortedToasts(pos: ToastBasePosition, items: ToastInstance[]) {
+  function getSortedToasts(pos: Position, items: ToastInstance[]) {
     // Pinned toasts always on top
     const pinned = items.filter(t => t.pin);
     const unpinned = items.filter(t => !t.pin);
 
     const dir = getStackDirection(pos);
-    const sortFn: (a: ToastInstance, b: ToastInstance) => number = dir === "down"
+    const sortFn: (a: ToastInstance, b: ToastInstance) => number = dir.includes("down")
       ? (a, b) => b.expiresAt - a.expiresAt // Newest on top
       : (a, b) => a.expiresAt - b.expiresAt; // Newest on bottom
 
@@ -390,10 +417,10 @@ export function ToastProvider({
     }}>
       {children}
       {Object.entries(grouped).map(([pos, items]) => {
-        const position = pos as ToastBasePosition;
+        const position = pos as Position;
         const sorted = getSortedToasts(position, items);
         const stackDirection = getStackDirection(position);
-        const stackStyle = stackDirection  === "center"
+        const stackStyle = stackDirection  === "none"
           ? { justifyContent: "center", minHeight: 160 }
           : {};
         return (
@@ -411,8 +438,10 @@ export function ToastProvider({
             }}
           >
             <AnimatePresence initial={true}>
-              {sorted.map((t, idx) => (
-                <motion.div
+              {sorted.map((t, idx) => {
+                const isEmptyToast = t.id.startsWith("__emptyToast-");
+
+                return <motion.div
                   key={t.id}
                   layout
                   initial="initial"
@@ -431,7 +460,7 @@ export function ToastProvider({
                     "bg-white dark:bg-neutral-900 shadow-lg rounded-lg border border-neutral-200 dark:border-neutral-800",
                     t.className || "",
                     t.onClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800" : "",
-                    t.id.startsWith("__emptyToast-") && "!hidden",
+                    isEmptyToast && "!hidden",
                   )}
                   style={{
                     minWidth: deviceType === "mobile" ? 0 : 400,
@@ -460,37 +489,44 @@ export function ToastProvider({
                     }
                   }}
                 >
-                  {t.icon && <div className="flex-shrink-0">{t.icon}</div>}
-                  <div className="flex flex-col flex-1 min-w-0 gap-1">
-                    {t.title && (
-                      <div className="font-medium text-sm truncate">
-                        {t.title}
-                      </div>
-                    )}
-                    {t.description && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {t.description}
-                      </div>
-                    )}
-                    {t.content && <div className={clsx(
-                      "text-sm",
-                      (t.title || t.description) && "mt-1",
-                    )}>{t.content}</div>}
-                  </div>
-                  {t.actions && (
-                    <div className="flex-shrink-0 ml-3">{t.actions}</div>
-                  )}
-                  {t.dismissible && (
-                    <button
-                      className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
-                      onClick={() => removeToast(t.id)}
-                      aria-label="Logout"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
+                  { isEmptyToast 
+                    ? t.position
+                    : (
+                      <>
+                        {t.icon && <div className="flex-shrink-0">{t.icon}</div>}
+                        <div className="flex flex-col flex-1 min-w-0 gap-1">
+                          {t.title && (
+                            <div className="font-medium text-sm truncate">
+                              {t.title}
+                            </div>
+                          )}
+                          {t.description && (
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {t.description}
+                            </div>
+                          )}
+                          {t.content && <div className={clsx(
+                            "text-sm",
+                            (t.title || t.description) && "mt-1",
+                          )}>{t.content}</div>}
+                        </div>
+                        {t.actions && (
+                          <div className="flex-shrink-0 ml-3">{t.actions}</div>
+                        )}
+                        {t.dismissible && (
+                          <button
+                            className="relative p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer flex-shrink-0"
+                            onClick={() => removeToast(t.id)}
+                            aria-label="Logout"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </>
+                    )
+                  }
                 </motion.div>
-              ))}
+              })}
             </AnimatePresence>
           </div>
         );
