@@ -187,6 +187,10 @@ body {
   background: var(--muted-hover);
 }
 
+.btn-ghost:disabled {
+  background: var(--muted);
+}
+
 .btn-accent,
 .btn-success {
   background: var(--accent);
