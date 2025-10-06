@@ -113,7 +113,7 @@ export function EstimateForm({ locale, categories, providerId }: EstimateFormPro
     }
   }
 
-  const labelCls = "block text-xs font-medium mb-1 text-slate-800";
+  const labelCls = "block text-[11px] tracking-wide text-neutral-500 mb-1";
   const inputCls = "w-full input";
   const textareaCls = inputCls + " min-h-[120px]";
 
