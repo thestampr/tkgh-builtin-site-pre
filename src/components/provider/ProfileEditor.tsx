@@ -260,6 +260,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
         pin: true,
         dismissible: false,
         style: { maxWidth: 600 },
+        position: "bottom",
         direction: "up-down",
         className: "!p-4 !-m-4 !gap-0 !border-none !w-screen !translate-x-0 !left-0 !bg-transparent !shadow-none",
         content: <Toast />,
@@ -271,6 +272,7 @@ export default function ProfileEditor({ initialProfile, inline = false }: Props)
     if (!toastId) return;
     if (!isSaving) return;
     updateToast(toastId, {
+      pin: false,
       content: <Toast />,
     });
   }, [toastId, isSaving]);
