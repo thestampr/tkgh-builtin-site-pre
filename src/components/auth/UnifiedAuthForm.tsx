@@ -71,8 +71,8 @@ export function UnifiedAuthForm({ mode: initialMode = "login", role = "CUSTOMER"
 					setError(handleErrors(400));
 					return;
 				}
-				if (r?.ok) {
-					setError(handleErrors(r.status));
+				if (!r?.ok) {
+					setError(handleErrors(r?.status));
 					return;
 				}
 				setSuccess("Logged in");
