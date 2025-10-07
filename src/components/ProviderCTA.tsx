@@ -1,7 +1,7 @@
 "use client";
 
+import { getIcon } from "@/components/IconPicker";
 import clsx from "clsx";
-import * as Lucide from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -30,6 +30,10 @@ export const defaultCta: CTAConfig = {
 interface ProviderCTAProps {
   preview?: boolean;
   config: CTAConfig | null;
+}
+
+function getSize(size: string): number {
+  return size === "lg" ? 24 : size === "sm" ? 18 : 20;
 }
 
 export function ProviderCTA({ preview, config }: ProviderCTAProps) {
@@ -77,11 +81,7 @@ export function ProviderCTA({ preview, config }: ProviderCTAProps) {
   // If neither icon nor label => don't render (allow global site CTA to show)
   if (!icon && !label) return null;
 
-  const Icon = () => {
-    if (!icon) return null;
-    const I = (Lucide as any)[icon];
-    return I ? <I size={size === "lg" ? 24 : size === "sm" ? 18 : 20} /> : null;
-  };
+  const Icon = () => getIcon(icon, { size: getSize(size) });
 
   const CTA = () => <Link
     href={href}

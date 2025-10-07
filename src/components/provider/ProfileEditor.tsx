@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPicker } from "@/components/IconPicker";
+import { IconPicker, getIcon } from "@/components/IconPicker";
 import { LocaleTabs } from "@/components/LocaleTabs";
 import type { CTAConfig } from "@/components/ProviderCTA";
 import { ProviderCTA } from "@/components/ProviderCTA";
@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/useToast";
 import { defaultLocale, locales } from "@/i18n/navigation";
 import { useProfileService, type InitialProfileRecord } from "@/services/useProfileService";
 import clsx from "clsx";
-import * as Lucide from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -210,8 +210,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
   const ctaIconEl = useMemo(() => {
     const name = profile.ctaConfig.icon;
     if (!name) return null;
-    const I = (Lucide as unknown as Record<string, React.ComponentType<{ size?: number, className?: string }>>)[name];
-    return I ? <I size={16} className="mx-1" /> : null;
+    return getIcon(name, { size: 16, className: "mx-1" });
   }, [profile.ctaConfig.icon]);
 
   const handleIconPicked = useCallback((name?: string | null) => {
@@ -461,7 +460,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
                   <div className="flex items-center justify-between">
                     <h3 className={sectionLabelClass}>{t("contactChannels")}</h3>
                     <button type="button" onClick={handleAddChannel} className="btn btn-secondary btn-xs">
-                      <Lucide.Plus size={14} />
+                      <Plus size={14} />
                       {t("addChannel")}
                     </button>
                   </div>
@@ -498,7 +497,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
           <div className="flex items-center gap-3 pt-2">
             {activeLocale !== defaultLocale && (
               <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className={clsx("btn btn-sm", !dirtyActive ? "btn-ghost" : "btn-danger")}>
-                <Lucide.Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
+                <Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
               </button>
             )}
           </div>
