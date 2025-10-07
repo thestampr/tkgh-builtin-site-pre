@@ -248,10 +248,10 @@ function toastOuterStyle(deviceType: string): React.CSSProperties {
       maxWidth: "100vw",
       minWidth: "0",
       boxSizing: "border-box",
-      paddingLeft: 14,
-      paddingRight: 14,
-      paddingTop: 72,
-      paddingBottom: 72,
+      paddingLeft: 18,
+      paddingRight: 18,
+      paddingTop: 18,
+      paddingBottom: 18,
     };
   }
   return {};
