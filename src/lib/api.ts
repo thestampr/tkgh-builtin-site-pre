@@ -607,7 +607,7 @@ export async function getPopularCategories(limit = 12, locale: string = DEFAULT_
 }
 
 // Search & filter helpers
-interface CategoryQueryParams {
+export interface CategoryQueryParams {
   search?: string;
   providerId?: string;
   order?: "name_asc" | "name_desc" | "popular" | string;
