@@ -38,7 +38,7 @@ export default async function CategoriesIndexPage({
     getProviderInfo(providerId)
   ]);
 
-  const noMatch = provider?._count?.categories && (search || order);
+  const noMatch = provider?._count?.categories && search;
 
   return (
     <main className="bg-white">
