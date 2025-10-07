@@ -21,7 +21,7 @@ export const defaultCta: CTAConfig = {
   color: "#292F36",
   textColor: "#FFFFFF",
   size: "md",
-  icon: "MessageCircle",
+  icon: "message-circle",
   href: "#",
   style: "solid",
   radius: "full"
@@ -51,16 +51,7 @@ export function ProviderCTA({ preview, config }: ProviderCTAProps) {
   if (!mounted) return null;
   if (!config) return null;
 
-  const { 
-    label = "Example", 
-    color = "#8a6a40", 
-    textColor = "#ffffff",
-    size = "md", 
-    icon = "MessageCircle", 
-    style = "solid", 
-    href = "#", 
-    radius = "full" 
-  } = config;
+  const { label, color, textColor, size, icon, style, href, radius } = config;
 
   const pad = size === "lg" ? "0.95rem 1.4rem" : size === "sm" ? "0.5rem 0.9rem" : "0.7rem 1.1rem";
   const iconDim = size === "lg" ? 56 : size === "sm" ? 40 : 48; // square when icon-only
