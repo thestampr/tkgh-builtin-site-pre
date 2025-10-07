@@ -58,7 +58,7 @@ export function ProviderCTA({ preview, config }: ProviderCTAProps) {
   const base = style === "solid"
     ? { background: color, color: textColor, border: "none" }
     : style === "outline"
-      ? { background: "rgba(255,255,255,0.85)", color: textColor, border: `1px solid ${color}` }
+      ? { background: color, color: textColor, border: `1px solid ${textColor}` }
       : { background: "transparent", color: textColor, border: "none" };
 
   const radiusCls = radius === "full"
