@@ -614,7 +614,7 @@ interface CategoryQueryParams {
 }
 export async function queryCategories(params: CategoryQueryParams & LocaleParams): Promise<Category[]> {
   const { search, providerId, order, locale = DEFAULT_LANG } = params;
-  const where: KeyValue = { published: true };
+  const where: KeyValue = { providerId, published: true };
   if (search) where.name = { contains: search, mode: "insensitive" };
   // basic ordering
   let orderBy: any = { name: "asc" };
@@ -666,6 +666,7 @@ export interface BuiltInQueryParams {
 export async function queryBuiltIns(params: BuiltInQueryParams & LocaleParams): Promise<BuiltInItem[]> {
   const { search, order, providerId, category, minPrice, maxPrice, locale = DEFAULT_LANG } = params;
   const where: KeyValue = { 
+    providerId,
     status: "PUBLISHED" ,
     category: { published: true }
   };
