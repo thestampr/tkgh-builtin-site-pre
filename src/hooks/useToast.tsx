@@ -1,6 +1,6 @@
 "use client";
 
-import { useDevice } from "@/hooks/useDevice";
+import { useDevice, type DeviceType } from "@/hooks/useDevice";
 import clsx from "clsx";
 import type { Variants } from "framer-motion";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,6 +13,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
 } from "react";
 
 // Position types
@@ -43,6 +44,11 @@ const directions = ["up", "down", "left", "right"] as const;
 type DirectionType = typeof directions[number];
 export type Direction = `${DirectionType}` | `${DirectionType}-${DirectionType}` | "none";
 
+// Style types
+type DeviceTargetStyle = { [key in Exclude<DeviceType, undefined>]?: CSSProperties };
+export type toastOuterStyle = DeviceTargetStyle;
+export type toastInnerStyle = DeviceTargetStyle;
+
 export interface ToastOptions {
   /** Optional ID for the toast. If not provided, a random ID will be generated. */
   id?: string;
@@ -63,7 +69,7 @@ export interface ToastOptions {
   /** Toast animation variants. If not provided, it will be determined by the position. */
   direction?: Direction;
   /** Custom styles for the toast container */
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   /** Custom class name for the toast container */
   className?: string;
   /** Click handler for the toast. */
@@ -241,7 +247,7 @@ function getToastVariants(dir: Direction): Variants {
 }
 
 // Style for toast on mobile (full width with safe margin)
-function toastOuterStyle(deviceType: string): React.CSSProperties {
+function defaultToastOuterStyle(deviceType: string): CSSProperties {
   if (deviceType === "mobile") {
     return {
       width: "100vw",
@@ -256,7 +262,7 @@ function toastOuterStyle(deviceType: string): React.CSSProperties {
   }
   return {};
 }
-function toastInnerStyle(deviceType: string): React.CSSProperties {
+function defaultToastInnerStyle(deviceType: string): CSSProperties {
   if (deviceType === "mobile") {
     return {
       width: "100%",
@@ -276,6 +282,8 @@ interface ToastProviderProps {
   defaultPosition?: Position;
   defaultDirection?: Direction;
   defaultzIndex?: number;
+  toastOuterStyle?: toastOuterStyle;
+  toastStyle?: toastInnerStyle;
 }
 
 export function ToastProvider({ 
@@ -283,7 +291,9 @@ export function ToastProvider({
   defaultDuration,
   defaultPosition,
   defaultDirection,
-  defaultzIndex
+  defaultzIndex,
+  toastOuterStyle = {},
+  toastStyle = {},
 }: ToastProviderProps) {
   const { deviceType } = useDevice();
 
@@ -434,7 +444,8 @@ export function ToastProvider({
               pointerEvents: "none", 
               zIndex: toastZIndex,
               ...stackStyle, 
-              ...toastOuterStyle(deviceType) 
+              ...defaultToastOuterStyle(deviceType),
+              ...toastOuterStyle?.[deviceType]
             }}
           >
             <AnimatePresence initial={true}>
@@ -466,7 +477,8 @@ export function ToastProvider({
                     minWidth: deviceType === "mobile" ? 0 : 400,
                     maxWidth: deviceType === "mobile" ? 480 : 400,
                     ...t.style,
-                    ...toastInnerStyle(deviceType),
+                    ...defaultToastInnerStyle(deviceType),
+                    ...toastStyle?.[deviceType],
                     pointerEvents: "auto",
                     marginBottom: 0,
                   }}
