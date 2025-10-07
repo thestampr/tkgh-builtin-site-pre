@@ -115,6 +115,12 @@ export default function ProfileEditor({ initialProfile }: Props) {
   const save = async () => {
     try {
       await updateProfile();
+      if (toastId) {
+        updateToast(toastId, {
+          pin: false,
+          content: <Toast />
+        });
+      }
       showSuccessToast({ title: t("saved") });
     } catch (e) {
       showErrorToast({ title: t("saveFailed") });
@@ -270,8 +276,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
     if (!toastId) return;
     if (!isSaving) return;
     updateToast(toastId, {
-      pin: false,
-      content: <Toast />,
+      content: <Toast />
     });
   }, [toastId, isSaving]);
 
