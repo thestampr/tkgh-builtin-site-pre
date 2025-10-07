@@ -1,7 +1,7 @@
 import { BuiltInGrid } from "@/components/BuiltInGrid";
-import { queryBuiltIns, queryCategories } from "@/lib/api";
-import { getTranslations } from "next-intl/server";
 import SearchFilterBar from "@/components/SearchFilterBar";
+import { queryBuiltIns, queryCategories, type BuiltInQueryParams } from "@/lib/api";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,16 +14,35 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function BuiltInIndexPage({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams?: Promise<{ [k: string]: string | string[] | undefined }> }) {
+export default async function BuiltInIndexPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string }>,
+  searchParams?: Promise<{ [k: string]: string | string[] | undefined }>
+}) {
   const [{ locale }, sp] = await Promise.all([params, searchParams]);
   const t = await getTranslations({ locale, namespace: "BuiltIn" });
+
   const search = typeof sp?.q === "string" ? sp.q : undefined;
   const order = typeof sp?.order === "string" ? sp.order : undefined;
-  const cat = typeof sp?.cat === "string" ? sp.cat : undefined;
+  const category = typeof sp?.cat === "string" ? sp.cat : undefined;
   const min = typeof sp?.min === "string" ? Number(sp.min) : undefined;
   const max = typeof sp?.max === "string" ? Number(sp.max) : undefined;
-  const items = await queryBuiltIns({ search, order, category: cat, minPrice: typeof min === "number" && !isNaN(min) ? min : undefined, maxPrice: typeof max === "number" && !isNaN(max) ? max : undefined, locale });
-  const categories = await queryCategories({ locale });
+  const query: BuiltInQueryParams = {
+    search,
+    order,
+    category,
+    minPrice: typeof min === "number" && !isNaN(min) ? min : undefined,
+    maxPrice: typeof max === "number" && !isNaN(max) ? max : undefined
+  };
+  
+  const [items, categories] = await Promise.all([
+    queryBuiltIns({ ...query, locale }),
+    queryCategories({ locale })
+  ]);
+
+  const hasQuery = search || category || min || max;
 
   return (
     <main className="bg-white">
@@ -34,13 +53,7 @@ export default async function BuiltInIndexPage({ params, searchParams }: { param
         </div>
 
         <SearchFilterBar variant="builtins" inline categories={categories.map(c => ({ slug: c.slug, title: c.title }))} />
-        {items?.length ? (
-          <BuiltInGrid items={items} />
-        ) : (
-          <div className="rounded-xl border bg-white p-8 text-center text-slate-600">
-            {search || cat || min || max ? (t("emptySearch") || "No built-ins match your filters.") : t("empty")}
-          </div>
-        )}
+        <BuiltInGrid items={items} showProvider={false} type={hasQuery ? "search" : undefined} />
       </section>
     </main>
   );

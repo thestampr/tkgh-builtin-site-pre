@@ -1,7 +1,7 @@
-import { getTranslations } from "next-intl/server";
-import { queryCategories } from "@/lib/api";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import SearchFilterBar from '@/components/SearchFilterBar';
+import { queryCategories, type CategoryQueryParams } from "@/lib/api";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,12 +14,26 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function CategoriesIndexPage({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams?: Promise<{ [k: string]: string | string[] | undefined }> }) {
+export default async function CategoriesIndexPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string }>,
+  searchParams?: Promise<{ [k: string]: string | string[] | undefined }>
+}) {
   const [{ locale }, sp] = await Promise.all([params, searchParams]);
   const t = await getTranslations({ locale, namespace: "Categories" });
-  const search = typeof sp?.q === 'string' ? sp.q : undefined;
-  const order = typeof sp?.order === 'string' ? sp.order : undefined;
-  const categories = await queryCategories({ search, order, locale });
+
+  const search = typeof sp?.q === "string" ? sp.q : undefined;
+  const order = typeof sp?.order === "string" ? sp.order : undefined;
+  const query: CategoryQueryParams = {
+    search,
+    order
+  }
+  
+  const categories = await queryCategories({ ...query, locale });
+
+  const hasQuery = search;
 
   return (
     <main className="bg-white">
@@ -30,13 +44,7 @@ export default async function CategoriesIndexPage({ params, searchParams }: { pa
         </div>
 
         <SearchFilterBar variant="categories" inline />
-        {categories?.length ? (
-          <CategoryGrid categories={categories} />
-        ) : (
-          <div className="rounded-xl border bg-white p-8 text-center text-slate-600">
-            {search ? (t('emptySearch') || 'No categories match your search.') : t('empty')}
-          </div>
-        )}
+        <CategoryGrid categories={categories} type={hasQuery ? "search" : undefined} />
       </section>
     </main>
   );
