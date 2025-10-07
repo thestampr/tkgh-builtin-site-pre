@@ -361,6 +361,11 @@ export function ToastProvider({
     const exists = toasts.find((t) => t.id === id);
     if (!exists) return;
     setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, ...options } : t)));
+    // Reset timeout if duration is updated and toast is not pinned
+    if (options.duration && !exists.pin) {
+      if (timeouts.current[id]) clearTimeout(timeouts.current[id]);
+      timeouts.current[id] = setTimeout(() => removeToast(id), options.duration);
+    }
   };
 
   // Remove toast
