@@ -803,7 +803,7 @@ export async function getProviderPublicProfile(providerId: string, locale: strin
     if (tr) {
       if (tr.displayName) displayName = tr.displayName;
       if (tr.bio) bio = tr.bio;
-      if (ctaBase && (tr.ctaLabel !== undefined)) ctaBase.label = tr.ctaLabel;
+      if (ctaBase && (tr.ctaLabel !== undefined)) ctaBase.label = tr.ctaLabel || ctaBase.label;
     }
   }
   return {
