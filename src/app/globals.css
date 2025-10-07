@@ -247,14 +247,17 @@ body {
   cursor: pointer;
   text-wrap: nowrap;
 }
+
 .text-btn:hover {
   text-decoration: underline;
 }
+
 .text-btn:disabled {
   opacity: 0.6;
   cursor: default;
   pointer-events: none;
 }
+
 .text-btn:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--ring);
@@ -288,6 +291,7 @@ body {
 
 .input::placeholder {
   color: var(--muted-foreground);
+  font-weight: 400;
 }
 
 /* Input field variants */
