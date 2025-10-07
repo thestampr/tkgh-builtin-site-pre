@@ -427,6 +427,7 @@
       "noImage": "No image selected",
       "chooseImage": "Choose image",
       "editProfile": "Edit profile",
+      "editingLocale": "Editing translation for locale",
       "favoritesHeading": "Favorites",
       "noFavorites": "No favorites yet",
       "views30Days": "Views (30 days)",

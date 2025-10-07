@@ -427,6 +427,7 @@
       "noImage": "画像が選択されていません",
       "chooseImage": "画像を選択",
       "editProfile": "プロフィールを編集",
+      "editingLocale": "ロケールの翻訳を編集中",
       "favoritesHeading": "お気に入り",
       "noFavorites": "お気に入りはまだありません",
       "views30Days": "閲覧数（30日）",
