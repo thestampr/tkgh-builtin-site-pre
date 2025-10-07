@@ -14,7 +14,7 @@ import { CategoryButton } from "./CategoryButton";
 import { FavoriteButton } from "./FavoriteButton";
 import ProviderButton from "./ProviderButton";
 
-type TypeKind = "category" | "provider" | `category-${string}` | `provider-${string}`;
+type TypeKind = "search" | "category" | "provider" | `category-${string}` | `provider-${string}`;
 
 /**
  * Props for BuiltInGrid and BuiltInSwiper components
@@ -66,6 +66,8 @@ function Placeholder({ type }: { type?: TypeKind }) {
   
   const message = () => {
     switch (type) {
+      case "search":
+        return t("emptySearch");
       case "category":
         return tCat("noItems");
       case "provider":
