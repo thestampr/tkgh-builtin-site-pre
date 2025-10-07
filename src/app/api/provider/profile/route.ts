@@ -119,9 +119,9 @@ export async function PUT(request: Request) {
             prisma.profileTranslation.upsert({
               where: { profileId_locale: { profileId, locale } },
               update: {
-                displayName: t.displayName ?? null,
-                bio: t.bio ?? null,
-                ctaLabel: t.ctaLabel ?? null,
+                displayName: t.displayName ?? undefined,
+                bio: t.bio ?? undefined,
+                ctaLabel: t.ctaLabel ?? undefined,
               },
               create: {
                 profileId,
@@ -152,9 +152,9 @@ export async function PUT(request: Request) {
       const rec = await prisma.profileTranslation.upsert({
         where: { profileId_locale: { profileId: base.id, locale: translationLocale } },
         update: {
-          displayName: translation.displayName ?? null,
-          bio: translation.bio ?? null,
-          ctaLabel: translation.ctaLabel ?? null
+          displayName: translation.displayName ?? undefined,
+          bio: translation.bio ?? undefined,
+          ctaLabel: translation.ctaLabel ?? undefined,
         },
         create: {
           profileId: base.id,
@@ -180,9 +180,9 @@ export async function PUT(request: Request) {
           prisma.profileTranslation.upsert({
             where: { profileId_locale: { profileId, locale } },
             update: {
-              displayName: t.displayName ?? null,
-              bio: t.bio ?? null,
-              ctaLabel: t.ctaLabel ?? null,
+              displayName: t.displayName ?? undefined,
+              bio: t.bio ?? undefined,
+              ctaLabel: t.ctaLabel ?? undefined,
             },
             create: {
               profileId,
