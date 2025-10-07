@@ -16,6 +16,10 @@ export interface ProviderInfo {
   id: string;
   displayName?: string | null;
   avatarUrl?: string | null;
+  _count?: {
+    builtIns: number;
+    categories: number;
+  };
 };
 
 export interface Category {
@@ -548,17 +552,17 @@ export async function getPopularBuiltIns(limit = 12, locale: string = DEFAULT_LA
         }
       },
       translations: true,
-      _count: {
-        select: {
-          favorites: true
-        }
-      },
       provider: {
         include: {
           profile: true
         }
       },
-      favorites: true
+      favorites: true,
+      _count: {
+        select: {
+          favorites: true
+        }
+      }
     }
   });
   const scored = items.map(b => ({
@@ -775,6 +779,34 @@ export async function getProfile(userId: string): Promise<(Profile & { translati
       translations: true
     }
   });
+}
+
+export async function getProviderInfo(userId: string): Promise<ProviderInfo | null> {
+  const provider = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { 
+      profile: {
+        select: {
+          displayName: true,
+          avatarUrl: true
+        }
+      },
+      _count: {
+        select: {
+          builtIns: true,
+          categories: true
+        }
+      }
+    }
+  });
+
+  if (!provider?.profile) return null;
+  return {
+    id: userId,
+    displayName: provider.profile.displayName,
+    avatarUrl: provider.profile.avatarUrl,
+    _count: provider._count
+  };
 }
 
 export async function getProviderPublicProfile(providerId: string, locale: string = DEFAULT_LANG): Promise<ProviderPublicProfile | null> {
