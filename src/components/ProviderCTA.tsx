@@ -82,7 +82,7 @@ export function ProviderCTA({ preview, config }: ProviderCTAProps) {
       "shadow-lg backdrop-blur-sm font-medium inline-flex items-center justify-center select-none",
       "hover:opacity-90 transition",
       radiusCls,
-      label ? "gap-2 px-0 text-sm" : "",
+      label ? "gap-3 px-0 text-sm" : "",
       preview ? "pointer-events-none" : "translate-y-[-20px]"
     )}
   >
