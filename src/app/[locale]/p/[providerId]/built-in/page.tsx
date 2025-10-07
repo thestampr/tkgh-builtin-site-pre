@@ -1,7 +1,7 @@
 import { BuiltInGrid } from "@/components/BuiltInGrid";
 import ProviderButton from "@/components/ProviderButton";
 import SearchFilterBar from "@/components/SearchFilterBar";
-import { queryBuiltIns, queryCategories, type BuiltInQueryParams } from "@/lib/api";
+import { getProviderInfo, queryBuiltIns, queryCategories, type BuiltInQueryParams } from "@/lib/api";
 import clsx from "clsx";
 import { getTranslations } from "next-intl/server";
 
@@ -37,12 +37,15 @@ export default async function BuiltInIndexPage({
     category,
     minPrice: typeof min === "number" && !isNaN(min) ? min : undefined,
     maxPrice: typeof max === "number" && !isNaN(max) ? max : undefined
-  }
+  };
 
-  const [items, categories] = await Promise.all([
+  const [items, categories, provider] = await Promise.all([
     queryBuiltIns({ providerId, ...query, locale }),
-    queryCategories({ providerId, locale })
+    queryCategories({ providerId, locale }),
+    getProviderInfo(providerId)
   ]);
+
+  const noMatch = provider?._count?.builtIns && (search || category || min || max);
 
   return (
     <main className="bg-white">
@@ -52,8 +55,8 @@ export default async function BuiltInIndexPage({
             "text-2xl md:text-3xl font-bold flex items-center gap-2",
             "*:!text-2xl md:*:!text-3xl"
           )}>
-            {categories.length > 0 && categories[0].provider && <>
-              <ProviderButton provider={categories[0].provider} size="md" />
+            {provider && <>
+              <ProviderButton provider={provider} size="md" />
               <span className="font-medium mx-2">/</span>
             </>}
             {t("listTitle")}
@@ -62,13 +65,7 @@ export default async function BuiltInIndexPage({
         </div>
 
         <SearchFilterBar variant="builtins" inline categories={categories.map(c => ({ slug: c.slug, title: c.title }))} />
-        {items?.length ? (
-          <BuiltInGrid items={items} showProvider={false} />
-        ) : (
-          <div className="rounded-xl border bg-white p-8 text-center text-slate-600">
-            {search || category || min || max ? (t("emptySearch") || "No built-ins match your filters.") : t("empty")}
-          </div>
-        )}
+        <BuiltInGrid items={items} showProvider={false} type={noMatch ? "search" : provider ? `provider-${provider.displayName}` : undefined} />
       </section>
     </main>
   );

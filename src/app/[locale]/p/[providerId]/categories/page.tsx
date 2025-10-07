@@ -1,7 +1,7 @@
 import { CategoryGrid } from "@/components/CategoryGrid";
 import ProviderButton from "@/components/ProviderButton";
 import SearchFilterBar from "@/components/SearchFilterBar";
-import { queryCategories } from "@/lib/api";
+import { getProviderInfo, queryCategories, type CategoryQueryParams } from "@/lib/api";
 import clsx from "clsx";
 import { getTranslations } from "next-intl/server";
 
@@ -25,10 +25,20 @@ export default async function CategoriesIndexPage({
 }) {
   const [{ locale, providerId }, sp] = await Promise.all([params, searchParams]);
   const t = await getTranslations({ locale, namespace: "Categories" });
+
   const search = typeof sp?.q === "string" ? sp.q : undefined;
   const order = typeof sp?.order === "string" ? sp.order : undefined;
-  // const categories = await queryCategories({ search, order, locale });
-  const categories = await queryCategories({ providerId, locale });
+  const query: CategoryQueryParams = {
+    search,
+    order
+  }
+
+  const [categories, provider] = await Promise.all([
+    queryCategories({ providerId, ...query, locale }),
+    getProviderInfo(providerId)
+  ]);
+
+  const noMatch = provider?._count?.categories && (search || order);
 
   return (
     <main className="bg-white">
@@ -38,8 +48,8 @@ export default async function CategoriesIndexPage({
             "text-2xl md:text-3xl font-bold flex items-center gap-2",
             "*:!text-2xl md:*:!text-3xl"
           )}>
-            {categories.length > 0 && categories[0].provider && <>
-              <ProviderButton provider={categories[0].provider} size="md" />
+            {provider && <>
+              <ProviderButton provider={provider} size="md" />
               <span className="font-medium mx-2">/</span>
             </>}
             {t("listTitle")}
@@ -48,13 +58,7 @@ export default async function CategoriesIndexPage({
         </div>
 
         <SearchFilterBar variant="categories" inline />
-        {categories?.length ? (
-          <CategoryGrid categories={categories} showProvider={false} />
-        ) : (
-          <div className="rounded-xl border bg-white p-8 text-center text-slate-600">
-            {search ? (t("emptySearch") || "No categories match your search.") : t("empty")}
-          </div>
-        )}
+        <CategoryGrid categories={categories} showProvider={false} type={noMatch ? "search" : provider ? `provider-${provider.displayName}` : undefined} />
       </section>
     </main>
   );
