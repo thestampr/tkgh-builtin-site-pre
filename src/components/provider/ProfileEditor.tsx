@@ -13,8 +13,8 @@ import * as Lucide from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-interface Props { 
-  initialProfile: InitialProfileRecord | null; 
+interface Props {
+  initialProfile: InitialProfileRecord | null;
 }
 
 function normalizeHex(v: string) {
@@ -25,8 +25,8 @@ function normalizeHex(v: string) {
   if (val.length > 7) val = val.slice(0, 7);
   return val;
 }
-function isValidFullHex(v: string) { 
-  return /^#[0-9a-fA-F]{6}$/.test(v); 
+function isValidFullHex(v: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(v);
 }
 
 export default function ProfileEditor({ initialProfile }: Props) {
@@ -379,11 +379,11 @@ export default function ProfileEditor({ initialProfile }: Props) {
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <label className={labelClass} >Label</label>
-                        <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full input input-secondary input-sm" />
+                        <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full input input-secondary text-sm" />
                       </div>
                       <div className="space-y-1">
                         <label className={labelClass} >Href</label>
-                        <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full input input-secondary input-sm" />
+                        <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full input input-secondary text-sm" />
                       </div>
                       <div className="space-y-1">
                         <label className={labelClass} >Label Color</label>
@@ -401,7 +401,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
                       </div>
                       <div className="space-y-1">
                         <label className={labelClass} >Size</label>
-                        <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full input input-secondary input-sm">
+                        <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full input input-secondary text-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
                           <option value="lg">Large</option>
@@ -410,7 +410,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
                       <div className="space-y-1">
                         <label className={labelClass} >Icon</label>
                         <div className="flex items-center gap-2">
-                          <button type="button" onClick={handleOpenIconPicker} className="input input-sm inline-flex gap-2 items-center btn-ghost flex-1 cursor-pointer !ring-0">
+                          <button type="button" onClick={handleOpenIconPicker} className="input text-sm inline-flex gap-2 items-center btn-ghost flex-1 cursor-pointer !ring-0">
                             {ctaIconEl}
                             <span>{profile.ctaConfig.icon || "Pick"}</span>
                           </button>
@@ -419,7 +419,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
                       </div>
                       <div className="space-y-1">
                         <label className={labelClass} >Style</label>
-                        <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full input input-secondary input-sm">
+                        <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full input input-secondary text-sm">
                           <option value="solid">Solid</option>
                           <option value="outline">Outline</option>
                           <option value="ghost">Ghost</option>
@@ -427,7 +427,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
                       </div>
                       <div className="space-y-1">
                         <label className={labelClass} >Radius</label>
-                        <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full input input-secondary input-sm">
+                        <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full input input-secondary text-sm">
                           <option value="sm">Small</option>
                           <option value="md">Medium</option>
                           <option value="lg">Large</option>
@@ -467,13 +467,13 @@ export default function ProfileEditor({ initialProfile }: Props) {
                     <div className="space-y-3">
                       {profile.contacts.channels.map((ch, i) => (
                         <div key={`${ch.type}-${i}`} className="flex items-center gap-2">
-                          <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="input input-secondary input-sm">
+                          <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="input input-secondary text-sm">
                             <option value="link">Link</option>
                             <option value="phone">Phone</option>
                             <option value="email">Email</option>
                             <option value="line">Line</option>
                           </select>
-                          <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 input input-secondary input-sm" />
+                          <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 input input-secondary text-sm" />
                           <button type="button" data-index={i} onClick={handleChannelRemove} className="btn btn-ghost btn-xs">✕</button>
                         </div>
                       ))}
@@ -487,7 +487,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
                 <h3 className={sectionLabelClass} >CTA Label <LocaleLabel /></h3>
                 <fieldset className="space-y-3">
                   <legend className="sr-only">CTA Label EN</legend>
-                  <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full input input-secondary input-sm" />
+                  <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full input input-secondary text-sm" />
                 </fieldset>
               </section>
             )}

@@ -17,7 +17,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
     <div className="space-y-4">
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.name")} ({localeLabel})</label>
-        <input value={value.name || ""} onChange={e => onChange({ name: e.target.value })} className="w-full input input-secondary input-sm" />
+        <input value={value.name || ""} onChange={e => onChange({ name: e.target.value })} className="w-full input input-secondary text-sm" />
       </div>
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.excerpt")} ({localeLabel})</label>

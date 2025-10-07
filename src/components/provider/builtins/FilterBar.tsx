@@ -42,7 +42,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           value={query}
           onChange={e => onQueryChange(e.target.value)}
           placeholder={t("filters.searchPlaceholder")}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         />
       </div>
       <div className="min-w-[140px]">
@@ -50,7 +50,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <select
           value={statusFilter}
           onChange={e => onStatusChange(e.target.value as BuiltInStatus | 'ALL')}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="ALL">{t("filters.all")}</option>
           <option value="PUBLISHED">{t("filters.published")}</option>
@@ -62,7 +62,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <select
           value={categoryFilter}
           onChange={e => onCategoryChange(e.target.value)}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="">{t("filters.all")}</option>
           {categories.map((c) => (
@@ -75,7 +75,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <select
           value={sort}
           onChange={e => onSortChange(e.target.value as sortKind)}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="updated_desc">{t("filters.sortNewest")}</option>
           <option value="title_asc">{t("filters.sortTitle")}</option>

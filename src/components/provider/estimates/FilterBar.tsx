@@ -25,7 +25,7 @@ export const FilterBar: React.FC<Props> = ({ search, onSearchChange, viewed, onV
           value={search}
           onChange={e => onSearchChange(e.target.value)}
           placeholder={t("filters.searchPlaceholder")}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         />
       </div>
       <div className="min-w-[150px]">
@@ -33,7 +33,7 @@ export const FilterBar: React.FC<Props> = ({ search, onSearchChange, viewed, onV
         <select
           value={viewed}
           onChange={e => onViewedChange(e.target.value as ViewedFilter)}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="ALL">{t("filters.all")}</option>
           <option value="unviewed">{t("status.new")}</option>
@@ -45,7 +45,7 @@ export const FilterBar: React.FC<Props> = ({ search, onSearchChange, viewed, onV
         <select
           value={sort}
           onChange={e => onSortChange(e.target.value as EstimateSort)}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="created_desc">{t("filters.sortNewest")}</option>
           <option value="created_asc">{t("filters.sortOldest")}</option>

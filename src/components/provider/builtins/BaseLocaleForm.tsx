@@ -33,7 +33,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
           <input
             value={draft.title}
             onChange={e => onTitleChange(e.target.value)}
-            className="w-full input input-secondary input-sm"
+            className="w-full input input-secondary text-sm"
           />
         </div>
         <div className="space-y-1">
@@ -42,7 +42,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
             value={draft.slug}
             disabled={!!editing}
             onChange={e => onChange({ slug: kebabcase(e.target.value) })}
-            className="w-full input input-secondary input-sm disabled:opacity-60"
+            className="w-full input input-secondary text-sm"
           />
         </div>
       </div>
@@ -53,7 +53,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
             <select
               value={draft.categoryId || ""}
               onChange={e => onChange({ categoryId: e.target.value })}
-              className="w-full input input-secondary input-sm"
+              className="w-full input input-secondary text-sm"
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -69,7 +69,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
             type="number"
             value={draft.price ?? ""}
             onChange={e => onChange({ price: e.target.value ? parseInt(e.target.value, 10) : null })}
-            className="w-full input input-secondary input-sm"
+            className="w-full input input-secondary text-sm"
           />
         </div>
         <div className="space-y-1">
@@ -77,7 +77,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
           <select
             value={draft.currency || ""}
             onChange={e => onChange({ currency: e.target.value || null })}
-            className="w-full input input-secondary input-sm"
+            className="w-full input input-secondary text-sm"
           >
             <option value="">—</option>
             <option value="THB">THB</option>

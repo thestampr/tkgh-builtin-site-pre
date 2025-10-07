@@ -263,11 +263,18 @@ body {
 /* Input fields */
 .input {
   border: 1px solid var(--input-border);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   
   --webkit-transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.1s ease, color 0.2s ease;
   --moz-transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.1s ease, color 0.2s ease;
   --o-transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.1s ease, color 0.2s ease;
   transition: background-image 0.2s ease, background-color 0.2s ease, border-color 0.1s ease, color 0.2s ease;
+}
+
+.input:disabled {
+  background: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .input:focus {
@@ -294,37 +301,4 @@ body {
 
 .input-warning {
   border-color: var(--warning);
-}
-
-/* Input field sizes */
-@layer utilities {
-  .input.input-xs {
-    padding: 0.125rem 0.25rem;
-    font-size: 0.75rem;
-    border-radius: 0.25rem;
-  }
-
-  .input.input-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    border-radius: 0.375rem;
-  }
-
-  .input {
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-  }
-
-  .input.input-lg {
-    padding: 0.75rem 1rem;
-    font-size: 1.125rem;
-    border-radius: 0.75rem;
-  }
-
-  .input.input-xl {
-    padding: 1rem 1.25rem;
-    font-size: 1.25rem;
-    border-radius: 1rem;
-  }
 }

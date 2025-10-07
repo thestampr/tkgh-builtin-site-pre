@@ -31,7 +31,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
           <input 
             value={draft.name} 
             onChange={e => onNameChange(e.target.value)}
-            className="w-full input input-secondary input-sm" />
+            className="w-full input input-secondary text-sm" />
         </div>
         <div className="space-y-1">
           <label className="block text-[11px] uppercase tracking-wide text-neutral-500">slug</label>
@@ -39,7 +39,7 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
             value={draft.slug} 
             disabled={!!editing} 
             onChange={e => onChange({ slug: kebabcase(e.target.value) })}
-            className="w-full input input-secondary input-sm disabled:opacity-60" />
+            className="w-full input input-secondary text-sm" />
         </div>
       </div>
 

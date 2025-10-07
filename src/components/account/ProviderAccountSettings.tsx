@@ -121,11 +121,11 @@ export default function ProviderAccountSettings() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{tSettings("currentEmail")}</label>
-            <input disabled value={email} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm bg-neutral-50" />
+            <input disabled value={email} className="w-full input input-secondary text-sm" />
           </div>
           <div className="space-y-2">
             <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("userProfile.newEmail")}</label>
-            <input value={newEmail} onChange={handleNewEmailChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+            <input value={newEmail} onChange={handleNewEmailChange} className="w-full input input-secondary text-sm" />
           </div>
           <span className="text-xs text-danger h-6">{emailError ?? <>&nbsp;</>}</span>
         </div>
@@ -144,15 +144,15 @@ export default function ProviderAccountSettings() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2 space-y-1">
             <label className="text-[11px] uppercase tracking-wide text-neutral-500">{t("userProfile.currentPassword")}</label>
-            <input type="password" value={currentPassword} onChange={handleCurrentPasswordChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+            <input type="password" value={currentPassword} onChange={handleCurrentPasswordChange} className="w-full input input-secondary text-sm" />
           </div>
           <div className="space-y-1">
             <label className="text-[11px] uppercase tracking-wide text-neutral-500">{t("userProfile.newPassword")}</label>
-            <input type="password" value={newPassword} onChange={handleNewPasswordChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+            <input type="password" value={newPassword} onChange={handleNewPasswordChange} className="w-full input input-secondary text-sm" />
           </div>
           <div className="space-y-1">
             <label className="text-[11px] uppercase tracking-wide text-neutral-500">{t("userProfile.confirmPassword")}</label>
-            <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm" />
+            <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} className="w-full input input-secondary text-sm" />
           </div>
           <span className="text-xs text-danger h-6">{passwordError ?? <>&nbsp;</>}</span>
           <div className="md:col-span-2 mt-2">

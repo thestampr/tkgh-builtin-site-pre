@@ -21,7 +21,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
         <input
           value={value.title || ""}
           onChange={e => onChange({ ...value, title: e.target.value })}
-          className="w-full input input-secondary input-sm"
+          className="w-full input input-secondary text-sm"
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -31,7 +31,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
             type="number"
             value={value.price ?? ""}
             onChange={e => onChange({ ...value, price: e.target.value ? parseInt(e.target.value, 10) : null })}
-            className="w-full input input-secondary input-sm"
+            className="w-full input input-secondary text-sm"
           />
         </div>
         <div className="space-y-1">
@@ -39,7 +39,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
             <select
               value={value.currency || ""}
               onChange={e => onChange({ ...value, currency: e.target.value || null })}
-              className="w-full input input-secondary input-sm"
+              className="w-full input input-secondary text-sm"
             >
               <option value="">—</option>
               <option value="THB">THB</option>

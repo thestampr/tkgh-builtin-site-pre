@@ -35,7 +35,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           value={search}
           onChange={e => onSearchChange(e.target.value)}
           placeholder={t("filters.searchPlaceholder")}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         />
       </div>
       <div className="min-w-[150px]">
@@ -43,7 +43,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <select
           value={published}
           onChange={e => onPublishedChange(e.target.value as FilterBarProps["published"])}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="ALL">{t("filters.all")}</option>
           <option value="true">{t("filters.published")}</option>
@@ -55,7 +55,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <select
           value={sort}
           onChange={e => onSortChange(e.target.value as SortKind)}
-          className="w-full input !text-xs"
+          className="w-full input text-xs"
         >
           <option value="updated_desc">{t("filters.sortUpdated")}</option>
           <option value="name_asc">{t("filters.sortNameAsc")}</option>
