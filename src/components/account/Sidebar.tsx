@@ -1,14 +1,15 @@
 "use client";
+
+import clsx from "clsx";
+import { useSession } from "next-auth/react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import clsx from "clsx";
 
-interface SidebarProps { locale: string }
-
-export default function AccountSidebar({ locale }: SidebarProps) {
+export default function AccountSidebar() {
   const { data: session } = useSession();
+  const locale = useLocale();
+
   const t = useTranslations("Account");
   const pathname = usePathname();
   const role = session?.user?.role;

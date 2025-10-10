@@ -24,7 +24,7 @@ export default async function AccountLayout({
     ? (
       <div className="md:flex md:items-start gap-8 max-w-7xl mx-auto w-full px-6 py-10">
         <div className="md:w-56 flex-shrink-0 mb-6 md:mb-0 sticky top-8 self-start">
-          <AccountSidebar locale={locale} />
+          <AccountSidebar />
         </div>
         <div className="flex-1 min-w-0">
           {children}
