@@ -115,13 +115,9 @@ export default function ProfileEditor({ initialProfile }: Props) {
   const save = async () => {
     try {
       await updateProfile();
-      if (toastId) {
-        updateToast(toastId, {
-          pin: false,
-          content: <Toast />
-        });
-      }
-      showSuccessToast({ title: t("saved") });
+      setTimeout(() => {
+        showSuccessToast({ title: t("saved") });
+      }, 500);
     } catch (e) {
       showErrorToast({ title: t("saveFailed") });
     }
@@ -276,7 +272,6 @@ export default function ProfileEditor({ initialProfile }: Props) {
   }, [dirtyAny, showToast, removeToast, t, toastId, resetAll, save, isSaving]);
   useEffect(() => {
     if (!toastId) return;
-    if (!isSaving) return;
     updateToast(toastId, {
       content: <Toast />
     });
