@@ -495,7 +495,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
 
           <div className="flex items-center gap-3 pt-2">
             {activeLocale !== defaultLocale && (
-              <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className={clsx("btn btn-sm", !dirtyActive ? "btn-ghost" : "btn-danger")}>
+              <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className={clsx("btn btn-sm btn-ghost", !dirtyActive ? "" : "btn-danger")}>
                 <Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
               </button>
             )}
