@@ -127,6 +127,11 @@ body {
   @apply rounded-xl border border-[var(--border)] bg-[var(--background)] p-5 space-y-4;
 }
 
+/* Sticky sensor helper */
+.sensor {
+  @apply h-0 sticky top-[-1px] opacity-0 pointer-events-none;
+}
+
 /* Buttons - soft, theme-aware */
 .btn {
   display: inline-flex;

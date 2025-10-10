@@ -277,234 +277,270 @@ export default function ProfileEditor({ initialProfile }: Props) {
     });
   }, [toastId, isSaving]);
 
+  // sticky header observer to add shadow when sticky on top
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const sensors = document.querySelector(".sensor");
+    const header = document.querySelector("#sticky-header");
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!header) return;
+        if (entry.intersectionRatio < 1) {
+          header.classList.add("shadow-b-sm");
+        } else {
+          header.classList.remove("shadow-b-sm");
+        }
+      },
+      { threshold: [1] }
+    );
+
+    if (sensors) {
+      observer.observe(sensors);
+    } else {
+      alert("Cannot find sticky header element");
+    }
+
+    return () => {
+      if (sensors) {
+        observer.unobserve(sensors);
+      }
+    };
+  }, []);
+
   const currentTr = translations[activeLocale] || { displayName: "", bio: "", ctaLabel: "" };
 
   const sectionLabelClass = "text-xs font-semibold tracking-wide uppercase flex";
   const labelClass = "block text-[11px] tracking-wide text-neutral-500";
 
   return (
-    <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
-      <div className="flex flex-col gap-4 max-w-2xl">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
-            <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
-          </div>
-          <LocaleTabs className="ml-auto" locales={locales} active={activeLocale} onChange={handleChangeLocale} />
-        </div>
-      </div>
-
-      <div className="grid max-w-2xl gap-10">
-        {!!errors.length && (
-          <ul className="text-xs text-danger space-y-1">
-            {errors.map((e) => (
-              <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>
-            ))}
-          </ul>
-        )}
-        <form className="space-y-6">
-          {activeLocale !== defaultLocale && (
-            <div className="rounded-md border border-warning bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
-              {t("editingLocale")} <strong>{activeLocale}</strong>
+    <>
+      <div className="sensor" />
+      <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-6">
+        <div id="sticky-header" className="max-w-2xl sticky top-4 z-1 bg-white pb-4">
+          <div className="relative w-full h-full flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{tProfile("title")}</h1>
+              <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
             </div>
+            <LocaleTabs className="ml-auto" locales={locales} active={activeLocale} onChange={handleChangeLocale} />
+            <div className="w-full h-full -z-1 absolute -translate-y-1/2 bg-white" />
+          </div>
+        </div>
+
+        <div className="grid max-w-2xl gap-10">
+          {!!errors.length && (
+            <ul className="text-xs text-danger space-y-1">
+              {errors.map((e) => (
+                <li key={e}>{e === "TYPE" ? "Invalid file type" : e === "SIZE" ? "File too large (512KB max)" : e}</li>
+              ))}
+            </ul>
           )}
-
-          <div className="space-y-6">
-            {baseLocale && (
-              <>
-                <section className="card">
-                  <h3 className={sectionLabelClass}>{t("avatar") || "Avatar"}</h3>
-                  <fieldset className="grid grid-cols-3 items-center">
-                    <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer col-span-2">
-                      <UserAvatar src={avatar.previewUrl || profile.avatarUrl || undefined} sessionUser={false} size={80} name={profile.displayName} />
-                      <div className="text-neutral-500 text-xs">{t("userProfile.clickToUpload")}</div>
-                      <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarChange} className="hidden" />
-                    </label>
-                    <div className="flex flex-col items-start gap-2">
-                      {(profile.avatarUrl || avatar.file) && (
-                        <button type="button" onClick={handleClearAvatar} className="text-btn text-danger text-xs">
-                          {t("removeImage") || "Remove"}
-                        </button>
-                      )}
-                    </div>
-                  </fieldset>
-                </section>
-
-                <section className="card">
-                  <h3 className={sectionLabelClass}>{t("coverImage") || "Cover Image"}</h3>
-                  <fieldset className="space-y-3">
-                    <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image-input">
-                      <span className="aspect-[16/6] w-full rounded-lg overflow-hidden bg-neutral-100 border border-neutral-300 cursor-pointer">
-                        {cover.previewUrl || profile.coverImage ? (
-                          <img src={(cover.previewUrl || profile.coverImage) as string} alt="cover" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[11px] text-slate-500 gap-2">
-                            <strong>{t("coverImage")}</strong> — {t("userProfile.clickToUpload")}
-                          </div>
-                        )}
-                      </span>
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer" onClick={handleChooseImageClick}>{t("chooseImage") || "Choose Image"}</label>
-                      {(profile.coverImage || cover.file) && (
-                        <button type="button" onClick={handleClearCover} className="text-btn text-danger text-xs">
-                          {t("removeImage") || "Remove"}
-                        </button>
-                      )}
-                    </div>
-                    <input id="cover-image-input" type="file" accept="image/*" className="hidden" onChange={onCoverChange} />
-                  </fieldset>
-                </section>
-              </>
+          <form className="space-y-6">
+            {activeLocale !== defaultLocale && (
+              <div className="rounded-md border border-warning bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+                {t("editingLocale")} <strong>{activeLocale}</strong>
+              </div>
             )}
 
-            <section className="card">
-              <h3 className={sectionLabelClass}>{t("basicInfo") || "Basic Info"}<LocaleLabel /></h3>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <label className={labelClass}>Display Name</label>
-                  <input value={baseLocale ? profile.displayName : currentTr.displayName} onChange={handleDisplayNameChange} className="w-full input input-secondary" />
-                </div>
-                <div className="space-y-1">
-                  <label className={labelClass}>Bio</label>
-                  <textarea value={baseLocale ? profile.bio : currentTr.bio} onChange={handleBioChange} className="w-full input input-secondary resize-y min-h-32" />
-                </div>
-              </div>
-            </section>
+            <div className="space-y-6">
+              {baseLocale && (
+                <>
+                  <section className="card">
+                    <h3 className={sectionLabelClass}>{t("avatar") || "Avatar"}</h3>
+                    <fieldset className="grid grid-cols-3 items-center">
+                      <label htmlFor="avatar-upload" className="flex flex-row items-center justify-start gap-4 cursor-pointer col-span-2">
+                        <UserAvatar src={avatar.previewUrl || profile.avatarUrl || undefined} sessionUser={false} size={80} name={profile.displayName} />
+                        <div className="text-neutral-500 text-xs">{t("userProfile.clickToUpload")}</div>
+                        <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp" onChange={onAvatarChange} className="hidden" />
+                      </label>
+                      <div className="flex flex-col items-start gap-2">
+                        {(profile.avatarUrl || avatar.file) && (
+                          <button type="button" onClick={handleClearAvatar} className="text-btn text-danger text-xs">
+                            {t("removeImage") || "Remove"}
+                          </button>
+                        )}
+                      </div>
+                    </fieldset>
+                  </section>
 
-            <section className="card">
-              <h3 className={sectionLabelClass}>{t("cta") || "CTA Button"} <LocaleLabel /></h3>
-              <fieldset className="space-y-3">
-                {baseLocale ? (
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <section className="card">
+                    <h3 className={sectionLabelClass}>{t("coverImage") || "Cover Image"}</h3>
+                    <fieldset className="space-y-3">
+                      <label className="text-neutral-500 flex flex-col gap-1" htmlFor="cover-image-input">
+                        <span className="aspect-[16/6] w-full rounded-lg overflow-hidden bg-neutral-100 border border-neutral-300 cursor-pointer">
+                          {cover.previewUrl || profile.coverImage ? (
+                            <img src={(cover.previewUrl || profile.coverImage) as string} alt="cover" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[11px] text-slate-500 gap-2">
+                              <strong>{t("coverImage")}</strong> — {t("userProfile.clickToUpload")}
+                            </div>
+                          )}
+                        </span>
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <label htmlFor="cover-image-input" className="btn btn-ghost btn-xs cursor-pointer" onClick={handleChooseImageClick}>{t("chooseImage") || "Choose Image"}</label>
+                        {(profile.coverImage || cover.file) && (
+                          <button type="button" onClick={handleClearCover} className="text-btn text-danger text-xs">
+                            {t("removeImage") || "Remove"}
+                          </button>
+                        )}
+                      </div>
+                      <input id="cover-image-input" type="file" accept="image/*" className="hidden" onChange={onCoverChange} />
+                    </fieldset>
+                  </section>
+                </>
+              )}
+
+              <section className="card">
+                <h3 className={sectionLabelClass}>{t("basicInfo") || "Basic Info"}<LocaleLabel /></h3>
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <label className={labelClass}>Display Name</label>
+                    <input value={baseLocale ? profile.displayName : currentTr.displayName} onChange={handleDisplayNameChange} className="w-full input input-secondary" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className={labelClass}>Bio</label>
+                    <textarea value={baseLocale ? profile.bio : currentTr.bio} onChange={handleBioChange} className="w-full input input-secondary resize-y min-h-32" />
+                  </div>
+                </div>
+              </section>
+
+              <section className="card">
+                <h3 className={sectionLabelClass}>{t("cta") || "CTA Button"} <LocaleLabel /></h3>
+                <fieldset className="space-y-3">
+                  {baseLocale ? (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className={labelClass}>Label</label>
+                        <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full input input-secondary text-sm" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className={labelClass}>Href</label>
+                        <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full input input-secondary text-sm" />
+                      </div>
+                      <div>
+                        <label className={labelClass}>Label Color</label>
+                        <div className="flex items-center gap-2 relative mt-1">
+                          <label htmlFor="text-color-input" className="h-9 w-9 input cursor-pointer" style={{ backgroundColor: isValidFullHex(textColorHex) ? textColorHex : (profile.ctaConfig.textColor || "#FFFFFF") }} />
+                          <input value={textColorHex} onChange={onTextHexChange} placeholder="#FFFFFF" className={clsx("w-24 input text-sm font-mono uppercase flex-1", isValidFullHex(textColorHex) ? "input-secondary" : "input-warning")} />
+                          <input id="text-color-input" type="color" value={isValidFullHex(textColorHex) ? textColorHex : (profile.ctaConfig.textColor || "#FFFFFF")} onChange={onTextColorPickerChange} className="pointer-events-none opacity-0 absolute bottom-0" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className={labelClass}>Color</label>
+                        <div className="flex items-center gap-2 relative mt-1">
+                          <label htmlFor="bg-color-input" className="h-9 w-9 input cursor-pointer" style={{ backgroundColor: isValidFullHex(bgColorHex) ? bgColorHex : (profile.ctaConfig.color || "#8A6A40") }} />
+                          <input value={bgColorHex} onChange={onBgHexChange} placeholder="#8A6A40" className={clsx("w-24 input text-sm font-mono uppercase flex-1", isValidFullHex(bgColorHex) ? "input-secondary" : "input-warning")} />
+                          <input id="bg-color-input" type="color" value={isValidFullHex(bgColorHex) ? bgColorHex : (profile.ctaConfig.color || "#8A6A40")} onChange={onBgColorPickerChange} className="pointer-events-none opacity-0 absolute bottom-0" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className={labelClass}>Size</label>
+                        <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full input input-secondary text-sm">
+                          <option value="sm">Small</option>
+                          <option value="md">Medium</option>
+                          <option value="lg">Large</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className={labelClass}>Icon</label>
+                        <div className="flex items-center gap-2">
+                          <button type="button" onClick={handleOpenIconPicker} className="input text-sm inline-flex gap-2 items-center btn-ghost flex-1 cursor-pointer !ring-0 h-10">
+                            {ctaIconEl}
+                            <span>{profile.ctaConfig.icon || "Pick"}</span>
+                          </button>
+                          {profile.ctaConfig.icon && (<button type="button" onClick={handleClearIcon} className="btn btn-ghost btn-xs">✕</button>)}
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className={labelClass}>Style</label>
+                        <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full input input-secondary text-sm">
+                          <option value="solid">Solid</option>
+                          <option value="outline">Outline</option>
+                          <option value="ghost">Ghost</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className={labelClass}>Radius</label>
+                        <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full input input-secondary text-sm">
+                          <option value="sm">Small</option>
+                          <option value="md">Medium</option>
+                          <option value="lg">Large</option>
+                          <option value="full">Full</option>
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
                     <div className="space-y-1">
                       <label className={labelClass}>Label</label>
-                      <input value={profile.ctaConfig.label || ""} onChange={handleCtaLabelChange} className="w-full input input-secondary text-sm" />
+                      <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full input input-secondary text-sm" />
                     </div>
-                    <div className="space-y-1">
-                      <label className={labelClass}>Href</label>
-                      <input value={profile.ctaConfig.href || ""} onChange={handleCtaHrefChange} className="w-full input input-secondary text-sm" />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Label Color</label>
-                      <div className="flex items-center gap-2 relative mt-1">
-                        <label htmlFor="text-color-input" className="h-9 w-9 input cursor-pointer" style={{ backgroundColor: isValidFullHex(textColorHex) ? textColorHex : (profile.ctaConfig.textColor || "#FFFFFF") }} />
-                        <input value={textColorHex} onChange={onTextHexChange} placeholder="#FFFFFF" className={clsx("w-24 input text-sm font-mono uppercase flex-1", isValidFullHex(textColorHex) ? "input-secondary" : "input-warning")} />
-                        <input id="text-color-input" type="color" value={isValidFullHex(textColorHex) ? textColorHex : (profile.ctaConfig.textColor || "#FFFFFF")} onChange={onTextColorPickerChange} className="pointer-events-none opacity-0 absolute bottom-0" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelClass}>Color</label>
-                      <div className="flex items-center gap-2 relative mt-1">
-                        <label htmlFor="bg-color-input" className="h-9 w-9 input cursor-pointer" style={{ backgroundColor: isValidFullHex(bgColorHex) ? bgColorHex : (profile.ctaConfig.color || "#8A6A40") }} />
-                        <input value={bgColorHex} onChange={onBgHexChange} placeholder="#8A6A40" className={clsx("w-24 input text-sm font-mono uppercase flex-1", isValidFullHex(bgColorHex) ? "input-secondary" : "input-warning")} />
-                        <input id="bg-color-input" type="color" value={isValidFullHex(bgColorHex) ? bgColorHex : (profile.ctaConfig.color || "#8A6A40")} onChange={onBgColorPickerChange} className="pointer-events-none opacity-0 absolute bottom-0" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelClass}>Size</label>
-                      <select value={profile.ctaConfig.size || "md"} onChange={handleCtaSizeChange} className="w-full input input-secondary text-sm">
-                        <option value="sm">Small</option>
-                        <option value="md">Medium</option>
-                        <option value="lg">Large</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelClass}>Icon</label>
-                      <div className="flex items-center gap-2">
-                        <button type="button" onClick={handleOpenIconPicker} className="input text-sm inline-flex gap-2 items-center btn-ghost flex-1 cursor-pointer !ring-0 h-10">
-                          {ctaIconEl}
-                          <span>{profile.ctaConfig.icon || "Pick"}</span>
-                        </button>
-                        {profile.ctaConfig.icon && (<button type="button" onClick={handleClearIcon} className="btn btn-ghost btn-xs">✕</button>)}
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelClass}>Style</label>
-                      <select value={profile.ctaConfig.style || "solid"} onChange={handleCtaStyleChange} className="w-full input input-secondary text-sm">
-                        <option value="solid">Solid</option>
-                        <option value="outline">Outline</option>
-                        <option value="ghost">Ghost</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelClass}>Radius</label>
-                      <select value={profile.ctaConfig.radius || "full"} onChange={handleCtaRadiusChange} className="w-full input input-secondary text-sm">
-                        <option value="sm">Small</option>
-                        <option value="md">Medium</option>
-                        <option value="lg">Large</option>
-                        <option value="full">Full</option>
-                      </select>
+                  )}
+                  <br />
+                  <div className="pt-2">
+                    <label className={labelClass}>Preview</label>
+                    <div className="h-52 flex items-center justify-center bg-neutral-100 rounded-lg">
+                      <ProviderCTA config={{ ...profile.ctaConfig, label: baseLocale ? profile.ctaConfig.label : currentTr.ctaLabel || profile.ctaConfig.label }} preview />
                     </div>
                   </div>
-                ) : (
-                  <div className="space-y-1">
-                    <label className={labelClass}>Label</label>
-                    <input value={currentTr.ctaLabel} onChange={handleCtaLabelTrChange} className="w-full input input-secondary text-sm" />
-                  </div>
-                )}
-                <br />
-                <div className="pt-2">
-                  <label className={labelClass}>Preview</label>
-                  <div className="h-52 flex items-center justify-center bg-neutral-100 rounded-lg">
-                    <ProviderCTA config={{ ...profile.ctaConfig, label: baseLocale ? profile.ctaConfig.label : currentTr.ctaLabel || profile.ctaConfig.label }} preview />
-                  </div>
-                </div>
-                <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
-                  <div className="flex items-center gap-1">
-                    <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-success" : "bg-warning")} />
-                    <span>Label HEX</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-success" : "bg-warning")} />
-                    <span>Color HEX</span>
-                  </div>
-                </div>
-              </fieldset>
-            </section>
-
-            {baseLocale && (
-              <section className="card">
-                <div className="flex items-center justify-between">
-                  <h3 className={sectionLabelClass}>{t("contactChannels")}</h3>
-                  <button type="button" onClick={handleAddChannel} className="btn btn-secondary btn-xs">
-                    <Plus size={14} />
-                    {t("addChannel")}
-                  </button>
-                </div>
-                <fieldset className="space-y-3">
-                  <div className="space-y-3">
-                    {profile.contacts.channels.map((ch, i) => (
-                      <div key={`${ch.type}-${i}`} className="flex items-center gap-2">
-                        <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="input input-secondary text-xs">
-                          <option value="link">Link</option>
-                          <option value="phone">Phone</option>
-                          <option value="email">Email</option>
-                          <option value="line">Line</option>
-                        </select>
-                        <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 input input-secondary text-xs" />
-                        <button type="button" data-index={i} onClick={handleChannelRemove} className="btn btn-ghost btn-xs">✕</button>
-                      </div>
-                    ))}
-                    {!profile.contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
+                  <div className="flex gap-4 text-[10px] text-neutral-500 pt-1">
+                    <div className="flex items-center gap-1">
+                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(textColorHex) ? "bg-success" : "bg-warning")} />
+                      <span>Label HEX</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className={clsx("inline-block w-2 h-2 rounded-full", isValidFullHex(bgColorHex) ? "bg-success" : "bg-warning")} />
+                      <span>Color HEX</span>
+                    </div>
                   </div>
                 </fieldset>
               </section>
-            )}
-          </div>
 
-          <div className="flex items-center gap-3 pt-2">
-            {activeLocale !== defaultLocale && (
-              <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className={clsx("btn btn-sm btn-ghost", !dirtyActive ? "" : "btn-danger")}>
-                <Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
-              </button>
-            )}
-          </div>
-        </form>
+              {baseLocale && (
+                <section className="card">
+                  <div className="flex items-center justify-between">
+                    <h3 className={sectionLabelClass}>{t("contactChannels")}</h3>
+                    <button type="button" onClick={handleAddChannel} className="btn btn-secondary btn-xs">
+                      <Plus size={14} />
+                      {t("addChannel")}
+                    </button>
+                  </div>
+                  <fieldset className="space-y-3">
+                    <div className="space-y-3">
+                      {profile.contacts.channels.map((ch, i) => (
+                        <div key={`${ch.type}-${i}`} className="flex items-center gap-2">
+                          <select value={ch.type} data-index={i} data-field="type" onChange={handleChannelChange} className="input input-secondary text-xs">
+                            <option value="link">Link</option>
+                            <option value="phone">Phone</option>
+                            <option value="email">Email</option>
+                            <option value="line">Line</option>
+                          </select>
+                          <input value={ch.value} placeholder="Value" data-index={i} data-field="value" onChange={handleChannelChange} className="flex-1 input input-secondary text-xs" />
+                          <button type="button" data-index={i} onClick={handleChannelRemove} className="btn btn-ghost btn-xs">✕</button>
+                        </div>
+                      ))}
+                      {!profile.contacts.channels.length && <div className="text-[11px] text-neutral-400">No channels yet</div>}
+                    </div>
+                  </fieldset>
+                </section>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              {activeLocale !== defaultLocale && (
+                <button type="button" onClick={() => resetLocale(activeLocale)} disabled={!dirtyActive} className={clsx("btn btn-sm btn-ghost", !dirtyActive ? "" : "btn-danger")}>
+                  <Trash size={16} /> {t("reset")} — {activeLocale.toUpperCase()}
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+        {iconPickerOpen && (
+          <IconPicker value={profile.ctaConfig.icon} onChange={handleIconPicked} onClose={handleCloseIconPicker} />
+        )}
       </div>
-      {iconPickerOpen && (
-        <IconPicker value={profile.ctaConfig.icon} onChange={handleIconPicked} onClose={handleCloseIconPicker} />
-      )}
-    </div>
+    </>
   );
 }
