@@ -29,10 +29,11 @@ export default function ResponsiveSwiper({
   maxSlidePerView
 }: ResponsiveSwiperProps) {
   const [viewportWidth, setViewportWidth] = useState(0);
-  useEffect(() => {
+  
+  const onSizeChange = useCallback(() => {
     setViewportWidth(window.innerWidth);
   }, []);
-  const onSizeChange = useCallback(() => {
+  useEffect(() => {
     setViewportWidth(window.innerWidth);
   }, []);
   useEffect(() => {
