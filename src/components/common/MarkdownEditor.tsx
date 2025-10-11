@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import React from "react";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
-import remarkRehype from "remark-rehype";
 
 interface Props {
   theme?: "light" | "dark";
@@ -43,7 +42,7 @@ const MarkdownEditor: React.FC<Props & MDEditorProps> = ({
         preview={preview}
         previewOptions={{
           remarkPlugins: [[remarkGfm]],
-          rehypePlugins: [[remarkRehype, rehypeSanitize]],
+          rehypePlugins: [[rehypeSanitize]],
         }}
         {...props}
       />
