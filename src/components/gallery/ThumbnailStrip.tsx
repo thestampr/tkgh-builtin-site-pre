@@ -49,7 +49,6 @@ export const ThumbnailStrip: React.FC<Props> = ({ images, activeIndex, onSelect 
               i === activeIndex ? "ring-2 ring-white" : "ring-1 ring-neutral-300 hover:ring-neutral-400"
             )}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={src} alt="thumb" className="w-full h-full object-cover cursor-pointer" draggable={false} />
           </button>
         ))}

@@ -12,7 +12,7 @@ for (const lc of supportedLocales || ["en"]) {
   // Try to load matching md pack; if none, fallback to EN
   let pack: StaticTextDefaultValue = EN_US;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require(`@/i18n/md/${lc}`);
     if (mod?.default) pack = mod.default as StaticTextDefaultValue;
   } catch {

@@ -59,7 +59,6 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
           />
           <span className="cursor-pointer">
             {(coverPreviewUrl || draft.coverImage) ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={coverPreviewUrl || draft.coverImage || undefined} alt="cover" className="h-40 w-full object-cover rounded border border-neutral-200" />
             ) : (
               <div className="h-40 w-full rounded border border-dashed border-neutral-300 flex items-center justify-center text-[11px] text-neutral-400 bg-neutral-50">

@@ -405,12 +405,10 @@ export const ImageViewer: React.FC<Props> = ({ images, index, onClose, debug = f
                 }}
               >
                 {prevSrc && (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={prevSrc} alt="prev" aria-hidden className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none p-6 sm:p-12 md:p-24" style={{ transform: "translate3d(-100%,0,0)", visibility: showSides ? "visible" : "hidden" }} draggable={false} />
                 )}
                 {/* current */}
                 <div className="absolute inset-0 flex items-center justify-center overflow-hidden p-6 sm:p-12 md:p-24">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     ref={imageRef}
                     src={src}
@@ -443,7 +441,6 @@ export const ImageViewer: React.FC<Props> = ({ images, index, onClose, debug = f
                   />
                 </div>
                 {nextSrc && (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={nextSrc} alt="next" aria-hidden className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none p-6 sm:p-12 md:p-24" style={{ transform: "translate3d(100%,0,0)", visibility: showSides ? "visible" : "hidden" }} draggable={false} />
                 )}
 

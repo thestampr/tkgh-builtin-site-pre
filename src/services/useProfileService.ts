@@ -255,7 +255,6 @@ export function useProfileService(initial?: InitialProfileRecord | null) {
   useEffect(() => () => {
     if (avatar.previewUrl) URL.revokeObjectURL(avatar.previewUrl);
     if (cover.previewUrl) URL.revokeObjectURL(cover.previewUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** Validate required fields and simple constraints */
