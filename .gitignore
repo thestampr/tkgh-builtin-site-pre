@@ -52,3 +52,6 @@ migration_lock.toml
 
 # uploads
 public/uploads
+
+# backups
+*.bak
