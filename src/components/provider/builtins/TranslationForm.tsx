@@ -1,5 +1,6 @@
 "use client";
 
+import MarkdownEditor from "@/components/common/MarkdownEditor";
 import { useTranslations } from "next-intl";
 import React from "react";
 import type { TranslationDraft } from "./types";
@@ -51,11 +52,10 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
       </div>
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Content ({localeLabel})</label>
-        <textarea
+        <MarkdownEditor
+          className="w-full resize-y overscroll-contain min-h-[500px]"
           value={value.content || ""}
-          onChange={e => onChange({ ...value, content: e.target.value })}
-          rows={6}
-          className="w-full input input-secondary !text-xs resize-y"
+          onChange={content => onChange({ ...value, content })}
         />
       </div>
       <label className="inline-flex items-center gap-2 text-xs text-neutral-600">

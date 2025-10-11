@@ -1,5 +1,6 @@
 import { CategoryButton } from "@/components/CategoryButton";
 import BackButton from "@/components/common/BackButton";
+import MarkdownViewer from "@/components/common/MarkdownViewer";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ImageGallery } from "@/components/gallery/ImageGallery";
 import ProviderButton from "@/components/ProviderButton";
@@ -7,15 +8,11 @@ import { TrackBuiltInView } from "@/components/TrackBuiltInView";
 import { getBuiltInItem } from "@/lib/api";
 import { authOptions } from "@/lib/auth/options";
 import { formatPrice } from "@/lib/formatting";
-import DOMPurify from "isomorphic-dompurify";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkRehype from "remark-rehype";
 
 export const dynamic = "force-dynamic";
 
@@ -91,9 +88,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
           {/* Description */}
           <article className="md:col-span-2 space-y-4">
             {item.content ? (
-              <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[remarkRehype]}>
-                {DOMPurify.sanitize(item.content)}
-              </Markdown>
+              <MarkdownViewer content={item.content} />
             ) : (
               <div className="text-slate-600">{tBuiltIn("noContent")}</div>
             )}

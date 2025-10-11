@@ -1,5 +1,6 @@
 "use client";
 
+import MarkdownEditor from "@/components/common/MarkdownEditor";
 import { kebabcase } from "@/lib/formatting";
 import type { Category } from "@prisma/client";
 import { useTranslations } from "next-intl";
@@ -89,11 +90,10 @@ export const BaseLocaleForm: React.FC<BaseLocaleFormProps> = ({ draft, onChange,
       </div>
       <div className="space-y-1">
         <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.content")}</label>
-        <textarea
+        <MarkdownEditor
+          className="w-full resize-y overscroll-contain min-h-[500px]"
           value={draft.content || ""}
-          onChange={e => onChange({ content: e.target.value })}
-          rows={6}
-          className="w-full input input-secondary !text-xs resize-y"
+          onChange={content => onChange({ content })}
         />
       </div>
       <GalleryEditor
