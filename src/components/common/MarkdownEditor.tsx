@@ -18,13 +18,14 @@ interface Props {
   onChange?: MDEditorProps['onChange'];
 }
 
-const MarkdownEditor: React.FC<Props> = ({ 
+const MarkdownEditor: React.FC<Props & MDEditorProps> = ({ 
   className,
   theme,
   value,
   onChange = () => {},
   preview = "edit",
-  height = 500
+  height = 500,
+  ...props
 }) => {
   const localeCode = useTranslations("Locale")("code");
 
@@ -44,6 +45,7 @@ const MarkdownEditor: React.FC<Props> = ({
           remarkPlugins: [[remarkGfm]],
           rehypePlugins: [[remarkRehype, rehypeSanitize]],
         }}
+        {...props}
       />
     </div>
   );

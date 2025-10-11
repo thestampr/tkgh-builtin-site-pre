@@ -1,5 +1,6 @@
 "use client";
 
+import type { MarkdownPreviewProps } from '@uiw/react-markdown-preview';
 import MDEditor from '@uiw/react-md-editor';
 import clsx from 'clsx';
 import React from "react";
@@ -13,7 +14,12 @@ interface Props {
   className?: string;
 }
 
-const MarkdownViewer: React.FC<Props> = ({ content, className, theme }) => {
+const MarkdownViewer: React.FC<Props & MarkdownPreviewProps> = ({ 
+  content, 
+  className, 
+  theme, 
+  ...props 
+}) => {
   return (
     <div data-color-mode={theme || "light"}>
       <MDEditor.Markdown
@@ -24,6 +30,7 @@ const MarkdownViewer: React.FC<Props> = ({ content, className, theme }) => {
           "prose prose-slate max-w-none", 
           className
         )}
+        {...props}
       />
     </div>
   );
