@@ -36,6 +36,7 @@ export default function ResponsiveSwiper({
     setViewportWidth(window.innerWidth);
   }, []);
   useEffect(() => {
+    if (typeof window === "undefined") return;
     window.addEventListener("resize", onSizeChange);
     return () => {
       window.removeEventListener("resize", onSizeChange);
