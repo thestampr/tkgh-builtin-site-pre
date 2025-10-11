@@ -298,8 +298,6 @@ export default function ProfileEditor({ initialProfile }: Props) {
 
     if (sensors) {
       observer.observe(sensors);
-    } else {
-      alert("Cannot find sticky header element");
     }
 
     return () => {
