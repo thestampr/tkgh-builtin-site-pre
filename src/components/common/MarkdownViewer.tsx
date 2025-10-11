@@ -1,34 +1,42 @@
 "use client";
 
-import type { MarkdownPreviewProps } from '@uiw/react-markdown-preview';
-import MDEditor from '@uiw/react-md-editor';
-import clsx from 'clsx';
+import "@/lib/mdconfig";
+import clsx from "clsx";
+import DOMPurify from "dompurify";
+import { MdPreview, type MdPreviewProps } from "md-editor-rt";
+import "md-editor-rt/lib/style.css";
+import { useLocale } from "next-intl";
 import React from "react";
-import rehypeSanitize from "rehype-sanitize";
-import remarkGfm from "remark-gfm";
 
 interface Props {
   content: string;
-  theme?: "light" | "dark";
   className?: string;
+  theme?: "light" | "dark";
+  locale?: string;
 }
 
-const MarkdownViewer: React.FC<Props & MarkdownPreviewProps> = ({ 
-  content, 
-  className, 
-  theme, 
-  ...props 
+const MarkdownViewer: React.FC<Props & MdPreviewProps> = ({
+  content,
+  className,
+  theme,
+  locale,
+  ...props
 }) => {
+  locale ??= useLocale();
+
   return (
     <div data-color-mode={theme || "light"}>
-      <MDEditor.Markdown
-        source={content}
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSanitize]}
+      <MdPreview
         className={clsx(
-          "prose prose-slate max-w-none", 
+          "prose prose-slate max-w-screen **:!flex-wrap",
           className
         )}
+        value={content}
+        language={locale}
+        previewTheme="github"
+        codeTheme="github"
+        sanitize={DOMPurify.sanitize}
+        noImgZoomIn
         {...props}
       />
     </div>
