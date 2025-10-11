@@ -120,6 +120,7 @@
   },
   "Locale": {
     "name": "English",
+    "code": "en-US",
     "en": "English",
     "th": "ภาษาไทย",
     "ja": "日本語"

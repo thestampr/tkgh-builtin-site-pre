@@ -120,6 +120,7 @@
   },
   "Locale": {
     "name": "ภาษาไทย",
+    "code": "th-TH",
     "en": "English",
     "th": "ภาษาไทย",
     "ja": "日本語"
