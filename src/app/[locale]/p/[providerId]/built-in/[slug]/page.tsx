@@ -88,7 +88,10 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
           {/* Description */}
           <article className="md:col-span-2 space-y-4">
             {item.content ? (
-              <MarkdownViewer content={item.content} />
+              <MarkdownViewer content={item.content}
+                style={{
+                  fontFamily: "kanit, sans-serif"
+                }} />
             ) : (
               <div className="text-slate-600">{tBuiltIn("noContent")}</div>
             )}
