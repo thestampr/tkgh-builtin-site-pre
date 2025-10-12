@@ -51,7 +51,7 @@ export const TranslationForm: React.FC<TranslationFormProps> = ({ value, onChang
         </div>
       </div>
       <div className="space-y-1">
-        <label className="block text-[11px] uppercase tracking-wide text-neutral-500">Content ({localeLabel})</label>
+        <label className="block text-[11px] uppercase tracking-wide text-neutral-500">{t("fields.content")} ({localeLabel})</label>
         <MarkdownEditor
           className="w-full resize-y overscroll-contain min-h-[500px]"
           value={value.content || ""}
