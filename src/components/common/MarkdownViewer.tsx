@@ -4,7 +4,6 @@ import "@/lib/mdconfig";
 import clsx from "clsx";
 import DOMPurify from "dompurify";
 import { MdPreview, type MdPreviewProps } from "md-editor-rt";
-import "md-editor-rt/lib/style.css";
 import { useLocale } from "next-intl";
 import React from "react";
 

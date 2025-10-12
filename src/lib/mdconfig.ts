@@ -1,6 +1,7 @@
 import { locales as supportedLocales } from "@/i18n/navigation";
 import type { StaticTextDefaultValue } from "md-editor-rt";
 import { config } from "md-editor-rt";
+import "md-editor-rt/lib/style.css";
 
 // Always include English for fallback
 import EN_US from "@/i18n/md/en";

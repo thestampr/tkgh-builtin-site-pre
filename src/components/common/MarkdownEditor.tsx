@@ -5,7 +5,6 @@ import clsx from "clsx";
 import DOMPurify from "dompurify";
 import type { EditorProps, ExposeParam, ToolbarNames } from "md-editor-rt";
 import { MdEditor } from "md-editor-rt";
-import "md-editor-rt/lib/style.css";
 import { useLocale } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
