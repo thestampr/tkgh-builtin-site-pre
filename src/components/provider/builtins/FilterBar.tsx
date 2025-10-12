@@ -3,13 +3,13 @@
 import type { BuiltInStatus, Category } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import React from "react";
-import type { sortKind } from "./types";
+import type { FilterOptions, sortKind } from "./types";
 
 interface FilterBarProps {
   query: string;
   onQueryChange: (v: string) => void;
   statusFilter: BuiltInStatus | "ALL";
-  onStatusChange: (v: BuiltInStatus | "ALL") => void;
+  onStatusChange: (v: FilterOptions["status"]) => void;
   categoryFilter: string;
   onCategoryChange: (v: string) => void;
   sort: sortKind;
@@ -49,7 +49,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <label className={labelCls}>{t("filters.status")}</label>
         <select
           value={statusFilter}
-          onChange={e => onStatusChange(e.target.value as BuiltInStatus | 'ALL')}
+          onChange={e => onStatusChange(e.target.value as FilterOptions["status"])}
           className="w-full input text-xs"
         >
           <option value="ALL">{t("filters.all")}</option>
