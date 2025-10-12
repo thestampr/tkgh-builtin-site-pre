@@ -21,13 +21,11 @@
   --accent: #047e37;
   --variant: #d01a22;
   --alert: oklch(87.9% 0.169 91.605);
-  --divider: #51545a;
+  --divider: #d4d4d4;
 
   --success: var(--accent);
   --danger: var(--variant);
   --warning: var(--alert);
-
-  --divider: #51545a;
 }
 
 :root {
