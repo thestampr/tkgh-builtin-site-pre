@@ -144,8 +144,6 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--foreground);
   text-wrap: nowrap;
   cursor: pointer;
   position: relative;
