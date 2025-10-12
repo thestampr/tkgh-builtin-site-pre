@@ -22,11 +22,11 @@ export default async function AccountLayout({
 
   const content = role === "PROVIDER"
     ? (
-      <div className="md:flex md:items-start gap-8 max-w-7xl mx-auto w-full px-6 py-10">
-        <div className="md:w-56 flex-shrink-0 mb-6 md:mb-0 sticky top-8 self-start">
+      <div className="md:flex md:items-start gap-8 max-w-7xl mx-auto w-full px-6 py-6 md:py-10">
+        <div className="md:w-56 flex-shrink-0 mb-6 md:mb-0 sticky top-4 md:top-8 self-start z-1">
           <AccountSidebar />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 !-z-0">
           {children}
         </div>
       </div>
