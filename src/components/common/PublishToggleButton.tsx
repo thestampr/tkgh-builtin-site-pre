@@ -27,10 +27,10 @@ export const PublishToggleButton: React.FC<PublishToggleButtonProps> = ({ status
       onClick={handleClick}
       disabled={loading || disabled}
       className={clsx(
-        "px-2 py-0.5 rounded border text-[11px] transition cursor-pointer disabled:pointer-events-none",
+        "btn btn-ghost btn-xs",
         status 
-          ? "bg-accent/10 border-accent/20 text-accent hover:bg-accent/20" 
-          : "bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-200",
+          ? "btn-accent !bg-accent/10 !border-accent/20" 
+          : "!bg-neutral-50 !border-neutral-200 !text-neutral-600",
         className
       )}
       title={status ? t("unpublish") : t("publish")}
