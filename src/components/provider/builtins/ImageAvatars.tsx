@@ -14,7 +14,7 @@ export const ImageAvatars: React.FC<ImageAvatarsProps> = ({ coverImage, gallery,
   const dedup = raw.filter((src, idx) => idx === 0 || src !== raw[0]);
   const shown = dedup.slice(0, max);
   return (
-    <div className={`flex -space-x-2 ${className}`}>
+    <div className={`flex -space-x-3 ${className}`}>
       {shown.map((src, i) => (
         <img key={i} src={src} className="h-8 w-8 rounded-full object-cover ring-2 ring-white border border-neutral-300" />
       ))}
