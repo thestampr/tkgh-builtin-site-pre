@@ -534,6 +534,7 @@
     "fields": {
       "title": "ชื่อ",
       "slug": "สลัก",
+      "langs": "ภาษา",
       "price": "ราคา",
       "currency": "สกุลเงิน",
       "category": "หมวดหมู่",
@@ -581,6 +582,7 @@
     "fields": {
       "name": "ชื่อ",
       "slug": "สลัก",
+      "langs": "ภาษา",
       "excerpt": "คำโปรย",
       "description": "คำอธิบาย",
       "coverImage": "รูปปก"

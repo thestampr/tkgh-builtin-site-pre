@@ -534,6 +534,7 @@
     "fields": {
       "title": "タイトル",
       "slug": "スラッグ",
+      "langs": "言語",
       "price": "価格",
       "currency": "通貨",
       "category": "カテゴリー",
@@ -581,6 +582,7 @@
     "fields": {
       "name": "名前",
       "slug": "スラッグ",
+      "langs": "言語",
       "excerpt": "概要",
       "description": "説明",
       "coverImage": "カバー画像"

@@ -534,6 +534,7 @@
     "fields": {
       "title": "Title",
       "slug": "Slug",
+      "langs": "Languages",
       "price": "Price",
       "currency": "Currency",
       "category": "Category",
@@ -581,6 +582,7 @@
     "fields": {
       "name": "Name",
       "slug": "Slug",
+      "langs": "Languages",
       "excerpt": "Excerpt",
       "description": "Description",
       "coverImage": "Cover Image"
