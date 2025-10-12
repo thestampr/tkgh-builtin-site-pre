@@ -29,7 +29,7 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
   if (!item) return notFound();
 
   const hero = item.images?.[0] || null;
-  const hasGallery = item.images;
+  const hasGallery = (item.images || []).length > 1;
 
   const backHref = `/${locale}/p/${providerId}`;
 
@@ -134,14 +134,16 @@ export default async function BuiltInByProviderSlug({ params }: { params: Promis
       </section>
 
       {/* Gallery */}
-      {hasGallery && (
-        <section className="pb-16">
-          <div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20">
+      <section className="pb-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20">
+          { hasGallery ? (
             <h2 className="text-xl font-semibold text-slate-900 mb-4">{tCommon("gallery")}</h2>
-          </div>
-          <ImageGallery imageSrcList={item.images?.map((src) => src.url) || []} className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20" />
-        </section>
-      )}
+          ): (
+            <h2 className="text-xl text-[var(--muted-foreground)] mb-4">{tCommon("noGallery")}</h2>
+          ) }
+        </div>
+        <ImageGallery imageSrcList={item.images?.map((src) => src.url) || []} className="mx-auto max-w-7xl px-6 lg:px-12 xl:px-20" />
+      </section>
     </main>
   );
 }
