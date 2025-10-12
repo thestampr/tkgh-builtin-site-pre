@@ -31,3 +31,11 @@ export interface DraftShape {
 }
 
 export type sortKind = "updated_desc" | "title_asc" | "title_desc" | "views_desc" | "favorites_desc";
+export type BuiltInStatus = "PUBLISHED" | "DRAFT";
+
+export type FilterOptions = {
+  query: string,
+  status: BuiltInStatus | "ALL",
+  categoryId: string,
+  sort: sortKind
+}
