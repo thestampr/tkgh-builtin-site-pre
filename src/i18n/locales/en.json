@@ -55,6 +55,8 @@
     "gallery": "Gallery",
     "noGallery": "No Gallery to show",
     "price": "Price",
+    "edit": "Edit",
+    "delete": "Delete",
     "loading": "Loading...",
     "save": "Save",
     "saving": "Saving...",

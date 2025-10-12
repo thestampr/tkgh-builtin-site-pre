@@ -55,6 +55,8 @@
     "gallery": "ギャラリー",
     "noGallery": "ギャラリーはありません",
     "price": "価格",
+    "edit": "編集",
+    "delete": "削除",
     "loading": "読み込み中...",
     "save": "保存",
     "saving": "保存中...",
