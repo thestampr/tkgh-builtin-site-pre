@@ -7,8 +7,8 @@ import { defaultLocale, locales } from "@/i18n/navigation";
 import { confirmModal } from "@/lib/confirm";
 import { kebabcase } from "@/lib/formatting";
 import { useBuiltInsService } from "@/services/useBuiltInsService";
-import type { BuiltIn, BuiltInStatus, Category } from "@prisma/client";
-import { Plus } from "lucide-react";
+import type { BuiltIn, Category } from "@prisma/client";
+import { Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { BaseLocaleForm } from "./BaseLocaleForm";
@@ -18,6 +18,7 @@ import { TranslationForm } from "./TranslationForm";
 import type {
   BuiltInDto,
   DraftShape,
+  FilterOptions,
   TranslationDraft,
   sortKind
 } from "./types";
@@ -45,11 +46,14 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
   const [activeLocale, setActiveLocale] = useState<string>(defaultLocale);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"ALL" | BuiltInStatus>("ALL");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [sort, setSort] = useState<sortKind>("updated_desc");
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    query: "",
+    status: "ALL",
+    categoryId: "",
+    sort: "updated_desc"
+  });
   const fetchAbort = useRef<AbortController | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { list, create, update: updateItem, upsertTranslation, publishToggle, remove: removeItem, uploadImages: uploadImagesService } = useBuiltInsService();
 
@@ -59,13 +63,13 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     if (!val) return [];
     if (Array.isArray(val)) return val.filter((x): x is string => typeof x === "string");
     if (typeof val === "string") {
-      try { 
-        const arr = JSON.parse(val); 
-        return Array.isArray(arr) 
-        ? arr.filter((x): x is string => typeof x === "string") 
-        : []; 
-      } catch { 
-        return []; 
+      try {
+        const arr = JSON.parse(val);
+        return Array.isArray(arr)
+          ? arr.filter((x): x is string => typeof x === "string")
+          : [];
+      } catch {
+        return [];
       }
     }
     return [];
@@ -94,7 +98,7 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
 
   function applyLocal(
     source: BuiltInDto[],
-    params: { query: string; status: "ALL" | BuiltInStatus; categoryId: string; sort: sortKind }
+    params: FilterOptions
   ): BuiltInDto[] {
     const term = params.query.trim().toLowerCase();
     let out = source;
@@ -122,12 +126,12 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
 
   async function openEdit(item: BuiltInDto) {
     setEditing(item);
-    const gallery = (item.gallery && Array.isArray(item.gallery)) 
-    ? item.gallery 
-    : ( item.galleryJson 
-      ? JSON.parse(item.galleryJson as string) 
-      : []
-    );
+    const gallery = (item.gallery && Array.isArray(item.gallery))
+      ? item.gallery
+      : (item.galleryJson
+        ? JSON.parse(item.galleryJson as string)
+        : []
+      );
     setDraft({
       title: item.title || "",
       slug: item.slug || "",
@@ -268,12 +272,12 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
       if (!controller.signal.aborted) {
         const normalized = j.items.map(normalizeService);
         setRawItems(normalized);
-        setItems(applyLocal(normalized, { query, status: statusFilter, categoryId: categoryFilter, sort }));
+        setItems(applyLocal(normalized, filterOptions));
       }
     } catch {
       /* ignore */
     }
-  }, [list, query, statusFilter, categoryFilter, sort]);
+  }, [list, filterOptions]);
 
   // Auto refresh on tab focus/visibility
   useEffect(() => {
@@ -284,6 +288,23 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
     };
   }, [runFetch]);
 
+  const onQueryChange = (v: string) => {
+    setFilterOptions(o => ({ ...o, query: v }));
+    setItems(applyLocal(rawItems, { ...filterOptions, query: v }));
+  };
+  const onStatusChange = (v: FilterOptions["status"]) => {
+    setFilterOptions(o => ({ ...o, status: v }));
+    setItems(applyLocal(rawItems, { ...filterOptions, status: v }));
+  };
+  const onCategoryChange = (v: string) => {
+    setFilterOptions(o => ({ ...o, categoryId: v }));
+    setItems(applyLocal(rawItems, { ...filterOptions, categoryId: v }));
+  };
+  const onSortChange = (v: sortKind) => {
+    setFilterOptions(o => ({ ...o, sort: v }));
+    setItems(applyLocal(rawItems, { ...filterOptions, sort: v }));
+  };
+
   return (
     <div className="max-w-5xl mx-auto md:px-6 pb-10 space-y-10">
       <div className="flex flex-col gap-4">
@@ -292,9 +313,13 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
             <h1 className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#8a6a40] via-[#a4814f] to-[#8a6a40]">{t("title")}</h1>
             <p className="text-sm text-neutral-500 mt-1">{t("subtitle")}</p>
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <RefreshButton onRefresh={() => runFetch()} label={t("ui.refresh") || "Refresh"} refreshingLabel={t("ui.refreshing") || "Refreshing..."} />
-            <button onClick={openNew} className="btn btn-secondary">
+          <div className="flex items-center gap-2 text-sm w-full md:w-auto">
+            <button className="btn btn-ghost btn-sm md:!hidden flex-1 !justify-start text-neutral-500" type="button" onClick={() => setShowFilters(v => !v)}>
+              <Search size={14} />
+              {t("filters.search")}
+            </button>
+            <RefreshButton className="btn-sm" onRefresh={() => runFetch()} label={t("ui.refresh") || "Refresh"} refreshingLabel={t("ui.refreshing") || "Refreshing..."} />
+            <button onClick={openNew} className="btn btn-secondary btn-sm">
               <Plus size={14} />
               {t("new")}
             </button>
@@ -302,14 +327,15 @@ export default function BuiltInsManager({ initialItems, categories }: BuiltInsMa
           </div>
         </div>
         <FilterBar
-          query={query}
-          onQueryChange={v => { setQuery(v); setItems(applyLocal(rawItems, { query: v, status: statusFilter, categoryId: categoryFilter, sort })); }}
-          statusFilter={statusFilter}
-          onStatusChange={v => { const nv = v as BuiltInStatus | "ALL"; setStatusFilter(nv); setItems(applyLocal(rawItems, { query, status: nv, categoryId: categoryFilter, sort })); }}
-          categoryFilter={categoryFilter}
-          onCategoryChange={v => { setCategoryFilter(v); setItems(applyLocal(rawItems, { query, status: statusFilter, categoryId: v, sort })); }}
-          sort={sort}
-          onSortChange={v => { const ns = v as typeof sort; setSort(ns); setItems(applyLocal(rawItems, { query, status: statusFilter, categoryId: categoryFilter, sort: ns })); }}
+          className={showFilters ? "" : "hidden md:flex"}
+          query={filterOptions.query}
+          onQueryChange={onQueryChange}
+          statusFilter={filterOptions.status}
+          onStatusChange={onStatusChange}
+          categoryFilter={filterOptions.categoryId}
+          onCategoryChange={onCategoryChange}
+          sort={filterOptions.sort}
+          onSortChange={onSortChange}
           categories={categories}
         />
       </div>
