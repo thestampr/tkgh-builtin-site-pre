@@ -1,12 +1,14 @@
 "use client";
 
 import "@/lib/mdconfig";
+import { Emoji, Mark } from "@vavt/rt-extension";
+import "@vavt/rt-extension/lib/asset/Emoji.css";
 import clsx from "clsx";
 import DOMPurify from "dompurify";
 import type { EditorProps, ExposeParam, ToolbarNames } from "md-editor-rt";
 import { MdEditor } from "md-editor-rt";
 import { useLocale } from "next-intl";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface Props {
   value?: string;
@@ -51,6 +53,8 @@ const extendedToolbar: ToolbarNames[] = [
 ];
 
 const utilsToolbar: ToolbarNames[] = [
+  0,
+  1,
   "codeRow",
   "code",
   "link",
@@ -62,7 +66,7 @@ const utilsToolbar: ToolbarNames[] = [
 const extendedUtilsToolbar: ToolbarNames[] = [
   ...extendedToolbar,
   "-",
-  ...utilsToolbar
+  ...utilsToolbar,
 ];
 
 const previewActions: ToolbarNames[] = [
@@ -92,10 +96,14 @@ const desktopToolbar: ToolbarNames[] = [
   ...previewActions
 ];
 
+// BUG: defToolbars not showing in floating mode
 const floatingToolbars: ToolbarNames[] = [
   ...textToolbar,
   "-",
-  ...extendedToolbar
+  // 1,
+  ...extendedToolbar,
+  // "-",
+  // 0,
 ];
 
 const MarkdownEditor: React.FC<Props & EditorProps> = ({
@@ -165,6 +173,13 @@ const MarkdownEditor: React.FC<Props & EditorProps> = ({
     return mobileToolbar;
   };
 
+  const defToolbars = useMemo(() => {
+    return [
+      <Emoji key="emoji" title="Emoji" />,
+      <Mark key="mark" title="Mark" />
+    ];
+  }, []);
+
   return (
     <div data-color-mode={theme || "light"}>
       <MdEditor
@@ -179,6 +194,7 @@ const MarkdownEditor: React.FC<Props & EditorProps> = ({
         sanitize={DOMPurify.sanitize}
         language={locale}
         toolbars={toolbars}
+        defToolbars={defToolbars}
         floatingToolbars={floatingToolbars}
         previewTheme="github"
         codeTheme="github"

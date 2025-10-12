@@ -132,6 +132,13 @@ body {
   @apply h-0 sticky top-[-1px] opacity-0 pointer-events-none;
 }
 
+/* Fixer */
+.emojis li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Buttons - soft, theme-aware */
 .btn {
   display: inline-flex;
