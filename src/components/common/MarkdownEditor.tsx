@@ -24,6 +24,8 @@ interface EditorState {
   pageFullscreen: boolean;
 }
 
+type DeviceType = "mobile" | "tablet" | "desktop";
+
 const navToolbar: ToolbarNames[] = [
   "revoke",
   "next",
@@ -113,7 +115,6 @@ const MarkdownEditor: React.FC<Props & EditorProps> = ({
   theme,
   locale,
   onChange = () => { },
-  preview = "edit",
   ...props
 }) => {
   const editorRef = useRef<ExposeParam>(null);
@@ -123,8 +124,29 @@ const MarkdownEditor: React.FC<Props & EditorProps> = ({
     pageFullscreen: false,
   });
   const [viewportWidth, setViewportWidth] = useState(0);
+  const [deviceType, setDeviceType] = useState<DeviceType>("mobile");
+  const [userAgent, setUserAgent] = useState<string>("");
 
   locale ??= useLocale();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.navigator) {
+      const ua = window.navigator.userAgent;
+      setUserAgent(ua);
+      setDeviceType(detectDevice(ua));
+    }
+  }, []);
+
+  const detectDevice = (userAgent: string) => {
+    const ua = userAgent.toLowerCase();
+    if (/mobile|android|iphone|ipod|blackberry|iemobile|opera mini/.test(ua)) {
+      return "mobile";
+    }
+    if (/ipad|tablet|kindle|playbook/.test(ua)) {
+      return "tablet";
+    }
+    return "desktop";
+  }
 
   const onSizeChange = useCallback(() => {
     setViewportWidth(window.innerWidth);
@@ -180,6 +202,10 @@ const MarkdownEditor: React.FC<Props & EditorProps> = ({
     ];
   }, []);
 
+  const preview = useMemo(() => {
+    return deviceType !== "mobile";
+  }, [deviceType, userAgent]);
+
   return (
     <div data-color-mode={theme || "light"}>
       <MdEditor
@@ -200,6 +226,7 @@ const MarkdownEditor: React.FC<Props & EditorProps> = ({
         codeTheme="github"
         noImgZoomIn
         noUploadImg
+        preview={preview}
         {...props}
       />
     </div>
