@@ -265,6 +265,9 @@ export async function getCategories(
   const { revalidate, locale = DEFAULT_LANG } = params || {};
   const run = cacheable(async () => {
     const categories = await prisma.category.findMany({
+      where: {
+        published: true
+      },
       orderBy: {
         createdAt: "asc"
       },
