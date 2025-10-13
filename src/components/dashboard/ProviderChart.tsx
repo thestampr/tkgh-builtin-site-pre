@@ -1,20 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Line } from "react-chartjs-2";
 import {
+  CategoryScale,
   Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
   LineElement,
   PointElement,
-  LinearScale,
   TimeScale,
-  Tooltip,
-  Filler,
-  CategoryScale,
-  Legend
+  Tooltip
 } from "chart.js";
-import { Calendar, TrendingUp } from "lucide-react";
 import clsx from "clsx";
+import { Calendar, TrendingUp } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Line } from "react-chartjs-2";
 
 ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, Tooltip, Filler, CategoryScale, Legend);
 
@@ -56,11 +56,10 @@ function normalizeRaw(points: RawPoint[]): { date: Date; value: number; hour: nu
 function buildSeries(all: RawPoint[], period: Period) {
   const now = new Date();
   const normalized = normalizeRaw(all);
+  const series: { date: string; value: number }[] = [];
 
   switch (period) {
-    case "daily": {
-      // 24 hours of today
-      const series: { date: string; value: number }[] = [];
+    case "daily": { // 24 hours of today
       for (let h = 0; h < 24; h++) {
         const sum = normalized
           .filter(p => p.hour === h && isSameDate(p.date, now))
@@ -72,7 +71,6 @@ function buildSeries(all: RawPoint[], period: Period) {
 
     case "weekly": {
       const start = startOfWeek(now); // Monday
-      const series: { date: string; value: number }[] = [];
       for (let i = 0; i < 7; i++) {
         const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
         const sum = normalized
@@ -88,7 +86,6 @@ function buildSeries(all: RawPoint[], period: Period) {
       const y = now.getFullYear();
       const m = now.getMonth();
       const dim = daysInMonth(y, m);
-      const series: { date: string; value: number }[] = [];
       for (let day = 1; day <= dim; day++) {
         const d = new Date(y, m, day);
         const sum = normalized
@@ -101,14 +98,11 @@ function buildSeries(all: RawPoint[], period: Period) {
 
     case "yearly": {
       const y = now.getFullYear();
-      const startYear = new Date(y, 0, 1);
-      const endYear = new Date(y, 11, 31);
-      const series: { date: string; value: number }[] = [];
-      for (let d = new Date(startYear); d <= endYear; d.setDate(d.getDate() + 1)) {
+      for (let m = 0; m < 12; m++) {
         const sum = normalized
-          .filter(p => isSameDate(p.date, d))
+          .filter(p => p.date.getFullYear() === y && p.date.getMonth() === m)
           .reduce((acc, cur) => acc + cur.value, 0);
-        series.push({ date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, value: sum });
+        series.push({ date: `${y}-${pad(m + 1)}-01`, value: sum });
       }
       return series;
     }
