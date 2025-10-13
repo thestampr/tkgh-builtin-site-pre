@@ -323,7 +323,7 @@ export default function ProfileEditor({ initialProfile }: Props) {
               <p className="text-sm text-neutral-500 mt-1">{tProfile("subtitle")}</p>
             </div>
             <LocaleTabs className="ml-auto" locales={locales} active={activeLocale} onChange={handleChangeLocale} />
-            <div className="w-full h-full -z-1 absolute -translate-y-1/2 bg-white" />
+            <div className="w-full h-full -z-1 absolute -translate-y-1/3 bg-white" />
           </div>
         </div>
 
