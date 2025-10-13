@@ -26,7 +26,7 @@ export default function AccountSidebar() {
 
   return (
     <aside className="w-full md:w-52 shrink-0 space-y-4">
-      <nav className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-3 text-sm flex md:flex-col gap-2 overflow-x-auto">
+      <nav className="rounded-full md:rounded-2xl border md:border-0 border-neutral-200/70 bg-white/70 backdrop-blur p-3 text-sm flex md:flex-col gap-2 overflow-x-auto">
 
         {links.map(l => {
           const href = l.href(locale);
@@ -36,8 +36,8 @@ export default function AccountSidebar() {
               key={href}
               href={href}
               className={clsx(
-                "flex items-center gap-2 rounded px-3 py-2 transition border text-xs tracking-wide uppercase text-nowrap",
-                active ? "bg-secondary text-white border-neutral-900 shadow" : "border-neutral-200 text-neutral-700 hover:bg-neutral-100"
+                "flex items-center gap-2 rounded-full md:rounded-lg px-3 py-2 transition border text-xs tracking-wide uppercase text-nowrap",
+                active ? "bg-secondary text-white border-neutral-900 shadow" : "bg-white border-neutral-200 md:border-0 text-neutral-700 hover:bg-neutral-100"
               )}
             >
               {l.label}
