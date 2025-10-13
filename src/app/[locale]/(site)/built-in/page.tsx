@@ -53,7 +53,7 @@ export default async function BuiltInIndexPage({
         </div>
 
         <SearchFilterBar variant="builtins" inline categories={categories.map(c => ({ slug: c.slug, title: c.title }))} />
-        <BuiltInGrid items={items} showProvider={false} type={hasQuery ? "search" : undefined} />
+        <BuiltInGrid items={items} type={hasQuery ? "search" : undefined} />
       </section>
     </main>
   );
