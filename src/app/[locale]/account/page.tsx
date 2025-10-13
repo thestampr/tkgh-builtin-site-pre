@@ -140,7 +140,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
             </div>
             <div className="grid gap-10 lg:grid-cols-3">
               <div className="lg:col-span-2 space-y-6">
-                <section className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-6">
+                <section className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-5 md:p-6">
                   <ProviderChart initial={data.analytics?.daily || []} />
                 </section>
                 <section className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-6">
