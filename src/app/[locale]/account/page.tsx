@@ -3,6 +3,7 @@ import { ProviderChart } from '@/components/dashboard/ProviderChart';
 import { getUserFavorites } from '@/lib/api';
 import { authOptions } from '@/lib/auth/options';
 import prisma from '@/lib/db/prisma';
+import { PublishToggleButton } from '@/src/components/common/PublishToggleButton';
 import { getServerSession } from 'next-auth';
 import { getTranslations } from 'next-intl/server';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -30,7 +31,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
   const t = await getTranslations({ locale: locale, namespace: 'Account' });
   const isProvider = user.role === 'PROVIDER';
   if (!isProvider) {
-    const favorites = await getUserFavorites(userId, {locale});
+    const favorites = await getUserFavorites(userId, { locale });
     return (
       <div className="space-y-10">
         <div>
@@ -69,15 +70,15 @@ export default async function AccountDashboardPage({ params }: { params: Promise
       prisma.builtIn.count({ where: { providerId: userId, status: 'DRAFT' } }),
       prisma.category.count({ where: { providerId: userId } })
     ]),
-    prisma.builtIn.findMany({ where: { providerId: userId }, orderBy: { updatedAt: 'desc' }, take: 5, select: { id: true, title: true, status: true, updatedAt: true } }),
-    prisma.builtIn.findMany({ where: { providerId: userId }, orderBy: { viewCount: 'desc' }, take: 5, select: { id: true, title: true, viewCount: true, status: true } }),
+    prisma.builtIn.findMany({ where: { providerId: userId }, orderBy: { updatedAt: 'desc' }, take: 5, select: { id: true, title: true, slug: true, status: true, updatedAt: true } }),
+    prisma.builtIn.findMany({ where: { providerId: userId }, orderBy: { viewCount: 'desc' }, take: 5, select: { id: true, title: true, slug: true, viewCount: true, status: true } }),
     Promise.all([
       prisma.analyticsEvent.findMany({
         where: { builtIn: { providerId: userId }, type: 'BUILTIN_VIEW', createdAt: { gte: since } },
         select: { createdAt: true, builtInId: true }
       }),
       prisma.builtIn.findMany({ where: { providerId: userId }, select: { id: true, title: true, viewCount: true, categoryId: true } }),
-      prisma.category.findMany({ where: { providerId: userId }, select: { id: true, name: true } })
+      prisma.category.findMany({ where: { providerId: userId }, select: { id: true, name: true, slug: true } })
     ])
   ]);
   // Build analytics structure mirroring /api/provider/analytics
@@ -94,7 +95,15 @@ export default async function AccountDashboardPage({ params }: { params: Promise
       if (b?.categoryId) catMap[b.categoryId] = (catMap[b.categoryId] || 0) + 1;
     }
     return Object.entries(catMap)
-      .map(([id, value]) => ({ id, name: categoriesAll.find(c => c.id === id)?.name || 'Unknown', views: value }))
+      .map(([id, value]) => {
+        const cat = categoriesAll.find(c => c.id === id);
+        return {
+          id,
+          name: cat?.name || 'Unknown',
+          slug: cat?.slug || '',
+          views: value
+        };
+      })
       .sort((a, b) => b.views - a.views)
       .slice(0, 8);
   })();
@@ -123,7 +132,7 @@ export default async function AccountDashboardPage({ params }: { params: Promise
         </div>
         {data ? (
           <>
-            <div className="grid gap-6 md:grid-cols-4">
+            <div className="grid gap-6 grid-cols-2 md:grid-cols-4">
               <DashboardStat label={t('summary.builtIns')} value={data.summary.totalBuiltIns} />
               <DashboardStat label={t('summary.published')} value={data.summary.publishedCount} />
               <DashboardStat label={t('summary.drafts')} value={data.summary.draftCount} />
@@ -137,12 +146,18 @@ export default async function AccountDashboardPage({ params }: { params: Promise
                 <section className="rounded-xl border border-neutral-200/70 bg-white/70 backdrop-blur p-6">
                   <h2 className="font-medium mb-4 text-neutral-700">{t('tables.recent')}</h2>
                   <ul className="space-y-2 text-sm">
-                    {data.recent.map((r) => (
-                      <li key={r.id} className="flex items-center justify-between">
-                        <span className="truncate mr-2">{r.title}</span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-neutral-100 text-neutral-600 border border-neutral-200">{r.status}</span>
-                      </li>
-                    ))}
+                    {data.recent.map((r) => {
+                      const href = `/${locale}/p/${userId}/built-in/${r.slug}`;
+                      return (
+                        <li key={r.id} className="flex items-center justify-between">
+                          <Link href={href} className="truncate text-btn">{r.title}</Link>
+                          <PublishToggleButton
+                            status={r.status === "PUBLISHED"}
+                            disabled
+                          />
+                        </li>
+                      );
+                    })}
                   </ul>
                 </section>
               </div>
@@ -151,23 +166,29 @@ export default async function AccountDashboardPage({ params }: { params: Promise
                   <div>
                     <h2 className="font-medium mb-2 text-neutral-700">{t('tables.topViews')}</h2>
                     <ul className="space-y-3 text-sm">
-                      {data.topViews.map((b) => (
-                        <li key={b.id} className="flex items-center justify-between">
-                          <span className="truncate mr-2">{b.title}</span>
-                          <span className="text-xs font-medium text-neutral-600">{b.viewCount}</span>
-                        </li>
-                      ))}
+                      {data.topViews.map((b) => {
+                        const href = `/${locale}/p/${userId}/built-in/${b.slug}`;
+                        return (
+                          <li key={b.id} className="flex items-center justify-between">
+                            <Link href={href} className="truncate text-btn">{b.title}</Link>
+                            <span className="text-xs font-medium text-neutral-600">{b.viewCount}</span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                   <div>
                     <h2 className="font-medium mb-2 text-neutral-700">{t('ui.topCategories')}</h2>
-                    <ul className="space-y-2 text-xs">
-                      {data.analytics?.topCategories?.map((c) => (
-                        <li key={c.id} className="flex items-center justify-between">
-                          <span className="truncate mr-2">{c.name}</span>
-                          <span className="text-neutral-600 font-medium">{c.views}</span>
-                        </li>
-                      )) || null}
+                    <ul className="space-y-2 text-sm">
+                      {data.analytics?.topCategories?.map((c) => {
+                        const href = `/${locale}/p/${userId}/categories/${c.slug}`;
+                        return (
+                          <li key={c.id} className="flex items-center justify-between">
+                            <Link href={href} className="truncate text-btn">{c.name}</Link>
+                            <span className="text-neutral-600 font-medium">{c.views}</span>
+                          </li>
+                        );
+                      }) || null}
                       {!data.analytics?.topCategories?.length && <li className="text-neutral-400">{t('ui.noDataGeneric')}</li>}
                     </ul>
                   </div>
